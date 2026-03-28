@@ -1,0 +1,505 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  Linkedin, 
+  Calendar, 
+  CheckCircle2, 
+  MessageSquare, 
+  Rocket, 
+  ShieldCheck, 
+  Users, 
+  Menu, 
+  X, 
+  ArrowUpRight,
+  Target, 
+  Zap, 
+  Clock, 
+  ChevronRight
+} from 'lucide-react';
+
+// Configuration des assets (Utilisation du format stable pour Google Drive)
+const ASSETS = {
+  logo: "https://lh3.googleusercontent.com/d/1r0tG2koxXGDPjoCw9dmlCtk6UisQYxDE",
+  colibri: "https://lh3.googleusercontent.com/d/1ZKwRL-c7yJCE-H8-ZbH1jt_RStqn-Svq",
+  photo: "https://lh3.googleusercontent.com/d/1LJfMlbhJatlaRiCFA2TgbD60scJNjpHB",
+};
+
+// Liens de contact
+const LINKS = {
+  linkedin: "https://www.linkedin.com/in/corinne-csm/",
+  calendly: "https://calendly.com/corinne-marsiac-careandsuccess/30min"
+};
+
+/**
+ * Composant Image avec gestion d'erreur et placeholders élégants
+ */
+const SmartImage = ({ src, alt, className, type = "default" }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
+
+  if (hasError || !src) {
+    const placeholders = {
+      logo: <div className="font-black text-2xl tracking-tighter text-neutral-900 italic uppercase">Care & Success</div>,
+      colibri: (
+        <div className="w-full h-full bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center rounded-3xl border border-blue-100">
+          <Rocket className="text-blue-600 opacity-20" size={60} />
+        </div>
+      ),
+      photo: (
+        <div className="w-full aspect-[4/5] bg-neutral-800 flex items-center justify-center rounded-2xl border border-white/10">
+          <Users className="text-neutral-700" size={50} />
+        </div>
+      ),
+      default: <div className="w-full h-full bg-neutral-100 rounded-lg" />
+    };
+    return placeholders[type] || placeholders.default;
+  }
+
+  return (
+    <div className={`relative ${!isLoaded ? 'animate-pulse bg-neutral-100 rounded-lg' : ''} ${className}`}>
+      <img 
+        src={src} 
+        alt={alt} 
+        className={`w-full h-full object-contain ${isLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-700`}
+        onLoad={() => setIsLoaded(true)}
+        onError={() => setHasError(true)}
+      />
+    </div>
+  );
+};
+
+const Button = ({ children, variant = 'primary', className = '', href }) => {
+  const base = "px-7 py-3.5 rounded-full font-bold transition-all duration-300 flex items-center justify-center gap-2 text-sm md:text-base whitespace-nowrap active:scale-95";
+  const styles = {
+    primary: "bg-black text-white hover:bg-neutral-800 shadow-xl",
+    secondary: "bg-white text-black border border-neutral-200 hover:border-black",
+    gradient: "bg-gradient-to-r from-blue-600 to-violet-600 text-white hover:opacity-90 shadow-blue-500/20 shadow-2xl",
+    outline: "border border-white/20 text-white hover:bg-white/10"
+  };
+
+  if (href) {
+    return <a href={href} target="_blank" rel="noopener noreferrer" className={`${base} ${styles[variant]} ${className}`}>{children}</a>;
+  }
+  return <button className={`${base} ${styles[variant]} ${className}`}>{children}</button>;
+};
+
+const Navbar = () => {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 30);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const links = [
+    { name: 'Accueil', href: '#accueil' },
+    { name: 'À propos', href: '#a-propos' },
+    { name: 'Services', href: '#services' },
+    { name: 'Vos défis', href: '#defis' },
+    { name: 'Contact', href: '#contact' },
+  ];
+
+  return (
+    <nav className={`fixed top-0 w-full z-50 transition-all duration-500 ${
+      isScrolled 
+      ? 'bg-white/95 backdrop-blur-md border-b border-neutral-100 py-3 shadow-md' 
+      : 'bg-transparent py-6 md:py-8'
+    }`}>
+      <div className="container mx-auto px-6 flex items-center justify-between">
+        
+        {/* Header Logo Group - Agrandi x3 */}
+        <div className="flex items-center">
+          <div className={`transition-all duration-500 ease-in-out ${
+            isScrolled ? 'h-32 md:h-36' : 'h-48 md:h-60 lg:h-72'
+          }`}>
+            <SmartImage 
+              src={ASSETS.logo} 
+              alt="Care & Success - Corinne Marsiac" 
+              className="h-full w-auto" 
+              type="logo" 
+            />
+          </div>
+        </div>
+
+        {/* Navigation Bureau */}
+        <div className="hidden lg:flex items-center gap-8 xl:gap-12">
+          {links.map(link => (
+            <a 
+              key={link.name} 
+              href={link.href} 
+              className="text-[11px] xl:text-[12px] font-black uppercase tracking-[0.2em] text-neutral-500 hover:text-blue-600 transition-colors"
+            >
+              {link.name}
+            </a>
+          ))}
+        </div>
+
+        <div className="hidden lg:flex items-center gap-4">
+          <Button variant="secondary" href={LINKS.linkedin} className="px-4 py-2.5">
+            <Linkedin size={18} />
+          </Button>
+          <Button variant="primary" href={LINKS.calendly} className="px-6 py-2.5 text-xs uppercase tracking-widest font-black">
+            Prendre RDV
+          </Button>
+        </div>
+
+        {/* Menu Mobile Toggle */}
+        <button className="lg:hidden text-neutral-900 p-2" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+          {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+        </button>
+      </div>
+
+      {/* Menu Mobile */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden absolute top-full left-0 w-full bg-white border-b border-neutral-100 p-8 flex flex-col gap-6 shadow-2xl animate-in fade-in slide-in-from-top-4">
+          {links.map(link => (
+            <a key={link.name} href={link.href} onClick={() => setMobileMenuOpen(false)} className="text-xl font-black text-neutral-900">
+              {link.name}
+            </a>
+          ))}
+          <div className="flex flex-col gap-4 pt-4">
+            <Button variant="gradient" href={LINKS.calendly} className="py-4 w-full">Prendre rendez-vous</Button>
+            <Button variant="secondary" href={LINKS.linkedin} className="py-4 w-full">LinkedIn</Button>
+          </div>
+        </div>
+      )}
+    </nav>
+  );
+};
+
+const SectionTitle = ({ label, title, light = false }) => (
+  <div className="mb-14">
+    <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] uppercase tracking-[0.3em] font-black mb-6 ${light ? 'bg-white/10 text-blue-400' : 'bg-blue-50 text-blue-700'}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${light ? 'bg-blue-400' : 'bg-blue-600'}`} />
+      {label}
+    </div>
+    <h2 className={`text-4xl md:text-6xl font-black tracking-tighter leading-[1.05] ${light ? 'text-white' : 'text-neutral-900'}`}>
+      {title}
+    </h2>
+  </div>
+);
+
+export default function App() {
+  // Liste des certifications avec leurs couleurs spécifiques basées sur la charte
+  const certifications = [
+    { name: "CSM Kare School", color: "border-violet-500/50 bg-violet-500/10 text-violet-400 shadow-violet-500/10" },
+    { name: "CCSM Level 1", color: "border-blue-400/50 bg-blue-400/10 text-blue-400 shadow-blue-400/10" },
+    { name: "Customer Care Generation", color: "border-blue-500/50 bg-blue-500/10 text-blue-400 shadow-blue-500/10" },
+    { name: "Salesforce Administrator", color: "border-indigo-500/50 bg-indigo-500/10 text-indigo-400 shadow-indigo-500/10" },
+    { name: "Agentforce Specialist", color: "border-violet-600/50 bg-violet-600/10 text-violet-300 shadow-violet-600/10" },
+    { name: "HubSpot Inbound", color: "border-blue-600/50 bg-blue-600/10 text-blue-300 shadow-blue-600/10" }
+  ];
+
+  // Défis opérationnels avec couleurs harmonisées
+  const challenges = [
+    {
+      title: "Pic d'activité",
+      icon: <Zap size={24} />,
+      colorClass: "text-blue-500",
+      bulletClass: "bg-blue-500",
+      items: ["Hausse soudaine de tickets", "Série d'onboardings massifs", "Lancement produit majeur"]
+    },
+    {
+      title: "Transition d'équipe",
+      icon: <Users size={24} />,
+      colorClass: "text-cyan-400", // Bleu turquoise
+      bulletClass: "bg-cyan-400", // Puces assorties
+      items: ["Congé ou départ imprévu", "Réorganisation interne", "Poste vacant à sécuriser"]
+    },
+    {
+      title: "Projets sensibles",
+      icon: <ShieldCheck size={24} />,
+      colorClass: "text-violet-500",
+      bulletClass: "bg-violet-500",
+      items: ["Migration de comptes", "Déploiement complexe", "Portefeuille à haut risque"]
+    }
+  ];
+
+  return (
+    <div className="min-h-screen bg-white font-sans text-neutral-900 selection:bg-blue-600 selection:text-white">
+      <Navbar />
+
+      {/* SECTION HÉROS */}
+      <section id="accueil" className="relative pt-64 pb-20 md:pt-80 md:pb-40 overflow-hidden">
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-blue-100/30 to-transparent -z-10 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/4" />
+        
+        <div className="container mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="max-w-2xl order-2 lg:order-1">
+              <h1 className="text-5xl md:text-8xl font-black leading-[0.95] tracking-tighter text-neutral-900 mb-10">
+                Votre Renfort <br />
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600">
+                  Care & Success
+                </span>
+              </h1>
+              <p className="text-xl md:text-2xl text-neutral-600 leading-relaxed mb-12 max-w-xl font-medium">
+                J’accompagne les équipes SaaS B2B dans l’onboarding, le customer care et le customer success pour sécuriser l’adoption et renforcer la rétention.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-5">
+                <Button variant="gradient" href={LINKS.calendly} className="px-10 py-5 text-lg">
+                  Prendre rendez-vous <Calendar size={20} />
+                </Button>
+                <Button variant="secondary" href={LINKS.linkedin} className="px-10 py-5 text-lg">
+                  Voir LinkedIn <ArrowUpRight size={20} />
+                </Button>
+              </div>
+            </div>
+
+            <div className="relative order-1 lg:order-2 flex justify-center items-center">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-violet-500/20 rounded-full blur-[100px] opacity-70 animate-pulse" />
+              <div className="relative z-10 w-full max-w-lg aspect-square flex items-center justify-center">
+                <SmartImage 
+                  src={ASSETS.colibri} 
+                  alt="Colibri Care & Success" 
+                  className="w-full h-auto drop-shadow-[0_20px_60px_rgba(37,99,235,0.2)] hover:scale-105 transition-transform duration-1000"
+                  type="colibri"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION À PROPOS (FOND NOIR) */}
+      <section id="a-propos" className="bg-black text-white py-24 md:py-32 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/5 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2" />
+        
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="grid lg:grid-cols-12 gap-16 items-start">
+            {/* Carte Photo */}
+            <div className="lg:col-span-4 lg:sticky lg:top-32">
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-violet-600 rounded-3xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+                <div className="relative bg-neutral-900 border border-white/10 p-4 rounded-3xl overflow-hidden shadow-2xl">
+                  <SmartImage 
+                    src={ASSETS.photo} 
+                    alt="Corinne Marsiac" 
+                    className="w-full h-auto rounded-2xl transition-all duration-700 object-cover aspect-[4/5] grayscale hover:grayscale-0"
+                    type="photo"
+                  />
+                  <div className="mt-8 space-y-2 px-2 pb-2">
+                    <h3 className="text-2xl font-black tracking-tight">Corinne Marsiac</h3>
+                    <p className="text-xs text-neutral-500 font-bold uppercase tracking-widest leading-relaxed">
+                      Customer Success Manager <br />
+                      Customer Care Manager
+                    </p>
+                    <div className="h-px w-10 bg-blue-600 mt-4" />
+                    <p className="text-[11px] uppercase tracking-[0.3em] text-blue-500 font-black pt-3">SaaS B2B Réglementé</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Texte & Expertise */}
+            <div className="lg:col-span-8">
+              <SectionTitle label="À propos de moi" title="Une expertise terrain au service de la rétention client" light />
+              <div className="space-y-12">
+                <p className="text-2xl md:text-3xl text-neutral-300 leading-snug font-medium">
+                  Professionnelle de la relation client avec plus de <span className="text-white font-bold border-b-2 border-blue-600/50">10 ans d’expérience</span> en environnement SaaS B2B et réglementé, j’interviens en renfort opérationnel sur les sujets onboarding, support, adoption et suivi de portefeuille.
+                </p>
+                <p className="text-lg text-neutral-400 leading-relaxed font-normal">
+                  Mon parcours en HR Tech, paie et environnements réglementés me permet d’apporter un cadre structuré, fiable et orienté résultats immédiats pour vos clients.
+                </p>
+
+                <div className="grid md:grid-cols-2 gap-x-12 gap-y-6 pt-6">
+                  {[
+                    "Onboarding & Product Adoption",
+                    "Customer Care & Ticketing",
+                    "Customer Success & Rétention",
+                    "Pilotage KPI : NPS, CSAT, MRR",
+                    "Salesforce Administration",
+                    "Coordination Transverse"
+                  ].map((skill, index) => (
+                    <div key={index} className="flex items-center gap-4 group cursor-default">
+                      <div className="p-1.5 rounded-lg bg-blue-500/10 border border-blue-500/20 group-hover:bg-blue-500/20 transition-all">
+                        <CheckCircle2 className="text-blue-500" size={20} />
+                      </div>
+                      <span className="text-neutral-300 text-lg font-bold group-hover:text-white transition-colors">{skill}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pt-16 border-t border-white/10">
+                  <p className="text-[11px] uppercase tracking-[0.4em] text-neutral-500 font-black mb-10">Écosystème & Certifications</p>
+                  <div className="flex flex-wrap gap-4">
+                    {certifications.map((cert, index) => (
+                      <span 
+                        key={index} 
+                        className={`px-5 py-3 rounded-xl border text-[10px] font-black uppercase tracking-wider transition-all duration-300 hover:scale-105 shadow-sm ${cert.color}`}
+                      >
+                        {cert.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION SERVICES */}
+      <section id="services" className="py-24 md:py-40 bg-white relative overflow-hidden">
+        <div className="container mx-auto px-6">
+          <div className="text-center max-w-3xl mx-auto mb-24">
+            <SectionTitle label="Services" title="Trois leviers pour soutenir votre croissance" />
+            <p className="text-neutral-500 text-xl font-medium leading-relaxed">
+              Une intervention agile pour garantir l'excellence de votre relation client à chaque étape critique du cycle de vie.
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-3 gap-10">
+            {/* Card 1: Onboarding */}
+            <div className="group p-14 rounded-[3rem] bg-neutral-50 border border-neutral-100 hover:bg-white hover:border-blue-200 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] transition-all duration-500">
+              <div className="w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center mb-10 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 border border-neutral-100">
+                <Rocket className="text-blue-600" size={36} />
+              </div>
+              <h3 className="text-3xl font-black mb-6 tracking-tight">Onboarding</h3>
+              <p className="text-neutral-600 leading-relaxed text-lg font-medium opacity-80">
+                Sécurisation des premiers usages, setup, formation, création de playbooks et accélération du time-to-value.
+              </p>
+            </div>
+
+            {/* Card 2: Customer Care - Icône Turquoise */}
+            <div className="group p-14 rounded-[3rem] bg-neutral-50 border border-neutral-100 hover:bg-white hover:border-blue-200 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] transition-all duration-500">
+              <div className="w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center mb-10 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 border border-neutral-100">
+                <MessageSquare className="text-cyan-400" size={36} />
+              </div>
+              <h3 className="text-3xl font-black mb-6 tracking-tight">Customer Care</h3>
+              <p className="text-neutral-600 leading-relaxed text-lg font-medium opacity-80">
+                Gestion du ticketing multicanal, help center, cas complexes et analyse structurée de la voix du client.
+              </p>
+            </div>
+
+            {/* Card 3: Customer Success */}
+            <div className="group p-14 rounded-[3rem] bg-neutral-50 border border-neutral-100 hover:bg-white hover:border-blue-200 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] transition-all duration-500">
+              <div className="w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center mb-10 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 border border-neutral-100">
+                <Target className="text-indigo-600" size={36} />
+              </div>
+              <h3 className="text-3xl font-black mb-6 tracking-tight">Customer Success</h3>
+              <p className="text-neutral-600 leading-relaxed text-lg font-medium opacity-80">
+                QBR, suivi de portefeuille, prévention du churn, renouvellement et détection d'opportunités d'expansion.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION VOS DÉFIS OPÉRATIONNELS */}
+      <section id="defis" className="bg-neutral-950 py-24 md:py-40 relative overflow-hidden">
+        <div className="absolute top-1/2 left-0 w-[600px] h-[600px] bg-blue-600/5 blur-[150px] rounded-full -translate-x-1/2 -translate-y-1/2" />
+        
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="max-w-4xl mb-20">
+            <SectionTitle label="Usage" title="Vos défis opérationnels" light />
+            <p className="text-neutral-400 text-xl font-medium max-w-2xl leading-relaxed">
+              J’interviens lorsque vos équipes ont besoin d’un renfort rapide et fiable pour absorber une surcharge ou sécuriser une transition critique.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {challenges.map((challenge, i) => (
+              <div key={i} className="bg-neutral-900 border border-white/10 p-12 rounded-[2.5rem] hover:border-blue-500/40 transition-all duration-500 group">
+                <div className="flex items-center gap-4 mb-10">
+                  <div className={`p-4 rounded-xl bg-white/5 border border-white/10 group-hover:bg-white/10 transition-colors ${challenge.colorClass}`}>
+                    {challenge.icon}
+                  </div>
+                  <h4 className="text-2xl font-black text-white tracking-tight">{challenge.title}</h4>
+                </div>
+                <ul className="space-y-6">
+                  {challenge.items.map((item, j) => (
+                    <li key={j} className="flex items-start gap-4 text-neutral-400 font-bold text-sm">
+                      <div className={`w-2 h-2 rounded-full mt-1.5 shadow-[0_0_12px_rgba(255,255,255,0.1)] ${challenge.bulletClass}`} />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION CONTACT */}
+      <section id="contact" className="py-24 md:py-44 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="relative overflow-hidden bg-neutral-950 rounded-[4rem] p-12 md:p-32 text-center shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)]">
+            {/* Effets lumineux d'ambiance */}
+            <div className="absolute top-0 right-0 w-[700px] h-[700px] bg-blue-600/15 blur-[160px] rounded-full translate-x-1/3 -translate-y-1/3" />
+            <div className="absolute bottom-0 left-0 w-[700px] h-[700px] bg-violet-600/10 blur-[160px] rounded-full -translate-x-1/3 translate-y-1/3" />
+            
+            <div className="relative z-10 max-w-4xl mx-auto">
+              <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-12 leading-[1.05]">
+                Construisons votre réussite ensemble
+              </h2>
+              <p className="text-xl md:text-2xl text-neutral-400 mb-16 font-medium max-w-2xl mx-auto opacity-90 leading-relaxed">
+                Besoin d’un renfort immédiat pour sécuriser vos comptes ou fluidifier votre support ? Échangeons sur vos enjeux actuels.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
+                <Button variant="gradient" href={LINKS.calendly} className="w-full sm:w-auto px-14 py-6 text-xl font-black">
+                  Réserver un créneau <Calendar size={24} />
+                </Button>
+                <Button variant="outline" href={LINKS.linkedin} className="w-full sm:w-auto px-14 py-6 text-xl font-black border-white/20">
+                  LinkedIn <ArrowUpRight size={24} />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* PIED DE PAGE */}
+      <footer className="py-20 border-t border-neutral-100 bg-neutral-50/50">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col md:flex-row items-start justify-between gap-16 mb-16">
+            
+            {/* Logo dans le footer */}
+            <div className="flex items-center gap-8">
+              <div className="h-24 md:h-32 w-auto">
+                <SmartImage src={ASSETS.logo} alt="Logo" className="h-full w-auto opacity-70 grayscale hover:grayscale-0 transition-all" type="logo" />
+              </div>
+              <div className="flex flex-col">
+                <span className="font-black text-2xl md:text-3xl text-neutral-900 tracking-tighter leading-none">Care & Success</span>
+                <span className="text-xs text-neutral-400 uppercase tracking-[0.4em] font-black mt-3">Corinne Marsiac</span>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-16 gap-y-10">
+              <div className="flex flex-col gap-5">
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-900">Navigation</span>
+                <a href="#accueil" className="text-sm font-bold text-neutral-500 hover:text-blue-600 transition-colors">Accueil</a>
+                <a href="#a-propos" className="text-sm font-bold text-neutral-500 hover:text-blue-600 transition-colors">À propos</a>
+                <a href="#services" className="text-sm font-bold text-neutral-500 hover:text-blue-600 transition-colors">Services</a>
+              </div>
+              <div className="flex flex-col gap-5">
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-900">Contact</span>
+                <a href={LINKS.linkedin} className="text-sm font-bold text-neutral-500 hover:text-blue-600 transition-colors flex items-center gap-2">
+                  LinkedIn <ArrowUpRight size={14} />
+                </a>
+                <a href={LINKS.calendly} className="text-sm font-bold text-neutral-500 hover:text-blue-600 transition-colors flex items-center gap-2">
+                  Calendly <ArrowUpRight size={14} />
+                </a>
+              </div>
+              <div className="flex flex-col gap-5">
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-900">Disponibilité</span>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-green-500" />
+                  <span className="text-sm font-bold text-neutral-500">Ouverte aux projets</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="pt-10 border-t border-neutral-100 flex flex-col md:flex-row justify-between items-center gap-4">
+             <p className="text-[10px] text-neutral-400 font-black uppercase tracking-[0.2em]">
+                © 2025 • Care & Success • Tous droits réservés
+             </p>
+             <p className="text-[10px] text-neutral-300 font-bold uppercase tracking-widest">
+                Expertise Opérationnelle SaaS B2B
+             </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
