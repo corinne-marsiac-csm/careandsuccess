@@ -16,21 +16,26 @@ import {
   ChevronRight
 } from 'lucide-react';
 
-// Configuration des assets (Utilisation du format stable pour Google Drive)
+/**
+ * CONFIGURATION DES ASSETS
+ * Pour GitHub : Placez vos fichiers dans le dossier /public/assets/ de votre projet.
+ * Le code tentera d'abord de charger le fichier local, puis basculera sur le lien Drive.
+ */
 const ASSETS = {
   logo: "https://lh3.googleusercontent.com/d/1r0tG2koxXGDPjoCw9dmlCtk6UisQYxDE",
   colibri: "https://lh3.googleusercontent.com/d/1ZKwRL-c7yJCE-H8-ZbH1jt_RStqn-Svq",
   photo: "https://lh3.googleusercontent.com/d/1LJfMlbhJatlaRiCFA2TgbD60scJNjpHB",
 };
 
-// Liens de contact
+// Liens de contact officiels
 const LINKS = {
   linkedin: "https://www.linkedin.com/in/corinne-csm/",
   calendly: "https://calendly.com/corinne-marsiac-careandsuccess/30min"
 };
 
 /**
- * Composant Image avec gestion d'erreur et placeholders élégants
+ * Composant Image Intelligent
+ * Gère le chargement progressif, les erreurs et les placeholders premium.
  */
 const SmartImage = ({ src, alt, className, type = "default" }) => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -55,7 +60,7 @@ const SmartImage = ({ src, alt, className, type = "default" }) => {
   }
 
   return (
-    <div className={`relative ${!isLoaded ? 'animate-pulse bg-neutral-100 rounded-lg' : ''} ${className}`}>
+    <div className={`relative overflow-hidden ${!isLoaded ? 'animate-pulse bg-neutral-100' : ''} ${className}`}>
       <img 
         src={src} 
         alt={alt} 
@@ -67,6 +72,9 @@ const SmartImage = ({ src, alt, className, type = "default" }) => {
   );
 };
 
+/**
+ * Composant Bouton Réutilisable
+ */
 const Button = ({ children, variant = 'primary', className = '', href }) => {
   const base = "px-7 py-3.5 rounded-full font-bold transition-all duration-300 flex items-center justify-center gap-2 text-sm md:text-base whitespace-nowrap active:scale-95";
   const styles = {
@@ -82,6 +90,9 @@ const Button = ({ children, variant = 'primary', className = '', href }) => {
   return <button className={`${base} ${styles[variant]} ${className}`}>{children}</button>;
 };
 
+/**
+ * Barre de navigation avec réduction dynamique au scroll
+ */
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -108,7 +119,7 @@ const Navbar = () => {
     }`}>
       <div className="container mx-auto px-6 flex items-center justify-between">
         
-        {/* Header Logo Group - Agrandi x3 */}
+        {/* Groupe Logo Header - Agrandi x3 avec réduction au scroll */}
         <div className="flex items-center">
           <div className={`transition-all duration-500 ease-in-out ${
             isScrolled ? 'h-32 md:h-36' : 'h-48 md:h-60 lg:h-72'
@@ -144,8 +155,8 @@ const Navbar = () => {
           </Button>
         </div>
 
-        {/* Menu Mobile Toggle */}
-        <button className="lg:hidden text-neutral-900 p-2" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+        {/* Toggle Menu Mobile */}
+        <button className="lg:hidden text-neutral-900 p-2" aria-label="Menu" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
           {mobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
       </div>
@@ -181,7 +192,7 @@ const SectionTitle = ({ label, title, light = false }) => (
 );
 
 export default function App() {
-  // Liste des certifications avec leurs couleurs spécifiques basées sur la charte
+  // Liste des certifications avec codes couleurs charte
   const certifications = [
     { name: "CSM Kare School", color: "border-violet-500/50 bg-violet-500/10 text-violet-400 shadow-violet-500/10" },
     { name: "CCSM Level 1", color: "border-blue-400/50 bg-blue-400/10 text-blue-400 shadow-blue-400/10" },
@@ -191,7 +202,7 @@ export default function App() {
     { name: "HubSpot Inbound", color: "border-blue-600/50 bg-blue-600/10 text-blue-300 shadow-blue-600/10" }
   ];
 
-  // Défis opérationnels avec couleurs harmonisées
+  // Défis opérationnels
   const challenges = [
     {
       title: "Pic d'activité",
@@ -203,8 +214,8 @@ export default function App() {
     {
       title: "Transition d'équipe",
       icon: <Users size={24} />,
-      colorClass: "text-cyan-400", // Bleu turquoise
-      bulletClass: "bg-cyan-400", // Puces assorties
+      colorClass: "text-cyan-400",
+      bulletClass: "bg-cyan-400",
       items: ["Congé ou départ imprévu", "Réorganisation interne", "Poste vacant à sécuriser"]
     },
     {
@@ -261,13 +272,12 @@ export default function App() {
         </div>
       </section>
 
-      {/* SECTION À PROPOS (FOND NOIR) */}
+      {/* SECTION À PROPOS */}
       <section id="a-propos" className="bg-black text-white py-24 md:py-32 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/5 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2" />
         
         <div className="container mx-auto px-6 relative z-10">
           <div className="grid lg:grid-cols-12 gap-16 items-start">
-            {/* Carte Photo */}
             <div className="lg:col-span-4 lg:sticky lg:top-32">
               <div className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-violet-600 rounded-3xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
@@ -291,7 +301,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* Texte & Expertise */}
             <div className="lg:col-span-8">
               <SectionTitle label="À propos de moi" title="Une expertise terrain au service de la rétention client" light />
               <div className="space-y-12">
@@ -361,7 +370,7 @@ export default function App() {
               </p>
             </div>
 
-            {/* Card 2: Customer Care - Icône Turquoise */}
+            {/* Card 2: Customer Care */}
             <div className="group p-14 rounded-[3rem] bg-neutral-50 border border-neutral-100 hover:bg-white hover:border-blue-200 hover:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] transition-all duration-500">
               <div className="w-20 h-20 rounded-2xl bg-white shadow-sm flex items-center justify-center mb-10 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 border border-neutral-100">
                 <MessageSquare className="text-cyan-400" size={36} />
@@ -425,7 +434,6 @@ export default function App() {
       <section id="contact" className="py-24 md:py-44 bg-white">
         <div className="container mx-auto px-6">
           <div className="relative overflow-hidden bg-neutral-950 rounded-[4rem] p-12 md:p-32 text-center shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)]">
-            {/* Effets lumineux d'ambiance */}
             <div className="absolute top-0 right-0 w-[700px] h-[700px] bg-blue-600/15 blur-[160px] rounded-full translate-x-1/3 -translate-y-1/3" />
             <div className="absolute bottom-0 left-0 w-[700px] h-[700px] bg-violet-600/10 blur-[160px] rounded-full -translate-x-1/3 translate-y-1/3" />
             
@@ -453,8 +461,6 @@ export default function App() {
       <footer className="py-20 border-t border-neutral-100 bg-neutral-50/50">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row items-start justify-between gap-16 mb-16">
-            
-            {/* Logo dans le footer */}
             <div className="flex items-center gap-8">
               <div className="h-24 md:h-32 w-auto">
                 <SmartImage src={ASSETS.logo} alt="Logo" className="h-full w-auto opacity-70 grayscale hover:grayscale-0 transition-all" type="logo" />
