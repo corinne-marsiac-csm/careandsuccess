@@ -196,7 +196,7 @@
             transition: all 0.5s ease;
         }
 
-        /* --- STYLE ETIQUETTE PERSONNALISÉE (Selon image_d7d709.png) --- */
+        /* --- STYLE ETIQUETTE PERSONNALISÉE --- */
         .label-partie {
             display: inline-block;
             background-color: #2563eb;
@@ -345,7 +345,6 @@
                 </div>
                 <div class="lg:col-span-7 reveal">
                     <div class="mb-10">
-                        <!-- ÉTIQUETTE PERSONNALISÉE -->
                         <div class="label-partie">À PROPOS DE MOI</div>
                         <h2 class="text-4xl md:text-6xl font-[900] tracking-tighter leading-tight mb-8 text-white">Une expertise terrain au service de <span class="brand-gradient">votre rétention client</span></h2>
                         <p class="text-xl md:text-2xl text-neutral-300 leading-relaxed font-medium mb-8">Professionnelle de la relation client avec plus de <span class="text-white font-bold border-b border-white/20">10 ans d’expérience</span> en environnement SaaS B2B.</p>
@@ -397,14 +396,12 @@
     <section id="offres" class="py-24 md:py-40 bg-[#f8faff] px-6 overflow-hidden relative">
         <div class="container mx-auto max-w-6xl relative z-10">
             <header class="text-center mb-20 reveal">
-                <!-- ÉTIQUETTE PERSONNALISÉE -->
                 <div class="label-partie">SOLUTIONS OPÉRATIONNELLES</div>
                 <h2 class="text-4xl md:text-6xl font-[900] tracking-tighter leading-none mb-2 text-neutral-900">3 leviers pour <span class="brand-gradient">sécuriser</span> <br class="hidden md:block"> votre croissance.</h2>
                 <p class="text-lg md:text-xl text-neutral-500 font-medium max-w-3xl mx-auto mt-6">Pourquoi s'engager dans un recrutement complexe quand vous pouvez activer un renfort expert, agile et immédiatement productif ?</p>
             </header>
 
             <div class="grid lg:grid-cols-3 gap-8 items-stretch py-10">
-                <!-- CARTE 1 -->
                 <div class="card-glass overflow-hidden rounded-[3rem] shadow-xl reveal flex flex-col group hover-halo-emerald" @click="selectedOffer = 1">
                     <div class="relative h-48 overflow-hidden shrink-0"><img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop" alt="Onboarding" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"><div class="absolute inset-0 bg-gradient-to-t from-white/95 via-transparent to-transparent"></div></div>
                     <div class="p-8 pt-4 flex-grow flex flex-col">
@@ -420,7 +417,6 @@
                     </div>
                 </div>
 
-                <!-- CARTE 2 -->
                 <div class="card-glass overflow-hidden rounded-[3rem] shadow-xl reveal flex flex-col group hover-halo-blue" @click="selectedOffer = 2">
                     <div class="relative h-48 overflow-hidden shrink-0"><img src="https://images.unsplash.com/photo-1525130413817-d45c1d127c42?q=80&w=2070&auto=format&fit=crop" alt="Customer Care" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"><div class="absolute inset-0 bg-gradient-to-t from-white/95 via-transparent to-transparent"></div></div>
                     <div class="p-8 pt-4 flex-grow flex flex-col">
@@ -436,7 +432,6 @@
                     </div>
                 </div>
 
-                <!-- CARTE 3 -->
                 <div class="card-glass overflow-hidden rounded-[3rem] shadow-xl reveal flex flex-col group hover-halo-violet" @click="selectedOffer = 3">
                     <div class="relative h-48 overflow-hidden shrink-0"><img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2026&auto=format&fit=crop" alt="CSM Farmer" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"><div class="absolute inset-0 bg-gradient-to-t from-white/95 via-transparent to-transparent"></div></div>
                     <div class="p-8 pt-4 flex-grow flex flex-col">
@@ -459,14 +454,12 @@
     <section id="framework" class="py-24 md:py-40 bg-neutral-50 overflow-hidden px-6">
         <div class="container mx-auto max-w-6xl">
             <div class="reveal mb-20">
-                <!-- ÉTIQUETTE PERSONNALISÉE -->
                 <div class="label-partie">MÉTHODE AGILITÉ DU COLIBRI™</div>
                 <h2 class="text-4xl md:text-6xl font-[900] tracking-tighter leading-none mb-10 text-neutral-900">Petit format. <br><span class="brand-gradient">Impact décisif.</span></h2>
                 <div class="bg-black p-6 md:p-8 rounded-[3rem] border border-neutral-800 mb-8 inline-block shadow-2xl"><p class="text-white font-medium italic text-sm md:text-base leading-relaxed text-left">"Intervention ciblée pour absorber les tensions sans complexifier l’organisation."</p></div>
             </div>
             
             <div class="reveal grid md:grid-cols-2 gap-x-12 gap-y-8">
-                <!-- COLONNE GAUCHE -->
                 <div class="space-y-8">
                     <div class="bg-white p-8 rounded-[2.5rem] border border-neutral-100 shadow-sm hover:shadow-md transition-all group">
                         <div class="flex items-center gap-6 mb-4">
@@ -518,7 +511,6 @@
                     </div>
                 </div>
 
-                <!-- COLONNE DROITE -->
                 <div class="space-y-8 md:pt-12">
                     <div class="bg-white p-8 rounded-[2.5rem] border border-neutral-100 shadow-sm hover:shadow-md transition-all group">
                         <div class="flex items-center gap-6 mb-4">
@@ -563,12 +555,10 @@
 
     <!-- SECTION AUDIT STRATÉGIQUE (ENCART) -->
     <section id="diagnostic-encart" class="py-24 md:py-32 bg-white px-6">
-        <div class="container mx-auto max-w-5xl">
+        <div class="container mx-auto max-w-7xl">
             <div class="reveal quiz-section-card rounded-[4rem] overflow-hidden relative shadow-2xl border border-neutral-50">
-                <!-- Header Audit -->
                 <div class="bg-brand-dark p-8 md:p-12 text-white flex flex-col md:flex-row justify-between items-center gap-8">
                     <div class="text-center md:text-left">
-                        <!-- ÉTIQUETTE PERSONNALISÉE -->
                         <div class="label-partie">AUDIT STRATÉGIQUE</div>
                         <h2 class="text-3xl md:text-5xl font-black tracking-tighter leading-tight">Diagnostic <br><span class="brand-gradient">Opérationnel</span></h2>
                     </div>
@@ -579,12 +569,26 @@
                 </div>
 
                 <div class="p-8 md:p-20 min-h-[500px] flex flex-col bg-white" x-show="!audit.submitted">
-                    <!-- Les étapes du questionnaire (Inchangées) -->
+                    
                     <div x-show="audit.step === 1" class="quiz-step-enter flex-1">
                         <h3 class="text-2xl md:text-3xl font-black mb-8 text-neutral-900 leading-tight">1. Quel enjeu opérationnel souhaitez-vous résoudre ?</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-5xl">
-                            <template x-for="choice in [{id:'growth', label:'Accélération commerciale massive', desc:'Déborder par l\'onboarding de nouveaux comptes.'},{id:'saturation', label:'Saturation du support technique', desc:'Backlog de tickets Zendesk/Intercom critique.'},{id:'churn_signals', label:'Signaux de désengagement (Churn)', desc:'Baisse d\'usage sur les comptes stratégiques.'},{id:'migration', label:'Migration de plateforme ou Refonte', desc:'Accompagner le passage vers une nouvelle interface.'},{id:'transition', label:'Départ ou absence d\'un membre clé', desc:'Garantir la continuité en phase de recrutement.'},{id:'low_adoption', label:'Faible adoption produit (Stickiness)', desc:'Utilisateurs actifs trop peu nombreux.'},{id:'standardization', label:'Manque de process structurés', desc:'Absence de Playbooks ou de parcours normés.'},{id:'scaling', label:'Besoin de Scaler sans recruter', desc:'Industrialiser les réponses et le suivi.'},{id:'upsell_stagnation', label:'Stagnation de l\'Upsell / Expansion', desc:'Difficulté à faire grandir le revenu par compte.'},{id:'health_score_missing', label:'Manque de visibilité (Data/KPI)', desc:'Absence de scores de santé client fiables.'}]">
-                                <button @click="audit.data.challenge = choice.id; nextStep()" class="option-card p-4 rounded-2xl flex items-start gap-4 text-left" :class="audit.data.challenge === choice.id ? 'active' : ''"><div class="w-8 h-8 bg-slate-50 rounded-lg flex items-center justify-center shrink-0"><i data-lucide="target" class="w-4 h-4 text-slate-400"></i></div><div><h4 class="font-bold text-sm text-neutral-900" x-text="choice.label"></h4><p class="text-[10px] text-slate-500 font-medium" x-text="choice.desc"></p></div></button>
+                            <template x-for="choice in [
+                                {id:'growth', label:'Accélération commerciale massive', desc:'Déborder par l\'onboarding de nouveaux comptes.', emoji:'🚀'},
+                                {id:'saturation', label:'Saturation du support technique', desc:'Backlog de tickets Zendesk/Intercom critique.', emoji:'🌊'},
+                                {id:'churn_signals', label:'Signaux de désengagement (Churn)', desc:'Baisse d\'usage sur les comptes stratégiques.', emoji:'📉'},
+                                {id:'migration', label:'Migration de plateforme ou Refonte', desc:'Accompagner le passage vers une nouvelle interface.', emoji:'🔄'},
+                                {id:'transition', label:'Départ ou absence d\'un membre clé', desc:'Garantir la continuité en phase de recrutement.', emoji:'👥'},
+                                {id:'low_adoption', label:'Faible adoption produit (Stickiness)', desc:'Utilisateurs actifs trop peu nombreux.', emoji:'🖱️'},
+                                {id:'standardization', label:'Manque de process structurés', desc:'Absence de Playbooks ou de parcours normés.', emoji:'📋'},
+                                {id:'scaling', label:'Besoin de Scaler sans recruter', desc:'Industrialiser les réponses et le suivi.', emoji:'📈'},
+                                {id:'upsell_stagnation', label:'Stagnation de l\'Upsell / Expansion', desc:'Difficulté à faire grandir le revenu par compte.', emoji:'🛑'},
+                                {id:'health_score_missing', label:'Manque de visibilité (Data/KPI)', desc:'Absence de scores de santé client fiables.', emoji:'🔍'}
+                            ]">
+                                <button @click="audit.data.challenge = choice.id; nextStep()" class="option-card p-6 rounded-2xl flex items-center gap-5 text-left group" :class="audit.data.challenge === choice.id ? 'active' : ''">
+                                    <div class="text-4xl shrink-0 transition-transform group-hover:scale-125" x-text="choice.emoji"></div>
+                                    <div><h4 class="font-bold text-base text-neutral-900" x-text="choice.label"></h4><p class="text-xs text-slate-500 font-medium" x-text="choice.desc"></p></div>
+                                </button>
                             </template>
                         </div>
                     </div>
@@ -593,7 +597,7 @@
                     <div x-show="audit.step === 4" x-cloak class="quiz-step-enter flex-1"><h3 class="text-2xl md:text-3xl font-black mb-8 text-neutral-900 leading-tight">4. Modèle & Technologies</h3><div class="grid md:grid-cols-2 gap-10 max-w-5xl"><div class="space-y-6"><div><label class="input-label">Canaux & IA</label><div class="grid grid-cols-1 gap-2 mt-2"><template x-for="tech in [{id:'email',label:'Email / Ticketing classique'},{id:'chat',label:'Chat direct (humain)'},{id:'phone',label:'Assistance téléphonique'},{id:'ai_agent',label:'Agent IA / Bot intelligent'},{id:'gen_ai',label:'Usage IA Générative (Copilot)'},{id:'low_code',label:'Automatisations Low-Code / No-Code'}]"><label class="option-card p-3 rounded-lg flex items-center gap-3 cursor-pointer text-xs font-bold" :class="audit.data.techUsage.includes(tech.id) ? 'active' : ''"><input type="checkbox" :value="tech.id" x-model="audit.data.techUsage" class="hidden"><span x-text="tech.label"></span></label></template></div></div></div><div class="space-y-6"><div><label class="input-label">Modèle d'accompagnement (CSM)</label><div class="grid gap-3 mt-2"><label class="option-card p-4 rounded-xl flex items-center gap-4 cursor-pointer" :class="audit.data.csmModel === 'low' ? 'active' : ''"><input type="radio" value="low" x-model="audit.data.csmModel" class="hidden"><div class="text-left"><p class="font-black text-xs uppercase">Low Touch</p><p class="text-[10px] text-slate-500 font-bold">100% Digital / Tech-led</p></div></label><label class="option-card p-4 rounded-xl flex items-center gap-4 cursor-pointer" :class="audit.data.csmModel === 'mid' ? 'active' : ''"><input type="radio" value="mid" x-model="audit.data.csmModel" class="hidden"><div class="text-left"><p class="font-black text-xs uppercase">Mid Touch</p><p class="text-[10px] text-slate-500 font-bold">Hybride (IA + Humain)</p></div></label><label class="option-card p-4 rounded-xl flex items-center gap-4 cursor-pointer" :class="audit.data.csmModel === 'high' ? 'active' : ''"><input type="radio" value="high" x-model="audit.data.csmModel" class="hidden"><div class="text-left"><p class="font-black text-xs uppercase">High Touch</p><p class="text-[10px] text-slate-500 font-bold">Accompagnement dédié / Sur-mesure</p></div></label></div></div></div></div></div>
                     <div x-show="audit.step === 5" x-cloak class="quiz-step-enter flex-1"><h3 class="text-2xl md:text-3xl font-black mb-8 text-neutral-900 leading-tight">5. Votre écosystème d'outils</h3><div class="grid md:grid-cols-2 gap-8 max-w-4xl"><div class="space-y-2"><label class="input-label">Outils en place (Cochez)</label><div class="grid grid-cols-2 gap-2"><template x-for="tool in ['Zendesk', 'Intercom', 'Salesforce', 'Hubspot', 'Gainsight', 'Planhat', 'Vitally', 'Make / Zapier', 'Notion', 'Slack']"><label class="option-card p-2 rounded-lg flex items-center gap-3 cursor-pointer text-[10px] font-bold" :class="audit.data.toolsList.includes(tool) ? 'active' : ''"><input type="checkbox" :value="tool" x-model="audit.data.toolsList" class="hidden"><span x-text="tool"></span></label></template></div></div><div class="space-y-4 flex flex-col"><label class="input-label">Autres outils ou précisions</label><textarea x-model="audit.data.toolsOther" class="input-field flex-1 min-h-[150px] resize-none text-sm" placeholder="Listez vos outils internes ou spécifiques..."></textarea></div></div></div>
                     <div x-show="audit.step === 6" x-cloak class="quiz-step-enter flex-1"><h3 class="text-2xl md:text-3xl font-black mb-8 text-neutral-900 leading-tight">6. Temporalité & Contexte</h3><div class="grid md:grid-cols-1 gap-8 max-w-4xl"><div class="space-y-4"><label class="input-label">Urgence de l'intervention</label><div class="grid grid-cols-1 md:grid-cols-3 gap-3"><label class="option-card p-4 rounded-xl text-center cursor-pointer font-black text-[10px] uppercase tracking-widest" :class="audit.data.urgency === 'immediate' ? 'active' : ''"><input type="radio" value="immediate" x-model="audit.data.urgency" class="hidden">Immédiate (< 15j)</label><label class="option-card p-4 rounded-xl text-center cursor-pointer font-black text-[10px] uppercase tracking-widest" :class="audit.data.urgency === 'planned' ? 'active' : ''"><input type="radio" value="planned" x-model="audit.data.urgency" class="hidden">Planifiée (1-2 mois)</label><label class="option-card p-4 rounded-xl text-center cursor-pointer font-black text-[10px] uppercase tracking-widest" :class="audit.data.urgency === 'monitoring' ? 'active' : ''"><input type="radio" value="monitoring" x-model="audit.data.urgency" class="hidden">Veille stratégique</label></div></div><div class="space-y-4 flex flex-col"><label class="input-label">Détaillez votre situation actuelle (Saisie libre)</label><textarea x-model="audit.data.situationContext" class="input-field flex-1 min-h-[120px] resize-none text-sm" placeholder="Détaillez ici l'objectif de votre démarche pour un audit plus précis..."></textarea></div></div></div>
-                    <div x-show="audit.step === 7" x-cloak class="quiz-step-enter flex-1"><h3 class="text-2xl md:text-3xl font-black mb-8 text-neutral-900 leading-tight">7. Finalisons votre analyse</h3><div class="grid md:grid-cols-2 gap-4 max-w-4xl"><input type="text" x-model="audit.data.firstName" placeholder="Prénom" class="input-field"><input type="text" x-model="audit.data.lastName" placeholder="Nom" class="input-field"><input type="text" x-model="audit.data.function" placeholder="Fonction" class="input-field"><input type="text" x-model="audit.data.companyName" placeholder="Entreprise" class="input-field"><input type="email" x-model="audit.data.email" placeholder="Email professionnel" class="input-field md:col-span-2 font-bold text-brand-blue"><input type="tel" x-model="audit.data.phone" placeholder="Numéro de téléphone" class="input-field md:col-span-2"></div></div>
+                    <div x-show="audit.step === 7" x-cloak class="quiz-step-enter flex-1"><h3 class="text-2xl md:text-3xl font-black mb-8 text-neutral-900 leading-tight">7. Finalisons votre analyse</h3><div class="grid md:grid-cols-2 gap-4 max-w-4xl"><input type="text" x-model="audit.data.firstName" placeholder="Prénom" class="input-field"><input type="text" x-model="audit.data.lastName" placeholder="Nom" class="input-field"><input type="text" x-model="audit.data.function" placeholder="Fonction" class="input-field"><input type="text" x-model="audit.data.companyName" placeholder="Entreprise" class="input-field md:col-span-2"><input type="email" x-model="audit.data.email" placeholder="Email professionnel" class="input-field md:col-span-2 font-bold text-brand-blue"><input type="tel" x-model="audit.data.phone" placeholder="Numéro de téléphone" class="input-field md:col-span-2"></div></div>
 
                     <!-- Navigation -->
                     <div class="mt-12 flex flex-col md:flex-row gap-4">
@@ -607,10 +611,7 @@
 
                 <!-- PAGE DE RÉSULTATS -->
                 <div x-show="audit.submitted" x-cloak x-transition:enter="transition ease-out duration-700" class="bg-white flex flex-col h-auto">
-                    <div class="relative h-64 md:h-[400px] overflow-hidden shrink-0"><img :src="audit.offerImages[audit.recommendedOffer]" alt="Offre" class="w-full h-full object-cover"><div class="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent"></div><div class="absolute bottom-10 left-10 md:left-20">
-                        <!-- ÉTIQUETTE PERSONNALISÉE RÉSULTAT -->
-                        <div class="label-partie mb-4">SOLUTION RECOMMANDÉE</div>
-                        <h2 class="text-4xl md:text-6xl font-black text-neutral-900 tracking-tighter" x-text="audit.recommendedOffer === 1 ? 'Onboarding & Adoption' : (audit.recommendedOffer === 2 ? 'Customer Care Expert' : (audit.recommendedOffer === 3 ? 'CSM / Farmer' : 'Analyse en cours'))"></h2></div></div>
+                    <div class="relative h-64 md:h-[400px] overflow-hidden shrink-0"><img :src="audit.offerImages[audit.recommendedOffer]" alt="Offre" class="w-full h-full object-cover"><div class="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent"></div><div class="absolute bottom-10 left-10 md:left-20"><div class="label-partie mb-4">SOLUTION RECOMMANDÉE</div><h2 class="text-4xl md:text-6xl font-black text-neutral-900 tracking-tighter" x-text="audit.recommendedOffer === 1 ? 'Onboarding & Adoption' : (audit.recommendedOffer === 2 ? 'Customer Care Expert' : 'CSM / Farmer')"></h2></div></div>
                     <div class="p-8 md:p-20 grid lg:grid-cols-5 gap-12 items-start h-auto">
                         <div class="lg:col-span-3 space-y-8 text-center md:text-left h-auto"><div class="space-y-4"><h3 class="text-2xl font-black text-neutral-900 uppercase tracking-tight">Bonjour <span x-text="audit.data.firstName"></span>,</h3><p class="text-lg text-slate-600 leading-relaxed font-medium">Basé sur votre diagnostic au sein de votre <span class="text-neutral-900 font-bold" x-text="audit.data.companyType"></span> du secteur <span class="text-neutral-900 font-bold" x-text="audit.data.sector"></span>, l'offre <span class="brand-gradient font-black" x-text="audit.recommendedOffer === 1 ? 'Onboarding & Adoption' : (audit.recommendedOffer === 2 ? 'Customer Care Expert' : 'CSM / Farmer')"></span> est le levier prioritaire pour impacter vos KPIs <span class="text-neutral-900 font-bold" x-text="audit.data.kpis.join(', ')"></span>.</p></div><div class="flex flex-wrap gap-4 justify-center md:justify-start"><a href="https://calendly.com/corinne-marsiac-careandsuccess/30min" target="_blank" class="px-10 py-5 bg-brand-gradient text-white rounded-full font-black uppercase text-[10px] shadow-2xl hover:scale-105 transition-all">Prendre rendez-vous</a><button @click="audit.submitted = false; audit.step = 1" class="px-10 py-5 border-2 border-neutral-100 rounded-full font-black uppercase text-[10px] text-neutral-400 hover:bg-neutral-50 transition-all">Nouveau diagnostic</button></div><div class="pt-8 flex justify-center"><div class="animate-float-success"><img src="https://lh3.googleusercontent.com/d/1ZKwRL-c7yJCE-H8-ZbH1jt_RStqn-Svq" alt="Colibri" class="w-24 h-auto drop-shadow-xl"></div></div></div>
                         <div class="lg:col-span-2 bg-neutral-900 p-8 md:p-12 rounded-[3rem] text-white shadow-2xl relative overflow-hidden h-auto flex flex-col transition-all duration-500"><div class="relative z-10 flex-grow h-auto"><h4 class="text-[10px] font-black uppercase tracking-[0.2em] text-brand-indigo mb-6">Mini Plan d'Action Personnalisé</h4><ul class="space-y-6 h-auto"><li class="flex items-start gap-4"><div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center shrink-0 font-black text-xs">1</div><p class="text-sm font-medium text-slate-300 leading-snug">Audit profond de <span class="text-white font-bold" x-text="audit.data.toolsList.join(', ') || 'technique'"></span> et des canaux <span class="text-white font-bold" x-text="audit.data.techUsage.includes('phone') ? 'incluant le Téléphone' : 'digitaux'"></span>.</p></li><li class="flex items-start gap-4"><div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center shrink-0 font-black text-xs">2</div><p class="text-sm font-medium text-slate-300 leading-snug">Optimisation du modèle <span class="text-white font-bold" x-text="audit.data.csmModel === 'low' ? 'Low-Touch' : (audit.data.csmModel === 'mid' ? 'Mid-Touch' : 'High-Touch')"></span> adapté à vos <span class="text-white font-bold" x-text="audit.data.effectif"></span> collaborateurs.</p></li><li class="flex items-start gap-4"><div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center shrink-0 font-black text-xs">3</div><p class="text-sm font-medium text-slate-300 leading-snug">Cadrage spécifique pour répondre à l'urgence : <span class="text-white font-bold italic" x-text="audit.data.urgency === 'immediate' ? 'Priorité 15j' : 'Projet moyen terme'"></span>.</p></li></ul><div class="mt-10 pt-6 border-t border-white/10 text-[10px] font-bold text-slate-500 italic">Un récapitulatif détaillé a été envoyé à <span x-text="audit.data.email" class="text-white"></span>.</div></div><div class="absolute -bottom-10 -right-10 w-40 h-40 bg-brand-blue/10 blur-3xl rounded-full"></div></div>
