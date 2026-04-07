@@ -19,6 +19,9 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
+    <!-- jsPDF pour la génération du compte rendu -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -203,30 +206,6 @@
             border: none;
         }
 
-        .input-field {
-            width: 100%;
-            padding: 1rem 1.25rem;
-            border-radius: 1rem;
-            border: 1.5px solid #e2e8f0;
-            background-color: #fff;
-            outline: none;
-            transition: all 0.2s ease;
-            font-size: 0.95rem;
-        }
-        .input-field:focus { border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
-
-        .input-label {
-            display: block;
-            font-size: 11px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            color: #64748b;
-            margin-bottom: 0.75rem;
-            margin-left: 0.5rem;
-        }
-
-        /* Styles spécifique pour la section "Quand m'appeler" */
         .card-dark {
             background: #1e293b;
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -238,7 +217,6 @@
             transform: translateY(-5px);
         }
 
-        /* MÉTHODE COLIBRI - ÉCRAN DYNAMIQUE */
         .method-letter-btn {
             background: white;
             border: 1px solid #e2e8f0;
@@ -301,7 +279,6 @@
             background: linear-gradient(to bottom, #2563eb, #6366f1, #a855f7);
         }
 
-        /* Styles pour Ma Différence */
         .diff-number {
             width: 3rem;
             height: 3rem;
@@ -317,79 +294,11 @@
             box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
         }
 
-        /* Custom scrollbar for some sections */
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #2563eb; border-radius: 10px; }
+        [x-cloak] { display: none !important; }
     </style>
 </head>
 <body class="bg-white text-neutral-900 antialiased font-sans"
-      x-data="{ 
-        scrolled: false, 
-        mobileMenu: false, 
-        scrollPos: 0, 
-        selectedOffer: null,
-        
-        // Données de la méthode Colibri
-        activeMethod: 0,
-        colibriSteps: [
-            { l: 'C', t: 'CADRER', st: 'Rôles & Règles', p: 'Structurer qui fait quoi, pour quels clients.', details: ['Attribution claire des comptes clés', 'Définition des règles de gestion support', 'Mise en place des priorités opérationnelles'] },
-            { l: 'O', t: 'OBSERVER', st: 'Analyse Terrain', p: 'Identifier rapidement les points de friction.', details: ['Audit approfondi des tickets récurrents', 'Détection des comptes en baisse d\'usage', 'Repérage des signaux faibles de churn'] },
-            { l: 'L', t: 'LISSER', st: 'Zéro Friction', p: 'Supprimer les obstacles du parcours client.', details: ['Simplification des parcours d\'onboarding', 'Ajustement des messages automatiques', 'Correction immédiate des points de blocage'] },
-            { l: 'I', t: 'IMPLÉMENTER', st: 'Outiller', p: 'Équiper vos équipes pour agir efficacement.', details: ['Création de templates de réponses et relances', 'Mise en place de Playbooks actionnables', 'Automatisation des tâches répétitives'] },
-            { l: 'B', t: 'BALISER', st: 'Suivre les KPI', p: 'Mesurer le succès par les bons indicateurs.', details: ['Suivi du taux d\'activation réel', 'Analyse du volume et de la résolution tickets', 'Mise en place de Health Scores simples'] },
-            { l: 'R', t: 'RETENIR', st: 'Action Churn', p: 'Agir proactivement avant le désengagement.', details: ['Relances ciblées des utilisateurs inactifs', 'Suivi spécifique des comptes sensibles', 'Mise en avant des succès rapides (quick wins)'] },
-            { l: 'I', t: 'ITÉRER', st: 'Améliorer', p: 'Optimiser en continu via les retours terrain.', details: ['Remontées régulières vers l\'équipe Produit', 'Ajustement des process selon les résultats', 'Optimisation constante des playbooks'] }
-        ],
-
-        audit: {
-            step: 1,
-            totalSteps: 3,
-            submitted: false,
-            loading: false,
-            recommendedOffer: null,
-            activeInfo: null,
-            // Liste centralisée des enjeux opérationnels pour le diagnostic
-            auditChallenges: [
-                {id:'growth', l:'Accélération commerciale', e:'🚀'}, 
-                {id:'saturation', l:'Saturation du support', e:'🌊'}, 
-                {id:'churn_signals', l:'Signaux de Churn', e:'📉'},
-                {id:'migration', l:'Migration ou Refonte', e:'🔄'},
-                {id:'transition', l:'Départ / absence membre clé', e:'👥'},
-                {id:'low_adoption', l:'Faible adoption (Stickiness)', e:'🖱️'}
-            ],
-            offerImages: {
-                1: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop', 
-                2: 'https://images.unsplash.com/photo-1525130413817-d45c1d127c42?q=80&w=2070&auto=format&fit=crop', 
-                3: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2026&auto=format&fit=crop'
-            },
-            data: { challenge: '', kpis: [], companyType: '', sector: '', effectif: '', techUsage: [], csmModel: '', csmContext: '', toolsList: [], toolsOther: '', urgency: '', firstName: '', lastName: '', companyName: '', email: '', phone: '' }
-        },
-
-        nextStep() { if(this.audit.step < this.audit.totalSteps) { this.audit.step++; this.$nextTick(() => lucide.createIcons()); } },
-        prevStep() { if(this.audit.step > 1) { this.audit.step--; this.$nextTick(() => lucide.createIcons()); } },
-        async submitAudit() {
-            if(!this.audit.data.email) return;
-            this.audit.loading = true;
-            
-            // Logique de recommandation basée sur le challenge
-            const onboardingChallenges = ['growth', 'migration', 'low_adoption'];
-            const careChallenges = ['saturation', 'transition'];
-            const successChallenges = ['churn_signals'];
-            
-            if(onboardingChallenges.includes(this.audit.data.challenge)) this.audit.recommendedOffer = 1;
-            else if(careChallenges.includes(this.audit.data.challenge)) this.audit.recommendedOffer = 2;
-            else this.audit.recommendedOffer = 3;
-
-            await new Promise(r => setTimeout(r, 2000));
-            this.audit.loading = false;
-            this.audit.submitted = true;
-            this.$nextTick(() => {
-                document.getElementById('diagnostic-encart').scrollIntoView({behavior:'smooth'});
-                lucide.createIcons();
-            });
-        }
-      }"
+      x-data="AppState()"
       @scroll.window="scrolled = (window.pageYOffset > 30); scrollPos = window.pageYOffset"
       :class="mobileMenu ? 'overflow-hidden' : ''">
 
@@ -439,16 +348,16 @@
         </div>
     </div>
 
-    <!-- SECTION HERO -->
-    <section id="accueil" class="relative min-h-screen flex flex-col justify-center bg-white px-6 md:px-12 py-20 pt-32 overflow-hidden">
-        <div class="container mx-auto max-w-[1920px]">
-            <div class="relative w-full">
-                <h1 class="hero-title text-4xl sm:text-6xl md:text-[6.5rem] lg:text-[8.5rem] font-[900] text-neutral-900 flex flex-col pointer-events-none text-center md:text-left leading-none tracking-tighter">
+    <!-- SECTION HERO (PARFAITEMENT CENTRÉE SUR TOUS LES SUPPORTS) -->
+    <section id="accueil" class="relative min-h-screen flex items-center justify-center bg-white px-6 md:px-12 py-20 pt-32 overflow-hidden text-center">
+        <div class="container mx-auto max-w-[1920px] flex flex-col items-center justify-center">
+            <div class="relative w-full flex flex-col items-center justify-center">
+                <h1 class="hero-title text-4xl sm:text-6xl md:text-[6.5rem] lg:text-[8.5rem] font-[900] text-neutral-900 flex flex-col pointer-events-none leading-none tracking-tighter">
                     <span class="block text-neutral-900">Votre Renfort</span>
                     <span class="block text-neutral-900">Opérationnel</span>
-                    <span class="brand-gradient block relative w-fit whitespace-nowrap mx-auto md:mx-0">Care & Success.
+                    <span class="brand-gradient block relative w-fit whitespace-nowrap mx-auto">Care & Success.
                         <!-- POSITIONNEMENT DU COLIBRI -->
-                        <div class="absolute bottom-[-15%] -right-8 md:bottom-[10%] md:-right-[180px] lg:-right-[250px] w-[40%] md:w-[45%] lg:w-[50%] h-auto pointer-events-none transition-transform duration-150 ease-out z-0" :style="'transform: translateY(' + (scrollPos * -0.3) + 'px)'">
+                        <div class="absolute bottom-[-20%] -right-12 md:bottom-[10%] md:-right-[200px] lg:-right-[280px] w-[45%] md:w-[45%] lg:w-[50%] h-auto pointer-events-none transition-transform duration-150 ease-out z-0" :style="'transform: translateY(' + (scrollPos * -0.3) + 'px)'">
                             <div class="w-full h-full animate-arrival-hero">
                                 <div class="animate-float">
                                     <img src="https://lh3.googleusercontent.com/d/1ZKwRL-c7yJCE-H8-ZbH1jt_RStqn-Svq" alt="Colibri Hero" class="w-full h-auto colibri-interaction">
@@ -457,9 +366,9 @@
                         </div>
                     </span>
                 </h1>
-                <div class="mt-12 md:mt-16 max-w-5xl mx-auto md:mx-0 relative z-10">
-                    <p class="text-xl md:text-3xl text-neutral-500 leading-relaxed md:leading-snug font-medium mb-12 md:mb-16 text-center md:text-left max-w-4xl">J’aide les SaaS B2B à absorber la charge, réduire les frictions client et prévenir le churn avec une intervention immédiate et orientée exécution.</p>
-                    <div class="flex flex-col sm:flex-row items-center md:items-start flex-wrap gap-6 justify-center md:justify-start">
+                <div class="mt-12 md:mt-16 max-w-4xl mx-auto relative z-10 flex flex-col items-center">
+                    <p class="text-xl md:text-3xl text-neutral-500 leading-relaxed md:leading-snug font-medium mb-12 md:mb-16 max-w-3xl">J’aide les SaaS B2B à absorber la charge, réduire les frictions client et prévenir le churn avec une intervention immédiate et orientée exécution.</p>
+                    <div class="flex flex-col sm:flex-row items-center flex-wrap gap-6 justify-center">
                         <a href="https://calendly.com/corinne-marsiac-careandsuccess/30min" target="_blank" class="w-full sm:w-auto px-10 py-5 bg-brand-gradient text-white rounded-full text-lg font-bold hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3 shadow-lg shadow-indigo-500/40">Prendre rendez-vous <i data-lucide="calendar" class="w-5 h-5"></i></a>
                         
                         <a href="#framework" class="w-full sm:w-auto px-10 py-5 bg-black text-white rounded-full text-lg font-bold hover:bg-neutral-800 transition-all duration-300 flex items-center justify-center gap-3 shadow-lg shadow-black/20">La Méthode Colibri™ <i data-lucide="target" class="w-5 h-5"></i></a>
@@ -476,46 +385,35 @@
                 <div class="inline-block bg-neutral-800 text-white px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-8 border border-white/10">
                     RENFORT OPÉRATIONNEL
                 </div>
-                <h2 class="text-5xl md:text-8xl font-[900] tracking-tighter leading-none mb-8 text-white">
+                <h2 class="text-5xl md:text-8xl font-[900] tracking-tighter leading-none mb-8 text-white text-center md:text-left">
                     Quand m'activer en <span class="brand-gradient">renfort pur.</span>
                 </h2>
-                <p class="text-xl md:text-2xl text-slate-400 font-medium max-w-3xl">
+                <p class="text-xl md:text-2xl text-slate-400 font-medium max-w-3xl text-center md:text-left">
                     J'interviens pour débloquer immédiatement ces situations critiques qui freinent votre exécution :
                 </p>
             </div>
 
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                <!-- Card 1: Accélération -->
                 <div class="reveal card-dark p-10 md:p-12 rounded-[2.5rem] flex flex-col gap-6" style="transition-delay: 100ms;">
                     <div class="flex items-center gap-4"><i data-lucide="rocket" class="text-brand-blue w-8 h-8"></i><h3 class="text-2xl font-bold text-white leading-tight">Accélération commerciale</h3></div>
                     <p class="text-slate-400 leading-relaxed font-medium italic">Un flux massif de nouveaux comptes à onboarder sans dégrader l'expérience client.</p>
                 </div>
-
-                <!-- Card 2: Saturation Support -->
                 <div class="reveal card-dark p-10 md:p-12 rounded-[2.5rem] flex flex-col gap-6" style="transition-delay: 200ms;">
                     <div class="flex items-center gap-4"><i data-lucide="alert-circle" class="text-brand-blue w-8 h-8"></i><h3 class="text-2xl font-bold text-white leading-tight">Saturation du support</h3></div>
                     <p class="text-slate-400 leading-relaxed font-medium italic">Backlog critique de tickets techniques. Je prends les manettes pour rétablir vos SLAs.</p>
                 </div>
-
-                <!-- Card 3: Signaux de Churn (NOUVEAU) -->
                 <div class="reveal card-dark p-10 md:p-12 rounded-[2.5rem] flex flex-col gap-6" style="transition-delay: 300ms;">
                     <div class="flex items-center gap-4"><i data-lucide="trending-down" class="text-brand-blue w-8 h-8"></i><h3 class="text-2xl font-bold text-white leading-tight">Signaux de Churn</h3></div>
                     <p class="text-slate-400 leading-relaxed font-medium italic">Baisse d'usage ou comptes silencieux. J'interviens en urgence pour sécuriser votre MRR et relancer l'engagement.</p>
                 </div>
-
-                <!-- Card 4: Migration / Refonte -->
                 <div class="reveal card-dark p-10 md:p-12 rounded-[2.5rem] flex flex-col gap-6" style="transition-delay: 400ms;">
                     <div class="flex items-center gap-4"><i data-lucide="refresh-cw" class="text-brand-blue w-8 h-8"></i><h3 class="text-2xl font-bold text-white leading-tight">Migration / Refonte</h3></div>
                     <p class="text-slate-400 leading-relaxed font-medium italic">Accompagnement opérationnel du passage vers une nouvelle interface pour prévenir le churn.</p>
                 </div>
-
-                <!-- Card 5: Départ Membre Clé -->
                 <div class="reveal card-dark p-10 md:p-12 rounded-[2.5rem] flex flex-col gap-6" style="transition-delay: 500ms;">
                     <div class="flex items-center gap-4"><i data-lucide="users" class="text-brand-blue w-8 h-8"></i><h3 class="text-2xl font-bold text-white leading-tight">Départ / Absence clé</h3></div>
                     <p class="text-slate-400 leading-relaxed font-medium italic">Garantir la continuité de service et la santé des comptes en phase de recrutement ou d'absence.</p>
                 </div>
-
-                <!-- Card 6: Stickiness -->
                 <div class="reveal card-dark p-10 md:p-12 rounded-[2.5rem] flex flex-col gap-6" style="transition-delay: 600ms;">
                     <div class="flex items-center gap-4"><i data-lucide="target" class="text-brand-blue w-8 h-8"></i><h3 class="text-2xl font-bold text-white leading-tight">Faible adoption produit</h3></div>
                     <p class="text-slate-400 leading-relaxed font-medium italic">Manque de stickiness. J'active les leviers d'usage pour ancrer le produit dans le quotidien client.</p>
@@ -549,11 +447,11 @@
                         <h2 class="text-5xl md:text-7xl font-[900] tracking-tighter leading-tight mb-10 text-white">Une expertise terrain au service de <span class="brand-gradient">votre rétention client</span></h2>
                         <p class="text-2xl md:text-3xl text-neutral-300 leading-relaxed font-medium mb-10">Professionnelle de la relation client avec plus de <span class="text-white font-bold border-b-2 border-white/20">10 ans d’expérience</span> en environnement SaaS B2B.</p>
                     </div>
-                    <div class="grid md:grid-cols-2 gap-y-8 gap-x-12 mb-20 text-neutral-200">
-                        <div class="flex items-center gap-6 group justify-center md:justify-start transition-transform hover:translate-x-2"><div class="w-8 h-8 rounded-full bg-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue transition-colors"><i data-lucide="check" class="w-4 h-4 text-brand-blue group-hover:text-white"></i></div><span class="font-bold text-xl text-center md:text-left">Onboarding & Adoption</span></div>
-                        <div class="flex items-center gap-6 group justify-center md:justify-start transition-transform hover:translate-x-2"><div class="w-8 h-8 rounded-full bg-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue transition-colors"><i data-lucide="check" class="w-4 h-4 text-brand-blue group-hover:text-white"></i></div><span class="font-bold text-xl text-center md:text-left">Care & Ticketing</span></div>
-                        <div class="flex items-center gap-6 group justify-center md:justify-start transition-transform hover:translate-x-2"><div class="w-8 h-8 rounded-full bg-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue transition-colors"><i data-lucide="check" class="w-4 h-4 text-brand-blue group-hover:text-white"></i></div><span class="font-bold text-xl text-center md:text-left">Stratégie de Rétention</span></div>
-                        <div class="flex items-center gap-6 group justify-center md:justify-start transition-transform hover:translate-x-2"><div class="w-8 h-8 rounded-full bg-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue transition-colors"><i data-lucide="check" class="w-4 h-4 text-brand-blue group-hover:text-white"></i></div><span class="font-bold text-xl text-center md:text-left">Pilotage KPI : NPS, CSAT</span></div>
+                    <div class="grid md:grid-cols-2 gap-y-8 gap-x-12 mb-20 text-neutral-200 text-center md:text-left">
+                        <div class="flex items-center gap-6 group justify-center md:justify-start transition-transform hover:translate-x-2"><div class="w-8 h-8 rounded-full bg-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue transition-colors"><i data-lucide="check" class="w-4 h-4 text-brand-blue group-hover:text-white"></i></div><span class="font-bold text-xl">Onboarding & Adoption</span></div>
+                        <div class="flex items-center gap-6 group justify-center md:justify-start transition-transform hover:translate-x-2"><div class="w-8 h-8 rounded-full bg-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue transition-colors"><i data-lucide="check" class="w-4 h-4 text-brand-blue group-hover:text-white"></i></div><span class="font-bold text-xl">Care & Ticketing</span></div>
+                        <div class="flex items-center gap-6 group justify-center md:justify-start transition-transform hover:translate-x-2"><div class="w-8 h-8 rounded-full bg-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue transition-colors"><i data-lucide="check" class="w-4 h-4 text-brand-blue group-hover:text-white"></i></div><span class="font-bold text-xl">Stratégie de Rétention</span></div>
+                        <div class="flex items-center gap-6 group justify-center md:justify-start transition-transform hover:translate-x-2"><div class="w-8 h-8 rounded-full bg-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue transition-colors"><i data-lucide="check" class="w-4 h-4 text-brand-blue group-hover:text-white"></i></div><span class="font-bold text-xl">Pilotage KPI : NPS, CSAT</span></div>
                     </div>
                     <div class="pt-12 border-t border-white/10 flex flex-wrap gap-3 justify-center md:justify-start">
                         <div class="cert-bubble">CSM Kare School</div>
@@ -570,25 +468,25 @@
     <!-- SECTION : MA DIFFÉRENCE -->
     <section id="difference" class="bg-white py-24 md:py-48 px-6">
         <div class="container mx-auto max-w-[1200px]">
-            <div class="reveal bg-brand-dark rounded-[4rem] p-12 md:p-24 text-white relative overflow-hidden shadow-3xl">
+            <div class="reveal bg-brand-dark rounded-[4rem] p-12 md:p-24 text-white relative overflow-hidden shadow-3xl text-center md:text-left">
                 <div class="absolute -top-24 -right-24 w-64 h-64 bg-brand-blue/10 blur-[80px] rounded-full"></div>
                 <h2 class="text-4xl md:text-6xl font-black mb-16 tracking-tighter">Ma différence</h2>
                 <div class="grid lg:grid-cols-1 gap-12 max-w-4xl relative z-10">
-                    <div class="flex gap-8 group">
+                    <div class="flex flex-col md:flex-row gap-8 group items-center md:items-start text-left">
                         <div class="diff-number group-hover:scale-110 transition-transform">1</div>
                         <div>
                             <h3 class="text-2xl md:text-3xl font-black mb-4">Focus Exécution :</h3>
                             <p class="text-lg md:text-xl text-slate-400 font-medium leading-relaxed">Je réponds aux tickets, j'onboarde vos clients et je gère vos alertes. Je me concentre sur l'exécution.</p>
                         </div>
                     </div>
-                    <div class="flex gap-8 group">
+                    <div class="flex flex-col md:flex-row gap-8 group items-center md:items-start text-left">
                         <div class="diff-number group-hover:scale-110 transition-transform">2</div>
                         <div>
                             <h3 class="text-2xl md:text-3xl font-black mb-4">Expérience SaaS B2B :</h3>
                             <p class="text-lg md:text-xl text-slate-400 font-medium leading-relaxed">10 ans d'expertise dans des milieux réglementés et complexes (Paie, RH, Tech).</p>
                         </div>
                     </div>
-                    <div class="flex gap-8 group">
+                    <div class="flex flex-col md:flex-row gap-8 group items-center md:items-start text-left">
                         <div class="diff-number group-hover:scale-110 transition-transform">3</div>
                         <div>
                             <h3 class="text-2xl md:text-3xl font-black mb-4">Zéro Friction RH :</h3>
@@ -603,17 +501,17 @@
     <!-- SECTION MÉTHODE COLIBRI -->
     <section id="framework" class="py-24 md:py-48 bg-neutral-50 overflow-hidden px-6">
         <div class="container mx-auto max-w-[1440px]">
-            <div class="reveal mb-24 text-center md:text-left">
+            <div class="reveal mb-24 text-center">
                 <div class="label-partie uppercase">MÉTHODE COLIBRI™</div>
                 <h2 class="text-5xl md:text-8xl font-[900] tracking-tighter leading-none mb-12 text-neutral-900">Une structure agile. <br><span class="brand-gradient">Des résultats concrets.</span></h2>
-                <div class="bg-black p-8 md:p-10 rounded-[3rem] border border-neutral-800 mb-10 inline-block shadow-2xl text-center md:text-left">
+                <div class="bg-black p-8 md:p-10 rounded-[3rem] border border-neutral-800 mb-10 inline-block shadow-2xl">
                     <p class="text-white font-medium italic text-xl md:text-2xl leading-relaxed">"Intervention ciblée pour absorber les tensions sans complexifier l’organisation de votre département Customer Success."</p>
                 </div>
             </div>
             
             <div class="reveal max-w-6xl mx-auto">
-                <div class="flex flex-wrap lg:flex-nowrap gap-3 justify-center">
-                    <template x-for="(step, index) in colibriSteps">
+                <div class="flex flex-wrap lg:flex-nowrap gap-3 justify-center mb-8">
+                    <template x-for="(step, index) in colibriSteps" :key="index">
                         <div @mouseenter="activeMethod = index"
                              @click="activeMethod = index"
                              class="method-letter-btn"
@@ -625,7 +523,7 @@
                 </div>
 
                 <div class="display-screen">
-                    <template x-for="(step, index) in colibriSteps">
+                    <template x-for="(step, index) in colibriSteps" :key="index">
                         <div x-show="activeMethod === index" 
                              x-transition:enter="transition ease-out duration-300"
                              x-transition:enter-start="opacity-0 translate-y-4"
@@ -640,7 +538,7 @@
                             </div>
                             <p class="text-2xl text-neutral-900 font-extrabold mb-10 max-w-2xl leading-tight" x-text="step.p"></p>
                             <div class="grid md:grid-cols-2 gap-4">
-                                <template x-for="detail in step.details">
+                                <template x-for="(detail, dIdx) in step.details" :key="dIdx">
                                     <div class="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
                                         <div class="w-2 h-2 bg-brand-blue rounded-full"></div>
                                         <span class="text-[15px] text-slate-600 font-bold" x-text="detail"></span>
@@ -663,7 +561,7 @@
                 <p class="text-xl md:text-2xl text-neutral-500 font-medium max-w-4xl mx-auto mt-10">Pourquoi recruter dans l'urgence quand vous pouvez activer un renfort expert et immédiatement productif ?</p>
             </header>
             <div class="grid lg:grid-cols-3 gap-10 md:gap-16 items-stretch">
-                <!-- CARTE 1: ADOPTION PRODUIT -->
+                <!-- ADOPTION PRODUIT -->
                 <div class="card-glass overflow-hidden rounded-4xl shadow-2xl reveal group hover-halo-emerald">
                     <div class="relative h-64 overflow-hidden shrink-0">
                         <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop" alt="Adoption Produit" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
@@ -680,13 +578,13 @@
                             <li class="flex items-start gap-4"><i data-lucide="search" class="w-5 h-5 text-emerald-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Suivi des premiers signaux d’usage et blocages</p></li>
                         </ul>
                         <div class="bg-black p-8 rounded-3xl mt-auto shadow-xl">
-                            <h4 class="text-[10px] font-black uppercase text-emerald-400 mb-2 tracking-widest">Impact</h4>
-                            <p class="text-sm text-white italic font-medium leading-relaxed">"Utilisateurs actifs, engagés et autonomes dès les premiers jours."</p>
+                            <h4 class="text-[10px] font-black uppercase text-emerald-400 mb-2 tracking-widest text-left">Impact</h4>
+                            <p class="text-sm text-white italic font-medium leading-relaxed text-left">"Utilisateurs actifs, engagés et autonomes dès les premiers jours."</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- CARTE 2: CUSTOMER CARE EXPERT -->
+                <!-- CUSTOMER CARE EXPERT -->
                 <div class="card-glass overflow-hidden rounded-4xl shadow-2xl reveal group hover-halo-blue">
                     <div class="relative h-64 overflow-hidden shrink-0">
                         <img src="https://images.unsplash.com/photo-1525130413817-d45c1d127c42?q=80&w=2070&auto=format&fit=crop" alt="Customer Care Expert" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
@@ -703,13 +601,13 @@
                             <li class="flex items-start gap-4"><i data-lucide="refresh-cw" class="text-brand-blue w-5 h-5 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Mise en place de process pour réduire les frictions</p></li>
                         </ul>
                         <div class="bg-brand-gradient p-8 rounded-3xl mt-auto shadow-xl">
-                            <h4 class="text-[10px] font-black uppercase text-white/70 mb-2 tracking-widest">Impact</h4>
-                            <p class="text-sm text-white italic font-medium leading-relaxed">"Moins de tickets, moins de friction, plus de satisfaction et de rétention."</p>
+                            <h4 class="text-[10px] font-black uppercase text-white/70 mb-2 tracking-widest text-left">Impact</h4>
+                            <p class="text-sm text-white italic font-medium leading-relaxed text-left">"Moins de tickets, moins de friction, plus de satisfaction et de rétention."</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- CARTE 3: CSM STRATÉGIQUE -->
+                <!-- CSM STRATÉGIQUE -->
                 <div class="card-glass overflow-hidden rounded-4xl shadow-2xl reveal group hover-halo-violet">
                     <div class="relative h-64 overflow-hidden shrink-0">
                         <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2026&auto=format&fit=crop" alt="CSM Stratégique" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
@@ -726,8 +624,8 @@
                             <li class="flex items-start gap-4"><i data-lucide="git-merge" class="w-5 h-5 text-violet-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Alignement Sales et Produit pour maximiser la valeur</p></li>
                         </ul>
                         <div class="bg-black p-8 rounded-3xl mt-auto shadow-xl">
-                            <h4 class="text-[10px] font-black uppercase text-violet-400 mb-2 tracking-widest">Impact</h4>
-                            <p class="text-sm text-white italic font-medium leading-relaxed">"Churn réduit, MRR sécurisé et croissance des comptes existants."</p>
+                            <h4 class="text-[10px] font-black uppercase text-violet-400 mb-2 tracking-widest text-left">Impact</h4>
+                            <p class="text-sm text-white italic font-medium leading-relaxed text-left">"Churn réduit, MRR sécurisé et croissance des comptes existants."</p>
                         </div>
                     </div>
                 </div>
@@ -736,18 +634,18 @@
     </section>
 
     <!-- SECTION AUDIT -->
-    <section id="diagnostic-encart" class="py-24 md:py-48 bg-white px-6">
+    <section id="diagnostic-encart" class="py-24 md:py-48 bg-white px-6 text-center md:text-left">
         <div class="container mx-auto max-w-[1600px]">
             <div class="reveal rounded-[5rem] overflow-hidden relative shadow-3xl border border-neutral-50">
                 <div class="bg-brand-dark p-12 md:p-20 text-white flex flex-col md:flex-row justify-between items-center gap-12">
                     <div class="text-center md:text-left">
                         <div class="label-partie uppercase">AUDIT STRATÉGIQUE</div>
-                        <h2 class="text-4xl md:text-7xl font-black tracking-tighter leading-tight">Diagnostic <br><span class="brand-gradient">Opérationnel</span></h2>
+                        <h2 class="text-4xl md:text-7xl font-black tracking-tighter leading-tight text-center md:text-left">Diagnostic <br><span class="brand-gradient">Opérationnel</span></h2>
                     </div>
                     <div class="flex flex-col items-center gap-4" x-show="!audit.submitted">
                         <div class="text-xs font-black uppercase tracking-[0.3em] text-neutral-500">Progression</div>
                         <div class="flex gap-2.5">
-                            <template x-for="i in 3">
+                            <template x-for="i in 3" :key="i">
                                 <div class="h-2 w-8 md:w-12 rounded-full transition-all duration-500" :class="audit.step >= i ? 'bg-brand-blue' : 'bg-neutral-800'"></div>
                             </template>
                         </div>
@@ -755,11 +653,10 @@
                 </div>
 
                 <div class="p-10 md:p-24 min-h-[600px] flex flex-col bg-white" x-show="!audit.submitted">
-                    <!-- Step 1: Challenge -->
                     <div x-show="audit.step === 1" class="flex-1">
                         <h3 class="text-3xl md:text-5xl font-black mb-12 text-neutral-900 text-center">Quel enjeu opérationnel activer en priorité ?</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
-                            <template x-for="c in audit.auditChallenges">
+                            <template x-for="c in audit.auditChallenges" :key="c.id">
                                 <button @click="audit.data.challenge = c.id; audit.step = 2; $nextTick(() => lucide.createIcons())" class="option-card p-8 rounded-3xl flex items-center gap-6 text-left" :class="audit.data.challenge === c.id ? 'active' : ''">
                                     <div class="text-4xl" x-text="c.e"></div>
                                     <h4 class="font-bold text-lg leading-tight" x-text="c.l"></h4>
@@ -767,13 +664,11 @@
                             </template>
                         </div>
                     </div>
-
-                    <!-- Step 2: KPIs -->
-                    <div x-show="audit.step === 2" x-cloak class="flex-1">
-                        <h3 class="text-3xl md:text-5xl font-black mb-12 text-neutral-900 text-center">Vos KPIs prioritaires ?</h3>
+                    <div x-show="audit.step === 2" x-cloak class="flex-1 text-center">
+                        <h3 class="text-3xl md:text-5xl font-black mb-12 text-neutral-900">Vos KPIs prioritaires ?</h3>
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                            <template x-for="k in [{id:'nps',l:'NPS / CSAT'},{id:'ttfv',l:'Time-To-Value'},{id:'churn',l:'Taux de Churn'},{id:'nrr',l:'Net Retention Rate'},{id:'activation',l:'Activation'}]">
-                                <label class="option-card p-6 rounded-3xl flex items-center gap-4 cursor-pointer" :class="audit.data.kpis.includes(k.id) ? 'active' : ''">
+                            <template x-for="k in [{id:'nps',l:'NPS / CSAT'},{id:'ttfv',l:'Time-To-Value'},{id:'churn',l:'Taux de Churn'},{id:'nrr',l:'Net Retention Rate'},{id:'activation',l:'Activation'}]" :key="k.id">
+                                <label class="option-card p-6 rounded-3xl flex items-center gap-4 cursor-pointer text-left" :class="audit.data.kpis.includes(k.id) ? 'active' : ''">
                                     <input type="checkbox" :value="k.id" x-model="audit.data.kpis" class="hidden">
                                     <div class="w-6 h-6 border-2 rounded-full border-neutral-200 flex items-center justify-center shrink-0" :class="audit.data.kpis.includes(k.id) ? 'border-brand-blue bg-brand-blue' : ''">
                                         <i data-lucide="check" class="w-4 h-4 text-white" x-show="audit.data.kpis.includes(k.id)"></i>
@@ -783,8 +678,6 @@
                             </template>
                         </div>
                     </div>
-
-                    <!-- Step 3: Final -->
                     <div x-show="audit.step === 3" x-cloak class="flex-1">
                         <h3 class="text-3xl md:text-5xl font-black mb-12 text-neutral-900 text-center">Finalisons votre analyse</h3>
                         <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
@@ -814,17 +707,20 @@
                         <div class="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent"></div>
                         <div class="absolute bottom-12 left-6 md:left-24">
                             <div class="label-partie uppercase mb-6">OFFRE PRIORITAIRE</div>
-                            <h2 class="text-5xl md:text-8xl font-black text-neutral-900 tracking-tighter" x-text="audit.recommendedOffer === 1 ? 'Onboarding' : (audit.recommendedOffer === 2 ? 'Care Expert' : 'CSM Stratégie')"></h2>
+                            <h2 class="text-5xl md:text-8xl font-black text-neutral-900 tracking-tighter" x-text="audit.recommendedOffer === 1 ? 'Adoption Produit' : (audit.recommendedOffer === 2 ? 'Customer Care' : 'Stratégie Rétention')"></h2>
                         </div>
                     </div>
                     <div class="p-12 md:p-24 grid lg:grid-cols-5 gap-16">
                         <div class="lg:col-span-3 space-y-10">
                             <h3 class="text-3xl font-black uppercase tracking-tight">Analyse effectuée</h3>
-                            <p class="text-xl text-slate-600 font-medium leading-relaxed">
-                                Au vu de votre enjeu sur <strong class="text-brand-blue" x-text="audit.auditChallenges.find(c => c.id === audit.data.challenge)?.l || 'votre département'"></strong>, j'ai identifié l'offre <strong x-text="audit.recommendedOffer === 1 ? 'Adoption Produit' : (audit.recommendedOffer === 2 ? 'Customer Care' : 'Stratégie Rétention')"></strong> comme étant le levier opérationnel le plus impactant pour vous aujourd'hui.
+                            <p class="text-xl text-slate-600 font-medium leading-relaxed text-center md:text-left">
+                                Au vu de votre enjeu sur <strong class="text-brand-blue" x-text="(audit.auditChallenges.find(c => c.id === audit.data.challenge)?.l || 'votre département')"></strong>, j'ai identifié l'offre <strong x-text="audit.recommendedOffer === 1 ? 'Adoption Produit' : (audit.recommendedOffer === 2 ? 'Customer Care' : 'Stratégie Rétention')"></strong> comme étant le levier opérationnel le plus impactant pour vous aujourd'hui.
                             </p>
-                            <div class="flex flex-wrap gap-4">
+                            <div class="flex flex-wrap gap-4 justify-center md:justify-start">
                                 <a href="https://calendly.com/corinne-marsiac-careandsuccess/30min" target="_blank" class="px-12 py-5 bg-brand-gradient text-white rounded-full text-sm font-black uppercase shadow-2xl hover:scale-105 transition-transform">Prendre RDV</a>
+                                <button @click="downloadPDF()" class="px-12 py-5 bg-neutral-900 text-white rounded-full text-sm font-black uppercase shadow-2xl hover:bg-neutral-800 transition-colors flex items-center gap-3">
+                                    <i data-lucide="download" class="w-4 h-4"></i> Télécharger mon compte rendu (.pdf)
+                                </button>
                                 <button @click="audit.submitted = false; audit.step = 1" class="px-12 py-5 border-2 rounded-full text-sm font-black uppercase">Refaire le test</button>
                             </div>
                         </div>
@@ -851,11 +747,11 @@
     <!-- FOOTER -->
     <footer class="py-24 bg-white border-t border-neutral-100 px-6">
         <div class="container mx-auto max-w-[1920px]">
-            <div class="flex flex-col lg:flex-row justify-between items-start gap-20 mb-20">
-                <a href="#accueil">
+            <div class="flex flex-col lg:flex-row justify-between items-start gap-20 mb-20 text-center lg:text-left">
+                <a href="#accueil" class="mx-auto lg:mx-0">
                     <img src="https://lh3.googleusercontent.com/d/1r0tG2koxXGDPjoCw9dmlCtk6UisQYxDE" alt="Logo" class="h-24 md:h-32 opacity-80 hover:opacity-100 transition-all">
                 </a>
-                <div class="grid grid-cols-2 md:grid-cols-2 gap-20">
+                <div class="grid grid-cols-2 md:grid-cols-2 gap-20 mx-auto lg:mx-0 text-left">
                     <div class="space-y-6">
                         <span class="text-xs font-black uppercase tracking-[0.3em] border-b-2 border-brand-blue pb-3 block">Navigation</span>
                         <div class="flex flex-col gap-3 text-lg font-bold text-neutral-500">
@@ -875,7 +771,7 @@
                     </div>
                 </div>
             </div>
-            <div class="pt-12 border-t border-neutral-100 text-[11px] font-black uppercase tracking-widest text-neutral-400 flex flex-col md:flex-row justify-between gap-6">
+            <div class="pt-12 border-t border-neutral-100 text-[11px] font-black uppercase tracking-widest text-neutral-400 flex flex-col md:flex-row justify-between gap-6 text-center md:text-left">
                 <p>© 2026 • Care & Success • Corinne Marsiac</p>
                 <p>Expertise SaaS B2B • RH Tech / Paie</p>
             </div>
@@ -883,6 +779,140 @@
     </footer>
 
     <script>
+        // Extraction de la logique Alpine.js pour éviter les erreurs de syntaxe dans les attributs HTML
+        function AppState() {
+            return {
+                scrolled: false, 
+                mobileMenu: false, 
+                scrollPos: 0, 
+                selectedOffer: null,
+                activeMethod: 0,
+                colibriSteps: [
+                    { l: 'C', t: 'CADRER', st: 'Rôles & Règles', p: 'Structurer qui fait quoi, pour quels clients.', details: ['Attribution claire des comptes clés', 'Définition des règles de gestion support', 'Mise en place des priorités opérationnelles'] },
+                    { l: 'O', t: 'OBSERVER', st: 'Analyse Terrain', p: 'Identifier rapidement les points de friction.', details: ['Audit approfondi des tickets récurrents', 'Détection des comptes en baisse d\'usage', 'Repérage des signaux faibles de churn'] },
+                    { l: 'L', t: 'LISSER', st: 'Zéro Friction', p: 'Supprimer les obstacles du parcours client.', details: ['Simplification des parcours d\'onboarding', 'Ajustement des messages automatiques', 'Correction immédiate des points de blocage'] },
+                    { l: 'I', t: 'IMPLÉMENTER', st: 'Outiller', p: 'Équiper vos équipes pour agir efficacement.', details: ['Création de templates de réponses et relances', 'Mise en place de Playbooks actionnables', 'Automatisation des tâches répétitives'] },
+                    { l: 'B', t: 'BALISER', st: 'Suivre les KPI', p: 'Mesurer le succès par les bons indicateurs.', details: ['Suivi du taux d\'activation réel', 'Analyse du volume et de la résolution tickets', 'Mise en place de Health Scores simples'] },
+                    { l: 'R', t: 'RETENIR', st: 'Action Churn', p: 'Agir proactivement avant le désengagement.', details: ['Relances ciblées des utilisateurs inactifs', 'Suivi spécifique des comptes sensibles', 'Mise en avant des succès rapides (quick wins)'] },
+                    { l: 'I', t: 'ITÉRER', st: 'Améliorer', p: 'Optimiser en continu via les retours terrain.', details: ['Remontées régulières vers l\'équipe Produit', 'Ajustement des process selon les résultats', 'Optimisation constante des playbooks'] }
+                ],
+                audit: {
+                    step: 1,
+                    totalSteps: 3,
+                    submitted: false,
+                    loading: false,
+                    recommendedOffer: null,
+                    auditChallenges: [
+                        {id:'growth', l:'Accélération commerciale', e:'🚀'}, 
+                        {id:'saturation', l:'Saturation du support', e:'🌊'}, 
+                        {id:'churn_signals', l:'Signaux de Churn', e:'📉'},
+                        {id:'migration', l:'Migration ou Refonte', e:'🔄'},
+                        {id:'transition', l:'Départ / absence membre clé', e:'👥'},
+                        {id:'low_adoption', l:'Faible adoption (Stickiness)', e:'🖱️'}
+                    ],
+                    offerImages: {
+                        1: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop', 
+                        2: 'https://images.unsplash.com/photo-1525130413817-d45c1d127c42?q=80&w=2070&auto=format&fit=crop', 
+                        3: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2026&auto=format&fit=crop'
+                    },
+                    data: { challenge: '', kpis: [], companyType: '', sector: '', firstName: '', lastName: '', companyName: '', email: '', phone: '', website: '', linkedin: '', csmModel: '' }
+                },
+                nextStep() { if(this.audit.step < this.audit.totalSteps) { this.audit.step++; this.$nextTick(() => lucide.createIcons()); } },
+                prevStep() { if(this.audit.step > 1) { this.audit.step--; this.$nextTick(() => lucide.createIcons()); } },
+                async submitAudit() {
+                    if(!this.audit.data.email) return;
+                    this.audit.loading = true;
+                    const onboardingChallenges = ['growth', 'migration', 'low_adoption'];
+                    if(onboardingChallenges.includes(this.audit.data.challenge)) this.audit.recommendedOffer = 1;
+                    else if(['saturation', 'transition'].includes(this.audit.data.challenge)) this.audit.recommendedOffer = 2;
+                    else this.audit.recommendedOffer = 3;
+                    await new Promise(r => setTimeout(r, 2000));
+                    this.audit.loading = false;
+                    this.audit.submitted = true;
+                    this.$nextTick(() => { document.getElementById('diagnostic-encart').scrollIntoView({behavior:'smooth'}); lucide.createIcons(); });
+                },
+                async downloadPDF() {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+                    const blueColor = [37, 99, 235];
+                    const darkColor = [15, 23, 42];
+                    const greyColor = [100, 116, 139];
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(22);
+                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                    doc.text('DIAGNOSTIC STRATÉGIQUE', 20, 25);
+                    doc.setFontSize(14);
+                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                    doc.text('Care & Success - Renfort Opérationnel Expert', 20, 35);
+                    doc.setFontSize(10);
+                    doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]);
+                    doc.text('Date : ' + new Date().toLocaleDateString('fr-FR'), 20, 42);
+                    doc.setDrawColor(226, 232, 240);
+                    doc.line(20, 48, 190, 48);
+                    doc.setFontSize(14);
+                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                    doc.text('1. Identification Client', 20, 58);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(11);
+                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                    doc.text('Entreprise : ' + (this.audit.data.companyName || 'Information manquante'), 20, 68);
+                    doc.text('Contact : ' + (this.audit.data.firstName || 'Information manquante') + ' ' + (this.audit.data.lastName || ''), 20, 75);
+                    doc.text('Email : ' + (this.audit.data.email || 'Non renseigné') + ' | Tel : ' + (this.audit.data.phone || 'Information manquante'), 20, 82);
+                    doc.text('Web : ' + (this.audit.data.website || 'Information manquante') + ' | LinkedIn : ' + (this.audit.data.linkedin || 'Information manquante'), 20, 89);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(14);
+                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                    doc.text('2. Enjeu & Performance', 20, 104);
+                    const challengeLabel = this.audit.auditChallenges.find(c => c.id === this.audit.data.challenge)?.l || 'Non défini';
+                    const kpisLabel = this.audit.data.kpis.length > 0 ? this.audit.data.kpis.join(', ').toUpperCase() : 'Non renseigné';
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(11);
+                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                    doc.text('Défi majeur : ' + challengeLabel, 20, 114);
+                    doc.text('KPIs prioritaires : ' + kpisLabel, 20, 121);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(14);
+                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                    doc.text('3. Profil Organisationnel', 20, 136);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(11);
+                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                    const typeLabel = this.audit.data.companyType === 'startup' ? 'Startup/Scale-up' : (this.audit.data.companyType === 'sme' ? 'PME' : (this.audit.data.companyType === 'enterprise' ? 'Grand Compte' : 'Information manquante'));
+                    doc.text('Type : ' + typeLabel + ' | Secteur : ' + (this.audit.data.sector || 'Information manquante'), 20, 146);
+                    doc.text('Modèle : ' + (this.audit.data.csmModel || 'Information manquante') + ' Touch | Niveau Structuration : Non défini / 5', 20, 153);
+                    doc.setDrawColor(226, 232, 240);
+                    doc.line(20, 163, 190, 163);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(14);
+                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                    doc.text('ANALYSE ET RECOMMANDATION', 20, 175);
+                    doc.setFont('helvetica', 'italic');
+                    doc.setFontSize(11);
+                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                    let analysisText = "";
+                    if(this.audit.data.challenge === 'churn_signals') {
+                        analysisText = "Vos indicateurs suggèrent un besoin de proactivité; une stratégie CSM orientée expansion est indispensable pour sécuriser et faire croître votre MRR.";
+                    } else if(['growth', 'low_adoption'].includes(this.audit.data.challenge)) {
+                        analysisText = "Votre accélération nécessite une structuration immédiate de vos parcours d'onboarding pour garantir la Time-to-Value et l'adoption produit.";
+                    } else {
+                        analysisText = "La situation décrite nécessite un renfort opérationnel ciblé pour absorber les pics de charge sans complexifier votre organisation actuelle.";
+                    }
+                    const splitAnalysis = doc.splitTextToSize(analysisText, 170);
+                    doc.text(splitAnalysis, 20, 185);
+                    const offerName = this.audit.recommendedOffer === 1 ? 'ADOPTION PRODUIT' : (this.audit.recommendedOffer === 2 ? 'CUSTOMER CARE' : 'STRATÉGIE RÉTENTION');
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(13);
+                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                    doc.text('SOLUTION PRÉCONISÉE : ' + offerName, 20, 205);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(9);
+                    doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]);
+                    doc.text('Care & Success par Corinne Marsiac - Rapport confidentiel', 20, 285);
+                    doc.save('Diagnostic_CareSuccess_' + (this.audit.data.companyName || 'Lead').replace(/\s+/g, '_') + '.pdf');
+                }
+            };
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             
