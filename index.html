@@ -447,7 +447,10 @@
         <div class="container mx-auto px-6 lg:px-12 flex items-center justify-between max-w-[1920px]">
             <div class="flex items-center">
                 <a href="#accueil">
-                    <img src="https://lh3.googleusercontent.com/d/1r0tG2koxXGDPjoCw9dmlCtk6UisQYxDE" alt="Care & Success" class="transition-all duration-500 ease-in-out object-contain" :class="scrolled ? 'h-10 md:h-12' : 'h-16 md:h-24 lg:h-28'">
+                    <!-- LOGO HEADER AGRANDI -->
+                    <img src="https://lh3.googleusercontent.com/d/1r0tG2koxXGDPjoCw9dmlCtk6UisQYxDE" alt="Care & Success" 
+                         class="transition-all duration-500 ease-in-out object-contain" 
+                         :class="scrolled ? 'h-14 md:h-20 lg:h-24' : 'h-32 md:h-48 lg:h-[16rem]'">
                 </a>
             </div>
             <div class="hidden lg:flex items-center gap-10">
@@ -485,15 +488,15 @@
         </div>
     </div>
 
-    <!-- SECTION HERO -->
-    <section id="accueil" class="relative min-h-screen flex items-center justify-center bg-white px-6 md:px-12 py-20 overflow-hidden text-center">
+    <!-- SECTION HERO (DÉCALÉE VERS LE BAS) -->
+    <section id="accueil" class="relative min-h-screen flex items-center justify-center bg-white px-6 md:px-12 pb-20 pt-64 overflow-hidden text-center">
         <div class="container mx-auto max-w-[1920px] flex flex-col items-center justify-center">
             <div class="relative w-full flex flex-col items-center justify-center">
                 <h1 class="hero-title text-4xl sm:text-6xl md:text-[6.5rem] lg:text-[8.5rem] font-[900] text-neutral-900 flex flex-col pointer-events-none leading-none tracking-tighter">
                     <span class="block text-neutral-900">Votre Renfort</span>
                     <span class="block text-neutral-900">Opérationnel</span>
                     <span class="brand-gradient block relative w-fit whitespace-nowrap mx-auto">Care & Success.
-                        <div class="absolute bottom-[-20%] -right-12 md:bottom-[10%] md:-right-[200px] lg:-right-[280px] w-[45%] md:w-[45%] lg:w-[50%] h-auto pointer-events-none transition-transform duration-150 ease-out z-0" :style="'transform: translateY(' + (scrollPos * -0.3) + 'px)'">
+                        <div class="absolute bottom-[-20%] -right-20 md:bottom-[10%] md:-right-[250px] lg:-right-[350px] w-[45%] md:w-[45%] lg:w-[50%] h-auto pointer-events-none transition-transform duration-150 ease-out z-0" :style="'transform: translateY(' + (scrollPos * -0.3) + 'px)'">
                             <div class="w-full h-full animate-arrival-hero">
                                 <div class="animate-float">
                                     <img src="https://lh3.googleusercontent.com/d/1ZKwRL-c7yJCE-H8-ZbH1jt_RStqn-Svq" alt="Colibri Hero" class="w-full h-auto colibri-interaction">
@@ -516,14 +519,14 @@
     <!-- SECTION : QUAND M'APPELER -->
     <section class="bg-brand-dark py-24 md:py-48 px-6 overflow-hidden">
         <div class="container mx-auto max-w-[1440px]">
-            <div class="reveal mb-16 md:mb-24">
+            <div class="reveal mb-16 md:mb-24 text-center lg:text-left">
                 <div class="inline-block bg-neutral-800 text-white px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-8 border border-white/10">
                     RENFORT OPÉRATIONNEL
                 </div>
-                <h2 class="text-5xl md:text-8xl font-[900] tracking-tighter leading-none mb-8 text-white text-center md:text-left">
+                <h2 class="text-5xl md:text-8xl font-[900] tracking-tighter leading-none mb-8 text-white">
                     Quand m'activer en <span class="brand-gradient">renfort pur.</span>
                 </h2>
-                <p class="text-xl md:text-2xl text-slate-400 font-medium max-w-3xl text-center md:text-left">
+                <p class="text-xl md:text-2xl text-slate-400 font-medium max-w-3xl">
                     J'interviens pour débloquer immédiatement ces situations critiques qui freinent votre exécution :
                 </p>
             </div>
@@ -634,9 +637,9 @@
     </section>
 
     <!-- SECTION MÉTHODE COLIBRI -->
-    <section id="framework" class="py-24 md:py-48 bg-neutral-50 overflow-hidden px-6">
+    <section id="framework" class="py-24 md:py-48 bg-neutral-50 overflow-hidden px-6 text-center">
         <div class="container mx-auto max-w-[1440px]">
-            <div class="reveal mb-24 text-center">
+            <div class="reveal mb-24">
                 <div class="label-partie uppercase">MÉTHODE COLIBRI™</div>
                 <h2 class="text-5xl md:text-8xl font-[900] tracking-tighter leading-none mb-12 text-neutral-900">Une structure agile. <br><span class="brand-gradient">Des résultats concrets.</span></h2>
                 <div class="bg-black p-8 md:p-10 rounded-[3rem] border border-neutral-800 mb-10 inline-block shadow-2xl">
@@ -664,17 +667,17 @@
                              x-transition:enter-start="opacity-0 translate-y-4"
                              x-transition:enter-end="opacity-100 translate-y-0"
                              class="w-full">
-                            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 text-left">
                                 <div>
                                     <h3 class="text-4xl md:text-6xl font-black text-brand-blue" x-text="step.t"></h3>
                                     <p class="text-sm font-black uppercase tracking-[0.2em] text-slate-400 mt-2" x-text="step.st"></p>
                                 </div>
                                 <div class="text-8xl font-black text-slate-100 absolute right-12 top-1/2 -translate-y-1/2 select-none pointer-events-none" x-text="step.l"></div>
                             </div>
-                            <p class="text-2xl text-neutral-900 font-extrabold mb-10 max-w-2xl leading-tight" x-text="step.p"></p>
-                            <div class="grid md:grid-cols-2 gap-4">
+                            <p class="text-2xl text-neutral-900 font-extrabold mb-10 max-w-2xl leading-tight text-left" x-text="step.p"></p>
+                            <div class="grid md:grid-cols-2 gap-4 text-left">
                                 <template x-for="(detail, dIdx) in step.details" :key="dIdx">
-                                    <div class="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                                    <div class="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 text-left">
                                         <div class="w-2 h-2 bg-brand-blue rounded-full"></div>
                                         <span class="text-[15px] text-slate-600 font-bold" x-text="detail"></span>
                                     </div>
@@ -688,7 +691,7 @@
     </section>
 
     <!-- SECTION SOLUTIONS -->
-    <section id="offres" class="py-24 md:py-48 bg-[#f8faff] px-6">
+    <section id="offres" class="py-24 md:py-48 bg-[#f8faff] px-6 text-center">
         <div class="container mx-auto max-w-[1600px]">
             <header class="text-center mb-24 reveal">
                 <div class="label-partie uppercase">SOLUTIONS OPÉRATIONNELLES</div>
@@ -698,69 +701,69 @@
             <div class="grid lg:grid-cols-3 gap-10 md:gap-16 items-stretch">
                 <!-- ADOPTION PRODUIT -->
                 <div class="card-glass overflow-hidden rounded-4xl shadow-2xl reveal group hover-halo-emerald text-left">
-                    <div class="relative h-64 overflow-hidden shrink-0">
+                    <div class="relative h-64 overflow-hidden shrink-0 text-left">
                         <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop" alt="Adoption Produit" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                         <div class="absolute inset-0 bg-gradient-to-t from-white/95 via-transparent to-transparent"></div>
                     </div>
-                    <div class="p-10 pt-6 flex-grow flex flex-col">
+                    <div class="p-10 pt-6 flex-grow flex flex-col text-left">
                         <div class="text-[11px] font-black uppercase tracking-widest text-emerald-600 mb-6 px-4 py-1.5 bg-emerald-50 rounded-full w-fit">Onboarding Client</div>
                         <h3 class="text-3xl font-[900] mb-3 uppercase tracking-tight text-neutral-900 leading-none">Adoption Produit</h3>
                         <p class="text-sm text-neutral-400 font-bold italic mb-8">L'autonomie client comme priorité.</p>
-                        <ul class="space-y-4 mb-10">
+                        <ul class="space-y-4 mb-10 text-left">
                             <li class="flex items-start gap-4"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Kick-off, formation et parcours personnalisés</p></li>
                             <li class="flex items-start gap-4"><i data-lucide="zap" class="w-5 h-5 text-emerald-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Activation rapide des premiers use cases</p></li>
                             <li class="flex items-start gap-4"><i data-lucide="trending-up" class="w-5 h-5 text-emerald-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Accélération du Time-to-Value (TTV)</p></li>
                             <li class="flex items-start gap-4"><i data-lucide="search" class="w-5 h-5 text-emerald-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Suivi des premiers signaux d’usage et blocages</p></li>
                         </ul>
                         <div class="bg-black p-8 rounded-3xl mt-auto shadow-xl">
-                            <h4 class="text-[10px] font-black uppercase text-emerald-400 mb-2 tracking-widest">Impact</h4>
-                            <p class="text-sm text-white italic font-medium leading-relaxed">"Utilisateurs actifs, engagés et autonomes dès les premiers jours."</p>
+                            <h4 class="text-[10px] font-black uppercase text-emerald-400 mb-2 tracking-widest text-left">Impact</h4>
+                            <p class="text-sm text-white italic font-medium leading-relaxed text-left">"Utilisateurs actifs, engagés et autonomes dès les premiers jours."</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- CUSTOMER CARE EXPERT -->
                 <div class="card-glass overflow-hidden rounded-4xl shadow-2xl reveal group hover-halo-blue text-left">
-                    <div class="relative h-64 overflow-hidden shrink-0">
+                    <div class="relative h-64 overflow-hidden shrink-0 text-left">
                         <img src="https://images.unsplash.com/photo-1525130413817-d45c1d127c42?q=80&w=2070&auto=format&fit=crop" alt="Customer Care Expert" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                         <div class="absolute inset-0 bg-gradient-to-t from-white/95 via-transparent to-transparent"></div>
                     </div>
-                    <div class="p-10 pt-6 flex-grow flex flex-col">
+                    <div class="p-10 pt-6 flex-grow flex flex-col text-left">
                         <div class="text-[11px] font-black uppercase tracking-widest text-brand-blue mb-6 px-4 py-1.5 bg-blue-50 rounded-full w-fit">Satisfaction 5★</div>
                         <h3 class="text-3xl font-[900] mb-3 uppercase tracking-tight text-neutral-900 leading-none">Customer Care Expert</h3>
                         <p class="text-sm text-neutral-400 font-bold italic mb-8">Le support devient un levier de performance.</p>
-                        <ul class="space-y-4 mb-10">
+                        <ul class="space-y-4 mb-10 text-left">
                             <li class="flex items-start gap-4"><i data-lucide="layers" class="w-5 h-5 text-brand-blue shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Gestion fluide des tickets (priorisation, SLA, escalades)</p></li>
                             <li class="flex items-start gap-4"><i data-lucide="shield-alert" class="w-5 h-5 text-brand-blue shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Résolution rapide des incidents et analyse causes racines</p></li>
                             <li class="flex items-start gap-4"><i data-lucide="users" class="text-brand-blue w-5 h-5 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Coordination avec les équipes Produit et Tech</p></li>
                             <li class="flex items-start gap-4"><i data-lucide="refresh-cw" class="text-brand-blue w-5 h-5 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Mise en place de process pour réduire les frictions</p></li>
                         </ul>
-                        <div class="bg-brand-gradient p-8 rounded-3xl mt-auto shadow-xl">
-                            <h4 class="text-[10px] font-black uppercase text-white/70 mb-2 tracking-widest">Impact</h4>
-                            <p class="text-sm text-white italic font-medium leading-relaxed">"Moins de tickets, moins de friction, plus de satisfaction et de rétention."</p>
+                        <div class="bg-brand-gradient p-8 rounded-3xl mt-auto shadow-xl text-left">
+                            <h4 class="text-[10px] font-black uppercase text-white/70 mb-2 tracking-widest text-left">Impact</h4>
+                            <p class="text-sm text-white italic font-medium leading-relaxed text-left">"Moins de tickets, moins de friction, plus de satisfaction et de rétention."</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- CSM STRATÉGIQUE -->
                 <div class="card-glass overflow-hidden rounded-4xl shadow-2xl reveal group hover-halo-violet text-left">
-                    <div class="relative h-64 overflow-hidden shrink-0">
+                    <div class="relative h-64 overflow-hidden shrink-0 text-left">
                         <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2026&auto=format&fit=crop" alt="CSM Stratégique" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                         <div class="absolute inset-0 bg-gradient-to-t from-white/95 via-transparent to-transparent"></div>
                     </div>
-                    <div class="p-10 pt-6 flex-grow flex flex-col">
+                    <div class="p-10 pt-6 flex-grow flex flex-col text-left">
                         <div class="text-[11px] font-black uppercase tracking-widest text-violet-600 mb-6 px-4 py-1.5 bg-violet-50 rounded-full w-fit">Rétention & Expansion</div>
                         <h3 class="text-3xl font-[900] mb-3 uppercase tracking-tight text-neutral-900 leading-none">CSM Stratégique</h3>
                         <p class="text-sm text-neutral-400 font-bold italic mb-8">Sécuriser et développer vos comptes clés.</p>
-                        <ul class="space-y-4 mb-10">
+                        <ul class="space-y-4 mb-10 text-left">
                             <li class="flex items-start gap-4"><i data-lucide="activity" class="w-5 h-5 text-violet-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Suivi des comptes sensibles et détection risque de churn</p></li>
                             <li class="flex items-start gap-4"><i data-lucide="bar-chart-3" class="w-5 h-5 text-violet-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Pilotage des KPIs (usage, NPS, Health Score)</p></li>
                             <li class="flex items-start gap-4"><i data-lucide="plus-circle" class="w-5 h-5 text-violet-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Identification opportunités expansion (upsell/cross-sell)</p></li>
                             <li class="flex items-start gap-4"><i data-lucide="git-merge" class="w-5 h-5 text-violet-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Alignement Sales et Produit pour maximiser la valeur</p></li>
                         </ul>
-                        <div class="bg-black p-8 rounded-3xl mt-auto shadow-xl">
-                            <h4 class="text-[10px] font-black uppercase text-violet-400 mb-2 tracking-widest">Impact</h4>
-                            <p class="text-sm text-white italic font-medium leading-relaxed">"Churn réduit, MRR sécurisé et croissance des comptes existants."</p>
+                        <div class="bg-black p-8 rounded-3xl mt-auto shadow-xl text-left">
+                            <h4 class="text-[10px] font-black uppercase text-violet-400 mb-2 tracking-widest text-left">Impact</h4>
+                            <p class="text-sm text-white italic font-medium leading-relaxed text-left">"Churn réduit, MRR sécurisé et croissance des comptes existants."</p>
                         </div>
                     </div>
                 </div>
@@ -771,8 +774,8 @@
     <!-- SECTION AUDIT -->
     <section id="diagnostic-encart" class="py-24 md:py-48 bg-white px-6 text-center md:text-left">
         <div class="container mx-auto max-w-[1600px]">
-            <div class="reveal rounded-[5rem] overflow-hidden relative shadow-3xl border border-neutral-50">
-                <div class="bg-brand-dark p-12 md:p-20 text-white flex flex-col md:flex-row justify-between items-center gap-12">
+            <div class="reveal rounded-[5rem] overflow-hidden relative shadow-3xl border border-neutral-50 text-center md:text-left">
+                <div class="bg-brand-dark p-12 md:p-20 text-white flex flex-col md:flex-row justify-between items-center gap-12 text-center md:text-left">
                     <div class="text-center md:text-left">
                         <div class="label-partie uppercase">AUDIT STRATÉGIQUE</div>
                         <h2 class="text-4xl md:text-7xl font-black tracking-tighter leading-tight text-center md:text-left">Diagnostic <br><span class="brand-gradient">Opérationnel</span></h2>
@@ -813,9 +816,9 @@
                             </template>
                         </div>
                     </div>
-                    <div x-show="audit.step === 3" x-cloak class="flex-1">
+                    <div x-show="audit.step === 3" x-cloak class="flex-1 text-center md:text-left">
                         <h3 class="text-3xl md:text-5xl font-black mb-12 text-neutral-900 text-center">Finalisons votre analyse</h3>
-                        <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto text-left">
+                        <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
                             <input type="text" x-model="audit.data.firstName" placeholder="Prénom" class="input-field h-14">
                             <input type="text" x-model="audit.data.lastName" placeholder="Nom" class="input-field h-14">
                             <input type="text" x-model="audit.data.companyName" placeholder="Entreprise" class="input-field h-14 md:col-span-2">
@@ -824,7 +827,7 @@
                     </div>
 
                     <div class="mt-16 flex flex-col md:flex-row gap-6 max-w-4xl mx-auto w-full">
-                        <button @click="prevStep()" x-show="audit.step > 1" class="px-10 py-5 rounded-full border-2 text-xs font-black uppercase tracking-widest text-neutral-400 hover:bg-neutral-50 transition-all flex items-center justify-center gap-3"><i data-lucide="arrow-left" class="w-5 h-5"></i> Retour</button>
+                        <button @click="prevStep()" x-show="audit.step > 1" class="px-10 py-5 rounded-full border-2 text-xs font-black uppercase tracking-widest text-neutral-400 hover:bg-neutral-50 transition-all flex items-center justify-center gap-3 text-left"><i data-lucide="arrow-left" class="w-5 h-5"></i> Retour</button>
                         <div class="flex-1">
                             <button @click="nextStep()" x-show="audit.step < 3" class="w-full px-10 py-5 bg-black text-white rounded-full text-xs font-black uppercase tracking-widest shadow-2xl flex items-center justify-center gap-3">Suivant <i data-lucide="arrow-right" class="w-5 h-5"></i></button>
                             <button @click="submitAudit()" x-show="audit.step === 3" class="w-full px-10 py-5 bg-brand-gradient text-white rounded-full text-xs font-black uppercase tracking-widest shadow-2xl flex items-center justify-center gap-3" :disabled="audit.loading || !audit.data.email">
@@ -842,13 +845,13 @@
                         <div class="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent"></div>
                         <div class="absolute bottom-12 left-6 md:left-24">
                             <div class="label-partie uppercase mb-6">OFFRE PRIORITAIRE</div>
-                            <h2 class="text-5xl md:text-8xl font-black text-neutral-900 tracking-tighter" x-text="audit.recommendedOffer === 1 ? 'Adoption Produit' : (audit.recommendedOffer === 2 ? 'Customer Care' : 'Stratégie Rétention')"></h2>
+                            <h2 class="text-5xl md:text-8xl font-black text-neutral-900 tracking-tighter text-left" x-text="audit.recommendedOffer === 1 ? 'Adoption Produit' : (audit.recommendedOffer === 2 ? 'Customer Care' : 'Stratégie Rétention')"></h2>
                         </div>
                     </div>
                     <div class="p-12 md:p-24 grid lg:grid-cols-5 gap-16">
                         <div class="lg:col-span-3 space-y-10">
-                            <h3 class="text-3xl font-black uppercase tracking-tight">Analyse effectuée</h3>
-                            <p class="text-xl text-slate-600 font-medium leading-relaxed">
+                            <h3 class="text-3xl font-black uppercase tracking-tight text-left">Analyse effectuée</h3>
+                            <p class="text-xl text-slate-600 font-medium leading-relaxed text-left">
                                 Au vu de votre enjeu sur <strong class="text-brand-blue" x-text="(audit.auditChallenges.find(c => c.id === audit.data.challenge)?.l || 'votre département')"></strong>, j'ai identifié l'offre <strong x-text="audit.recommendedOffer === 1 ? 'Adoption Produit' : (audit.recommendedOffer === 2 ? 'Customer Care' : 'Stratégie Rétention')"></strong> comme étant le levier opérationnel le plus impactant pour vous aujourd'hui.
                             </p>
                             <div class="flex flex-wrap gap-4 justify-center md:justify-start">
@@ -866,10 +869,10 @@
     </section>
 
     <!-- SECTION CONTACT -->
-    <section id="contact" class="py-24 md:py-48 bg-white px-6">
+    <section id="contact" class="py-24 md:py-48 bg-white px-6 text-center">
         <div class="container mx-auto max-w-[1920px]">
             <div class="relative overflow-hidden bg-neutral-950 rounded-[5rem] p-12 md:p-32 reveal text-center group shadow-3xl">
-                <h2 class="text-5xl md:text-8xl font-[900] tracking-tighter mb-12 leading-tight text-white">Construisons votre <span class="brand-gradient">réussite ensemble</span></h2>
+                <h2 class="text-5xl md:text-8xl font-[900] tracking-tighter mb-12 leading-tight text-white text-center">Construisons votre <span class="brand-gradient">réussite ensemble</span></h2>
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-8 relative z-10">
                     <a href="https://calendly.com/corinne-marsiac-careandsuccess/30min" target="_blank" class="w-full sm:w-auto px-16 py-6 bg-brand-gradient text-white rounded-full font-black uppercase tracking-widest text-sm transition-all duration-500 hover:scale-110 flex items-center justify-center gap-4 shadow-2xl shadow-indigo-500/30">Prendre RDV <i data-lucide="calendar" class="w-5 h-5"></i></a>
                     <a href="mailto:careandsuccess.partner@gmail.com" class="w-full sm:w-auto px-16 py-6 border border-white/20 text-white rounded-full font-black uppercase tracking-widest text-sm transition-all duration-500 hover:scale-110 hover:bg-white/10 flex items-center justify-center gap-4">E-mail <i data-lucide="mail" class="w-5 h-5"></i></a>
@@ -879,26 +882,32 @@
         </div>
     </section>
 
-    <!-- FOOTER -->
+    <!-- FOOTER MODIFIÉ -->
     <footer class="py-24 bg-white border-t border-neutral-100 px-6">
         <div class="container mx-auto max-w-[1920px]">
-            <div class="flex flex-col lg:flex-row justify-between items-start gap-20 mb-20 text-center lg:text-left">
-                <a href="#accueil" class="mx-auto lg:mx-0">
-                    <img src="https://lh3.googleusercontent.com/d/1r0tG2koxXGDPjoCw9dmlCtk6UisQYxDE" alt="Logo" class="h-24 md:h-32 opacity-80 hover:opacity-100 transition-all">
-                </a>
-                <div class="grid grid-cols-2 md:grid-cols-2 gap-20 mx-auto lg:mx-0 text-left">
+            <!-- TOP FOOTER : LOGO À CÔTÉ DE NAVIGATION ET CONTACT -->
+            <div class="flex flex-col lg:flex-row justify-between items-center lg:items-start gap-12 lg:gap-20 mb-20">
+                <!-- LOGO SECTION (D'ABORD EN MOBILE) -->
+                <div class="flex-shrink-0">
+                    <a href="#accueil">
+                        <img src="https://lh3.googleusercontent.com/d/1r0tG2koxXGDPjoCw9dmlCtk6UisQYxDE" alt="Logo" class="h-24 md:h-32 lg:h-40 opacity-80 hover:opacity-100 transition-all mx-auto lg:mx-0">
+                    </a>
+                </div>
+                
+                <!-- CONTENT SECTION (NAV & CONTACT) -->
+                <div class="flex flex-col md:flex-row gap-12 lg:gap-32 text-center md:text-left">
                     <div class="space-y-6">
-                        <span class="text-xs font-black uppercase tracking-[0.3em] border-b-2 border-brand-blue pb-3 block">Navigation</span>
-                        <div class="flex flex-col gap-3 text-lg font-bold text-neutral-500">
+                        <span class="text-xs font-black uppercase tracking-[0.3em] border-b-2 border-brand-blue pb-3 block text-center md:text-left">Navigation</span>
+                        <div class="flex flex-col gap-3 text-lg font-bold text-neutral-500 text-center md:text-left">
                             <a href="#accueil" class="hover:text-blue-600 transition-colors">Accueil</a>
                             <a href="#offres" class="hover:text-blue-600 transition-colors">Offres</a>
                             <a href="#framework" class="hover:text-blue-600 transition-colors">Méthode Colibri™</a>
                         </div>
                     </div>
-                    <div class="space-y-6 text-left">
-                        <span class="text-xs font-black uppercase tracking-[0.3em] border-b-2 border-brand-blue pb-3 block">Contact</span>
-                        <div class="flex flex-col gap-3 text-lg font-bold text-neutral-500">
-                            <a href="https://www.linkedin.com/company/care-and-success/" target="_blank" class="hover:text-blue-600 transition-colors flex items-center gap-2">
+                    <div class="space-y-6">
+                        <span class="text-xs font-black uppercase tracking-[0.3em] border-b-2 border-brand-blue pb-3 block text-center md:text-left">Contact</span>
+                        <div class="flex flex-col gap-3 text-lg font-bold text-neutral-500 text-center md:text-left">
+                            <a href="https://www.linkedin.com/company/care-and-success/" target="_blank" class="hover:text-blue-600 transition-colors flex items-center gap-2 justify-center md:justify-start">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#0077b5"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg> LinkedIn
                             </a>
                             <a href="mailto:careandsuccess.partner@gmail.com" class="hover:text-blue-600 transition-colors lowercase break-all text-sm md:text-lg">careandsuccess.partner@gmail.com</a>
@@ -906,14 +915,150 @@
                     </div>
                 </div>
             </div>
-            <div class="pt-12 border-t border-neutral-100 text-[11px] font-black uppercase tracking-widest text-neutral-400 flex flex-col md:flex-row justify-between gap-6 text-center md:text-left">
-                <p>© 2026 • Care & Success • Corinne Marsiac</p>
-                <p>Expertise SaaS B2B • RH Tech / Paie</p>
+
+            <!-- BOTTOM LINE : MENTION UNIQUE CENTRÉE -->
+            <div class="pt-12 border-t border-neutral-100 text-center">
+                <p class="text-[11px] font-black uppercase tracking-widest text-neutral-400 leading-relaxed">
+                    © 2026 • Care & Success • Renfort opérationnel Freelance • Expertise SaaS B2B • RH Tech / Paie
+                </p>
             </div>
         </div>
     </footer>
 
     <script>
+        function AppState() {
+            return {
+                scrolled: false, 
+                mobileMenu: false, 
+                scrollPos: 0, 
+                selectedOffer: null,
+                activeMethod: 0,
+                colibriSteps: [
+                    { l: 'C', t: 'CADRER', st: 'Rôles & Règles', p: 'Structurer qui fait quoi, pour quels clients.', details: ['Attribution claire des comptes clés', 'Définition des règles de gestion support', 'Mise en place des priorités opérationnelles'] },
+                    { l: 'O', t: 'OBSERVER', st: 'Analyse Terrain', p: 'Identifier rapidement les points de friction.', details: ['Audit approfondi des tickets récurrents', 'Détection des comptes en baisse d\'usage', 'Repérage des signaux faibles de churn'] },
+                    { l: 'L', t: 'LISSER', st: 'Zéro Friction', p: 'Supprimer les obstacles du parcours client.', details: ['Simplification des parcours d\'onboarding', 'Ajustement des messages automatiques', 'Correction immédiate des points de blocage'] },
+                    { l: 'I', t: 'IMPLÉMENTER', st: 'Outiller', p: 'Équiper vos équipes pour agir efficacement.', details: ['Création de templates de réponses et relances', 'Mise en place de Playbooks actionnables', 'Automatisation des tâches répétitives'] },
+                    { l: 'B', t: 'BALISER', st: 'Suivre les KPI', p: 'Mesurer le succès par les bons indicateurs.', details: ['Suivi du taux d\'activation réel', 'Analyse du volume et de la résolution tickets', 'Mise en place de Health Scores simples'] },
+                    { l: 'R', t: 'RETENIR', st: 'Action Churn', p: 'Agir proactivement avant le désengagement.', details: ['Relances ciblées des utilisateurs inactifs', 'Suivi spécifique des comptes sensibles', 'Mise en avant des succès rapides (quick wins)'] },
+                    { l: 'I', t: 'ITÉRER', st: 'Améliorer', p: 'Optimiser en continu via les retours terrain.', details: ['Remontées régulières vers l\'équipe Produit', 'Ajustement des process selon les résultats', 'Optimisation constante des playbooks'] }
+                ],
+                audit: {
+                    step: 1,
+                    totalSteps: 3,
+                    submitted: false,
+                    loading: false,
+                    recommendedOffer: null,
+                    auditChallenges: [
+                        {id:'growth', l:'Accélération commerciale', e:'🚀'}, 
+                        {id:'saturation', l:'Saturation du support', e:'🌊'}, 
+                        {id:'churn_signals', l:'Signaux de Churn', e:'📉'},
+                        {id:'migration', l:'Migration ou Refonte', e:'🔄'},
+                        {id:'transition', l:'Départ / absence membre clé', e:'👥'},
+                        {id:'low_adoption', l:'Faible adoption (Stickiness)', e:'🖱️'}
+                    ],
+                    offerImages: {
+                        1: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop', 
+                        2: 'https://images.unsplash.com/photo-1525130413817-d45c1d127c42?q=80&w=2070&auto=format&fit=crop', 
+                        3: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2026&auto=format&fit=crop'
+                    },
+                    data: { challenge: '', kpis: [], companyType: '', sector: '', firstName: '', lastName: '', companyName: '', email: '', phone: '', website: '', linkedin: '', csmModel: '' }
+                },
+                nextStep() { if(this.audit.step < this.audit.totalSteps) { this.audit.step++; this.$nextTick(() => lucide.createIcons()); } },
+                prevStep() { if(this.audit.step > 1) { this.audit.step--; this.$nextTick(() => lucide.createIcons()); } },
+                async submitAudit() {
+                    if(!this.audit.data.email) return;
+                    this.audit.loading = true;
+                    const onboardingChallenges = ['growth', 'migration', 'low_adoption'];
+                    if(onboardingChallenges.includes(this.audit.data.challenge)) this.audit.recommendedOffer = 1;
+                    else if(['saturation', 'transition'].includes(this.audit.data.challenge)) this.audit.recommendedOffer = 2;
+                    else this.audit.recommendedOffer = 3;
+                    await new Promise(r => setTimeout(r, 2000));
+                    this.audit.loading = false;
+                    this.audit.submitted = true;
+                    this.$nextTick(() => { document.getElementById('diagnostic-encart').scrollIntoView({behavior:'smooth'}); lucide.createIcons(); });
+                },
+                async downloadPDF() {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+                    const blueColor = [37, 99, 235];
+                    const darkColor = [15, 23, 42];
+                    const greyColor = [100, 116, 139];
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(22);
+                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                    doc.text('DIAGNOSTIC STRATÉGIQUE', 20, 25);
+                    doc.setFontSize(14);
+                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                    doc.text('Care & Success - Renfort Opérationnel Expert', 20, 35);
+                    doc.setFontSize(10);
+                    doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]);
+                    doc.text('Date : ' + new Date().toLocaleDateString('fr-FR'), 20, 42);
+                    doc.setDrawColor(226, 232, 240);
+                    doc.line(20, 48, 190, 48);
+                    doc.setFontSize(14);
+                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                    doc.text('1. Identification Client', 20, 58);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(11);
+                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                    doc.text('Entreprise : ' + (this.audit.data.companyName || 'Information manquante'), 20, 68);
+                    doc.text('Contact : ' + (this.audit.data.firstName || 'Information manquante') + ' ' + (this.audit.data.lastName || ''), 20, 75);
+                    doc.text('Email : ' + (this.audit.data.email || 'Non renseigné') + ' | Tel : ' + (this.audit.data.phone || 'Information manquante'), 20, 82);
+                    doc.text('Web : ' + (this.audit.data.website || 'Information manquante') + ' | LinkedIn : ' + (this.audit.data.linkedin || 'Information manquante'), 20, 89);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(14);
+                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                    doc.text('2. Enjeu & Performance', 20, 104);
+                    const challengeLabel = this.audit.auditChallenges.find(c => c.id === this.audit.data.challenge)?.l || 'Non défini';
+                    const kpisLabel = this.audit.data.kpis.length > 0 ? this.audit.data.kpis.join(', ').toUpperCase() : 'Non renseigné';
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(11);
+                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                    doc.text('Défi majeur : ' + challengeLabel, 20, 114);
+                    doc.text('KPIs prioritaires : ' + kpisLabel, 20, 121);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(14);
+                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                    doc.text('3. Profil Organisationnel', 20, 136);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(11);
+                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                    const typeLabel = this.audit.data.companyType === 'startup' ? 'Startup/Scale-up' : (this.audit.data.companyType === 'sme' ? 'PME' : (this.audit.data.companyType === 'enterprise' ? 'Grand Compte' : 'Information manquante'));
+                    doc.text('Type : ' + typeLabel + ' | Secteur : ' + (this.audit.data.sector || 'Information manquante'), 20, 146);
+                    doc.text('Modèle : ' + (this.audit.data.csmModel || 'Information manquante') + ' Touch | Niveau Structuration : Non défini / 5', 20, 153);
+                    doc.setDrawColor(226, 232, 240);
+                    doc.line(20, 163, 190, 163);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(14);
+                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                    doc.text('ANALYSE ET RECOMMANDATION', 20, 175);
+                    doc.setFont('helvetica', 'italic');
+                    doc.setFontSize(11);
+                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                    let analysisText = "";
+                    if(this.audit.data.challenge === 'churn_signals') {
+                        analysisText = "Vos indicateurs suggèrent un besoin de proactivité; une stratégie CSM orientée expansion est indispensable pour sécuriser et faire croître votre MRR.";
+                    } else if(['growth', 'low_adoption'].includes(this.audit.data.challenge)) {
+                        analysisText = "Votre accélération nécessite une structuration immédiate de vos parcours d'onboarding pour garantir la Time-to-Value et l'adoption produit.";
+                    } else {
+                        analysisText = "La situation décrite nécessite un renfort opérationnel ciblé pour absorber les pics de charge sans complexifier votre organisation actuelle.";
+                    }
+                    const splitAnalysis = doc.splitTextToSize(analysisText, 170);
+                    doc.text(splitAnalysis, 20, 185);
+                    const offerName = this.audit.recommendedOffer === 1 ? 'ADOPTION PRODUIT' : (this.audit.recommendedOffer === 2 ? 'CUSTOMER CARE' : 'STRATÉGIE RÉTENTION');
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(13);
+                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                    doc.text('SOLUTION PRÉCONISÉE : ' + offerName, 20, 205);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(9);
+                    doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]);
+                    doc.text('Care & Success par Corinne Marsiac - Rapport confidentiel', 20, 285);
+                    doc.save('Diagnostic_CareSuccess_' + (this.audit.data.companyName || 'Lead').replace(/\s+/g, '_') + '.pdf');
+                }
+            };
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             
