@@ -488,15 +488,16 @@
         </div>
     </div>
 
-    <!-- SECTION HERO (DÉCALÉE VERS LE BAS) -->
+    <!-- SECTION HERO -->
     <section id="accueil" class="relative min-h-screen flex items-center justify-center bg-white px-6 md:px-12 pb-20 pt-64 overflow-hidden text-center">
         <div class="container mx-auto max-w-[1920px] flex flex-col items-center justify-center">
             <div class="relative w-full flex flex-col items-center justify-center">
-                <h1 class="hero-title text-4xl sm:text-6xl md:text-[6.5rem] lg:text-[8.5rem] font-[900] text-neutral-900 flex flex-col pointer-events-none leading-none tracking-tighter">
+                <h1 class="hero-title text-5xl sm:text-6xl md:text-[6.5rem] lg:text-[8.5rem] font-[900] text-neutral-900 flex flex-col items-center justify-center pointer-events-none leading-none tracking-tighter">
                     <span class="block text-neutral-900">Votre Renfort</span>
                     <span class="block text-neutral-900">Opérationnel</span>
                     <span class="brand-gradient block relative w-fit whitespace-nowrap mx-auto">Care & Success.
-                        <div class="absolute bottom-[-20%] -right-20 md:bottom-[10%] md:-right-[250px] lg:-right-[350px] w-[45%] md:w-[45%] lg:w-[50%] h-auto pointer-events-none transition-transform duration-150 ease-out z-0" :style="'transform: translateY(' + (scrollPos * -0.3) + 'px)'">
+                        <!-- POSITION DU COLIBRI DÉCALÉE À DROITE -->
+                        <div class="absolute bottom-[-15%] -right-12 sm:-right-20 md:bottom-[10%] md:-right-[250px] lg:-right-[350px] w-[45%] md:w-[45%] lg:w-[50%] h-auto pointer-events-none transition-transform duration-150 ease-out z-0" :style="'transform: translateY(' + (scrollPos * -0.3) + 'px)'">
                             <div class="w-full h-full animate-arrival-hero">
                                 <div class="animate-float">
                                     <img src="https://lh3.googleusercontent.com/d/1ZKwRL-c7yJCE-H8-ZbH1jt_RStqn-Svq" alt="Colibri Hero" class="w-full h-auto colibri-interaction">
@@ -508,7 +509,7 @@
                 <div class="mt-12 md:mt-16 max-w-4xl mx-auto relative z-10 flex flex-col items-center">
                     <p class="text-xl md:text-3xl text-neutral-500 leading-relaxed md:leading-snug font-medium mb-12 md:mb-16 max-w-3xl">J’aide les SaaS B2B à absorber la charge, réduire les frictions client et prévenir le churn avec une intervention immédiate et orientée exécution.</p>
                     <div class="flex flex-col sm:flex-row items-center flex-wrap gap-6 justify-center">
-                        <a href="https://calendly.com/corinne-marsiac-careandsuccess/30min" target="_blank" class="w-full sm:w-auto px-10 py-5 bg-brand-gradient text-white rounded-full text-lg font-bold hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3 shadow-lg shadow-indigo-500/40">Prendre rendez-vous <i data-lucide="calendar" class="w-5 h-5"></i></a>
+                        <a href="https://calendly.com/corinne-marsiac-careandsuccess/30min" target="_blank" class="w-full sm:w-auto px-10 py-5 bg-brand-gradient text-white rounded-full text-lg font-bold hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3 shadow-lg shadow-indigo-500/40">Prendre RDV <i data-lucide="calendar" class="w-5 h-5"></i></a>
                         <a href="#framework" class="w-full sm:w-auto px-10 py-5 bg-black text-white rounded-full text-lg font-bold hover:bg-neutral-800 transition-all duration-300 flex items-center justify-center gap-3 shadow-lg shadow-black/20">La Méthode Colibri™ <i data-lucide="target" class="w-5 h-5"></i></a>
                     </div>
                 </div>
@@ -523,10 +524,10 @@
                 <div class="inline-block bg-neutral-800 text-white px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-8 border border-white/10">
                     RENFORT OPÉRATIONNEL
                 </div>
-                <h2 class="text-5xl md:text-8xl font-[900] tracking-tighter leading-none mb-8 text-white text-center md:text-left">
+                <h2 class="text-5xl md:text-8xl font-[900] tracking-tighter leading-none mb-8 text-white">
                     Quand m'activer en <span class="brand-gradient">renfort pur.</span>
                 </h2>
-                <p class="text-xl md:text-2xl text-slate-400 font-medium max-w-3xl text-center md:text-left">
+                <p class="text-xl md:text-2xl text-slate-400 font-medium max-w-3xl">
                     J'interviens pour débloquer immédiatement ces situations critiques qui freinent votre exécution :
                 </p>
             </div>
@@ -585,11 +586,12 @@
                         <h2 class="text-5xl md:text-7xl font-[900] tracking-tighter leading-tight mb-10 text-white">Une expertise terrain au service de <span class="brand-gradient">votre rétention client</span></h2>
                         <p class="text-2xl md:text-3xl text-neutral-300 leading-relaxed font-medium mb-10">Professionnelle de la relation client avec plus de <span class="text-white font-bold border-b-2 border-white/20">10 ans d’expérience</span> en environnement SaaS B2B.</p>
                     </div>
-                    <div class="grid md:grid-cols-2 gap-y-8 gap-x-12 mb-20 text-neutral-200 text-center md:text-left">
-                        <div class="flex items-center gap-6 group justify-center md:justify-start transition-transform hover:translate-x-2"><div class="w-8 h-8 rounded-full bg-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue transition-colors"><i data-lucide="check" class="w-4 h-4 text-brand-blue group-hover:text-white"></i></div><span class="font-bold text-xl">Onboarding & Adoption</span></div>
-                        <div class="flex items-center gap-6 group justify-center md:justify-start transition-transform hover:translate-x-2"><div class="w-8 h-8 rounded-full bg-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue transition-colors"><i data-lucide="check" class="w-4 h-4 text-brand-blue group-hover:text-white"></i></div><span class="font-bold text-xl">Care & Ticketing</span></div>
-                        <div class="flex items-center gap-6 group justify-center md:justify-start transition-transform hover:translate-x-2"><div class="w-8 h-8 rounded-full bg-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue transition-colors"><i data-lucide="check" class="w-4 h-4 text-brand-blue group-hover:text-white"></i></div><span class="font-bold text-xl">Stratégie de Rétention</span></div>
-                        <div class="flex items-center gap-6 group justify-center md:justify-start transition-transform hover:translate-x-2"><div class="w-8 h-8 rounded-full bg-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue transition-colors"><i data-lucide="check" class="w-4 h-4 text-brand-blue group-hover:text-white"></i></div><span class="font-bold text-xl">Pilotage KPI : NPS, CSAT</span></div>
+                    <!-- Puces alignées à gauche sur mobile -->
+                    <div class="grid md:grid-cols-2 gap-y-8 gap-x-12 mb-20 text-neutral-200 text-left">
+                        <div class="flex items-center gap-6 group justify-start transition-transform hover:translate-x-2"><div class="w-8 h-8 rounded-full bg-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue transition-colors"><i data-lucide="check" class="w-4 h-4 text-brand-blue group-hover:text-white"></i></div><span class="font-bold text-xl">Onboarding & Adoption</span></div>
+                        <div class="flex items-center gap-6 group justify-start transition-transform hover:translate-x-2"><div class="w-8 h-8 rounded-full bg-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue transition-colors"><i data-lucide="check" class="w-4 h-4 text-brand-blue group-hover:text-white"></i></div><span class="font-bold text-xl">Care & Ticketing</span></div>
+                        <div class="flex items-center gap-6 group justify-start transition-transform hover:translate-x-2"><div class="w-8 h-8 rounded-full bg-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue transition-colors"><i data-lucide="check" class="w-4 h-4 text-brand-blue group-hover:text-white"></i></div><span class="font-bold text-xl">Stratégie de Rétention</span></div>
+                        <div class="flex items-center gap-6 group justify-start transition-transform hover:translate-x-2"><div class="w-8 h-8 rounded-full bg-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue transition-colors"><i data-lucide="check" class="w-4 h-4 text-brand-blue group-hover:text-white"></i></div><span class="font-bold text-xl">Pilotage KPI : NPS, CSAT</span></div>
                     </div>
                     <div class="pt-12 border-t border-white/10 flex flex-wrap gap-3 justify-center md:justify-start">
                         <div class="cert-bubble">CSM Kare School</div>
@@ -698,72 +700,69 @@
                 <h2 class="text-5xl md:text-8xl font-[900] tracking-tighter leading-none mb-6 text-neutral-900">3 leviers pour <span class="brand-gradient">sécuriser</span> <br class="hidden md:block"> votre croissance.</h2>
                 <p class="text-xl md:text-2xl text-neutral-500 font-medium max-w-4xl mx-auto mt-10">Pourquoi recruter dans l'urgence quand vous pouvez activer un renfort expert et immédiatement productif ?</p>
             </header>
-            <div class="grid lg:grid-cols-3 gap-10 md:gap-16 items-stretch">
-                <!-- ADOPTION PRODUIT -->
-                <div class="card-glass overflow-hidden rounded-4xl shadow-2xl reveal group hover-halo-emerald text-left">
-                    <div class="relative h-64 overflow-hidden shrink-0 text-left">
+            <div class="grid lg:grid-cols-3 gap-10 md:gap-16 items-stretch text-left">
+                <div class="card-glass overflow-hidden rounded-4xl shadow-2xl reveal group hover-halo-emerald">
+                    <div class="relative h-64 overflow-hidden shrink-0">
                         <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop" alt="Adoption Produit" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                         <div class="absolute inset-0 bg-gradient-to-t from-white/95 via-transparent to-transparent"></div>
                     </div>
-                    <div class="p-10 pt-6 flex-grow flex flex-col text-left">
+                    <div class="p-10 pt-6 flex-grow flex flex-col">
                         <div class="text-[11px] font-black uppercase tracking-widest text-emerald-600 mb-6 px-4 py-1.5 bg-emerald-50 rounded-full w-fit">Onboarding Client</div>
                         <h3 class="text-3xl font-[900] mb-3 uppercase tracking-tight text-neutral-900 leading-none">Adoption Produit</h3>
                         <p class="text-sm text-neutral-400 font-bold italic mb-8">L'autonomie client comme priorité.</p>
-                        <ul class="space-y-4 mb-10 text-left">
+                        <ul class="space-y-4 mb-10">
                             <li class="flex items-start gap-4"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Kick-off, formation et parcours personnalisés</p></li>
                             <li class="flex items-start gap-4"><i data-lucide="zap" class="w-5 h-5 text-emerald-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Activation rapide des premiers use cases</p></li>
                             <li class="flex items-start gap-4"><i data-lucide="trending-up" class="w-5 h-5 text-emerald-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Accélération du Time-to-Value (TTV)</p></li>
                             <li class="flex items-start gap-4"><i data-lucide="search" class="w-5 h-5 text-emerald-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Suivi des premiers signaux d’usage et blocages</p></li>
                         </ul>
                         <div class="bg-black p-8 rounded-3xl mt-auto shadow-xl">
-                            <h4 class="text-[10px] font-black uppercase text-emerald-400 mb-2 tracking-widest text-left">Impact</h4>
-                            <p class="text-sm text-white italic font-medium leading-relaxed text-left">"Utilisateurs actifs, engagés et autonomes dès les premiers jours."</p>
+                            <h4 class="text-[10px] font-black uppercase text-emerald-400 mb-2 tracking-widest">Impact</h4>
+                            <p class="text-sm text-white italic font-medium leading-relaxed">"Utilisateurs actifs, engagés et autonomes dès les premiers jours."</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- CUSTOMER CARE EXPERT -->
-                <div class="card-glass overflow-hidden rounded-4xl shadow-2xl reveal group hover-halo-blue text-left">
-                    <div class="relative h-64 overflow-hidden shrink-0 text-left">
+                <div class="card-glass overflow-hidden rounded-4xl shadow-2xl reveal group hover-halo-blue">
+                    <div class="relative h-64 overflow-hidden shrink-0">
                         <img src="https://images.unsplash.com/photo-1525130413817-d45c1d127c42?q=80&w=2070&auto=format&fit=crop" alt="Customer Care Expert" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                         <div class="absolute inset-0 bg-gradient-to-t from-white/95 via-transparent to-transparent"></div>
                     </div>
-                    <div class="p-10 pt-6 flex-grow flex flex-col text-left">
+                    <div class="p-10 pt-6 flex-grow flex flex-col">
                         <div class="text-[11px] font-black uppercase tracking-widest text-brand-blue mb-6 px-4 py-1.5 bg-blue-50 rounded-full w-fit">Satisfaction 5★</div>
                         <h3 class="text-3xl font-[900] mb-3 uppercase tracking-tight text-neutral-900 leading-none">Customer Care Expert</h3>
                         <p class="text-sm text-neutral-400 font-bold italic mb-8">Le support devient un levier de performance.</p>
-                        <ul class="space-y-4 mb-10 text-left">
+                        <ul class="space-y-4 mb-10">
                             <li class="flex items-start gap-4"><i data-lucide="layers" class="w-5 h-5 text-brand-blue shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Gestion fluide des tickets (priorisation, SLA, escalades)</p></li>
                             <li class="flex items-start gap-4"><i data-lucide="shield-alert" class="w-5 h-5 text-brand-blue shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Résolution rapide des incidents et analyse causes racines</p></li>
                             <li class="flex items-start gap-4"><i data-lucide="users" class="text-brand-blue w-5 h-5 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Coordination avec les équipes Produit et Tech</p></li>
                             <li class="flex items-start gap-4"><i data-lucide="refresh-cw" class="text-brand-blue w-5 h-5 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Mise en place de process pour réduire les frictions</p></li>
                         </ul>
-                        <div class="bg-brand-gradient p-8 rounded-3xl mt-auto shadow-xl text-left">
-                            <h4 class="text-[10px] font-black uppercase text-white/70 mb-2 tracking-widest text-left">Impact</h4>
-                            <p class="text-sm text-white italic font-medium leading-relaxed text-left">"Moins de tickets, moins de friction, plus de satisfaction et de rétention."</p>
+                        <div class="bg-brand-gradient p-8 rounded-3xl mt-auto shadow-xl">
+                            <h4 class="text-[10px] font-black uppercase text-white/70 mb-2 tracking-widest">Impact</h4>
+                            <p class="text-sm text-white italic font-medium leading-relaxed">"Moins de tickets, moins de friction, plus de satisfaction et de rétention."</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- CSM STRATÉGIQUE -->
-                <div class="card-glass overflow-hidden rounded-4xl shadow-2xl reveal group hover-halo-violet text-left">
-                    <div class="relative h-64 overflow-hidden shrink-0 text-left">
+                <div class="card-glass overflow-hidden rounded-4xl shadow-2xl reveal group hover-halo-violet">
+                    <div class="relative h-64 overflow-hidden shrink-0">
                         <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2026&auto=format&fit=crop" alt="CSM Stratégique" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                         <div class="absolute inset-0 bg-gradient-to-t from-white/95 via-transparent to-transparent"></div>
                     </div>
-                    <div class="p-10 pt-6 flex-grow flex flex-col text-left">
+                    <div class="p-10 pt-6 flex-grow flex flex-col">
                         <div class="text-[11px] font-black uppercase tracking-widest text-violet-600 mb-6 px-4 py-1.5 bg-violet-50 rounded-full w-fit">Rétention & Expansion</div>
                         <h3 class="text-3xl font-[900] mb-3 uppercase tracking-tight text-neutral-900 leading-none">CSM Stratégique</h3>
                         <p class="text-sm text-neutral-400 font-bold italic mb-8">Sécuriser et développer vos comptes clés.</p>
-                        <ul class="space-y-4 mb-10 text-left">
+                        <ul class="space-y-4 mb-10">
                             <li class="flex items-start gap-4"><i data-lucide="activity" class="w-5 h-5 text-violet-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Suivi des comptes sensibles et détection risque de churn</p></li>
                             <li class="flex items-start gap-4"><i data-lucide="bar-chart-3" class="w-5 h-5 text-violet-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Pilotage des KPIs (usage, NPS, Health Score)</p></li>
                             <li class="flex items-start gap-4"><i data-lucide="plus-circle" class="w-5 h-5 text-violet-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Identification opportunités expansion (upsell/cross-sell)</p></li>
                             <li class="flex items-start gap-4"><i data-lucide="git-merge" class="w-5 h-5 text-violet-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Alignement Sales et Produit pour maximiser la valeur</p></li>
                         </ul>
-                        <div class="bg-black p-8 rounded-3xl mt-auto shadow-xl text-left">
-                            <h4 class="text-[10px] font-black uppercase text-violet-400 mb-2 tracking-widest text-left">Impact</h4>
-                            <p class="text-sm text-white italic font-medium leading-relaxed text-left">"Churn réduit, MRR sécurisé et croissance des comptes existants."</p>
+                        <div class="bg-black p-8 rounded-3xl mt-auto shadow-xl">
+                            <h4 class="text-[10px] font-black uppercase text-violet-400 mb-2 tracking-widest">Impact</h4>
+                            <p class="text-sm text-white italic font-medium leading-relaxed">"Churn réduit, MRR sécurisé et croissance des comptes existants."</p>
                         </div>
                     </div>
                 </div>
@@ -774,7 +773,7 @@
     <!-- SECTION AUDIT -->
     <section id="diagnostic-encart" class="py-24 md:py-48 bg-white px-6 text-center md:text-left">
         <div class="container mx-auto max-w-[1600px]">
-            <div class="reveal rounded-[5rem] overflow-hidden relative shadow-3xl border border-neutral-50 text-center md:text-left">
+            <div class="reveal rounded-[5rem] overflow-hidden relative shadow-3xl border border-neutral-50">
                 <div class="bg-brand-dark p-12 md:p-20 text-white flex flex-col md:flex-row justify-between items-center gap-12 text-center md:text-left">
                     <div class="text-center md:text-left">
                         <div class="label-partie uppercase">AUDIT STRATÉGIQUE</div>
@@ -818,7 +817,7 @@
                     </div>
                     <div x-show="audit.step === 3" x-cloak class="flex-1 text-center md:text-left">
                         <h3 class="text-3xl md:text-5xl font-black mb-12 text-neutral-900 text-center">Finalisons votre analyse</h3>
-                        <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto text-left">
+                        <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
                             <input type="text" x-model="audit.data.firstName" placeholder="Prénom" class="input-field h-14">
                             <input type="text" x-model="audit.data.lastName" placeholder="Nom" class="input-field h-14">
                             <input type="text" x-model="audit.data.companyName" placeholder="Entreprise" class="input-field h-14 md:col-span-2">
@@ -827,7 +826,7 @@
                     </div>
 
                     <div class="mt-16 flex flex-col md:flex-row gap-6 max-w-4xl mx-auto w-full">
-                        <button @click="prevStep()" x-show="audit.step > 1" class="px-10 py-5 rounded-full border-2 text-xs font-black uppercase tracking-widest text-neutral-400 hover:bg-neutral-50 transition-all flex items-center justify-center gap-3 text-left"><i data-lucide="arrow-left" class="w-5 h-5"></i> Retour</button>
+                        <button @click="prevStep()" x-show="audit.step > 1" class="px-10 py-5 rounded-full border-2 text-xs font-black uppercase tracking-widest text-neutral-400 hover:bg-neutral-50 transition-all flex items-center justify-center gap-3"><i data-lucide="arrow-left" class="w-5 h-5"></i> Retour</button>
                         <div class="flex-1">
                             <button @click="nextStep()" x-show="audit.step < 3" class="w-full px-10 py-5 bg-black text-white rounded-full text-xs font-black uppercase tracking-widest shadow-2xl flex items-center justify-center gap-3">Suivant <i data-lucide="arrow-right" class="w-5 h-5"></i></button>
                             <button @click="submitAudit()" x-show="audit.step === 3" class="w-full px-10 py-5 bg-brand-gradient text-white rounded-full text-xs font-black uppercase tracking-widest shadow-2xl flex items-center justify-center gap-3" :disabled="audit.loading || !audit.data.email">
@@ -882,12 +881,12 @@
         </div>
     </section>
 
-    <!-- FOOTER MODIFIÉ -->
+    <!-- FOOTER -->
     <footer class="py-24 bg-white border-t border-neutral-100 px-6">
         <div class="container mx-auto max-w-[1920px]">
             <!-- TOP FOOTER -->
             <div class="grid grid-cols-1 lg:grid-cols-3 items-center gap-12 lg:gap-20 mb-20 text-center">
-                <!-- Navigation -->
+                <!-- Navigation (Ordre 2 sur mobile) -->
                 <div class="order-2 lg:order-1 space-y-6 lg:text-left">
                     <span class="text-xs font-black uppercase tracking-[0.3em] border-b-2 border-brand-blue pb-3 inline-block lg:block">Navigation</span>
                     <div class="flex flex-col gap-3 text-lg font-bold text-neutral-500">
@@ -897,14 +896,15 @@
                     </div>
                 </div>
 
-                <!-- LOGO SECTION (Centré sur PC) -->
+                <!-- LOGO SECTION (Ordre 1 sur mobile) -->
                 <div class="order-1 lg:order-2 flex justify-center">
                     <a href="#accueil">
+                        <!-- LOGO FOOTER AGRANDI -->
                         <img src="https://lh3.googleusercontent.com/d/1r0tG2koxXGDPjoCw9dmlCtk6UisQYxDE" alt="Logo" class="h-40 md:h-56 lg:h-72 opacity-90 hover:opacity-100 transition-all mx-auto">
                     </a>
                 </div>
                 
-                <!-- Contact -->
+                <!-- Contact (Ordre 3 sur mobile) -->
                 <div class="order-3 lg:order-3 space-y-6 lg:text-left">
                     <span class="text-xs font-black uppercase tracking-[0.3em] border-b-2 border-brand-blue pb-3 inline-block lg:block">Contact</span>
                     <div class="flex flex-col gap-3 text-lg font-bold text-neutral-500">
@@ -918,7 +918,7 @@
 
             <!-- BOTTOM LINE : MENTION UNIQUE CENTRÉE -->
             <div class="pt-12 border-t border-neutral-100 text-center">
-                <p class="text-[11px] font-black uppercase tracking-widest text-neutral-400 leading-relaxed mx-auto max-w-4xl">
+                <p class="text-[11px] font-black uppercase tracking-widest text-neutral-400 leading-relaxed mx-auto max-w-5xl px-4">
                     © 2026 • Care & Success • Renfort opérationnel Freelance • Expertise SaaS B2B • RH Tech / Paie
                 </p>
             </div>
