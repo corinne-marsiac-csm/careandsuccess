@@ -8,7 +8,7 @@
     <!-- Polices Premium -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Quicksand:wght@700&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -19,7 +19,7 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- jsPDF pour la génération du compte rendu -->
+    <!-- jsPDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script>
@@ -28,6 +28,7 @@
                 extend: {
                     fontFamily: {
                         sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        brand: ['Quicksand', 'sans-serif'],
                     },
                     colors: {
                         brand: {
@@ -158,9 +159,6 @@
             color: #cbd5e1;
             transition: all 0.3s ease;
         }
-        .method-letter-btn:hover .letter, .method-letter-btn.active .letter {
-            color: #2563eb;
-        }
 
         .display-screen {
             background: white;
@@ -191,7 +189,6 @@
             box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
         }
 
-        /* STYLE DES ÉTIQUETTES UNIFORMISÉ : TEXTE BLANC SUR FOND BLEU */
         .label-partie {
             display: inline-block;
             background-color: #2563eb;
@@ -207,7 +204,6 @@
             margin-bottom: 2rem;
         }
 
-        /* STYLE DES ENCARTS SITUATIONS (MATCHING image_2ded2c.png) */
         .situation-card {
             background-color: #1e293b;
             padding: 2.5rem;
@@ -278,116 +274,166 @@
                     this.$nextTick(() => { document.getElementById('diagnostic-encart').scrollIntoView({behavior:'smooth'}); lucide.createIcons(); });
                 },
                 async downloadPDF() {
+                    this.audit.loading = true;
                     const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF();
-                    const blueColor = [37, 99, 235];
-                    const darkColor = [15, 23, 42];
-                    const greyColor = [100, 116, 139];
+                    const colibriImgUrl = "https://lh3.googleusercontent.com/d/1ZKwRL-c7yJCE-H8-ZbH1jt_RStqn-Svq";
 
-                    // --- Header Décoratif ---
-                    doc.setFillColor(37, 99, 235);
-                    doc.rect(0, 0, 210, 45, 'F');
-                    
-                    // Texte Header
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(28);
-                    doc.setTextColor(255, 255, 255);
-                    doc.text('CARE & SUCCESS', 20, 25);
-                    
-                    doc.setFontSize(10);
-                    doc.setFont('helvetica', 'normal');
-                    doc.text('RENFORT OPÉRATIONNEL EXPERT | CUSTOMER SUCCESS & CARE', 20, 32);
+                    const loadImage = (url) => {
+                        return new Promise((resolve, reject) => {
+                            const img = new Image();
+                            img.crossOrigin = "Anonymous";
+                            img.src = url;
+                            img.onload = () => resolve(img);
+                            img.onerror = (e) => reject(e);
+                        });
+                    };
 
-                    // --- Corps du Document ---
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(18);
-                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-                    doc.text('DIAGNOSTIC STRATÉGIQUE', 20, 60);
-                    
-                    doc.setDrawColor(blueColor[0], blueColor[1], blueColor[2]);
-                    doc.setLineWidth(1);
-                    doc.line(20, 65, 50, 65);
+                    // Fonction pour générer le titre avec dégradé via un canvas
+                    const createGradientTitleCanvas = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 1000;
+                        canvas.height = 200;
+                        const ctx = canvas.getContext('2d');
+                        
+                        // Font Quicksand bold
+                        ctx.font = "bold 80px Quicksand, sans-serif";
+                        
+                        // Dégradé
+                        const gradient = ctx.createLinearGradient(0, 0, 600, 0);
+                        gradient.addColorStop(0, '#2563eb'); // Bleu
+                        gradient.addColorStop(1, '#a855f7'); // Violet
+                        
+                        ctx.fillStyle = gradient;
+                        ctx.fillText("Care & Success", 0, 100);
+                        return canvas.toDataURL('image/png');
+                    };
 
-                    // Date
-                    doc.setFontSize(10);
-                    doc.setFont('helvetica', 'normal');
-                    doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]);
-                    doc.text('Émis le : ' + new Date().toLocaleDateString('fr-FR'), 155, 60);
+                    try {
+                        const loadedColibri = await loadImage(colibriImgUrl);
+                        const gradientTitleData = createGradientTitleCanvas();
 
-                    // 1. Identification Client
-                    doc.setFillColor(241, 245, 249);
-                    doc.rect(20, 75, 170, 42, 'F');
-                    
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(11);
-                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                    doc.text('1. IDENTIFICATION CLIENT', 25, 85);
-                    
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(10);
-                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-                    doc.text('Entreprise : ' + (this.audit.data.companyName || 'Non renseigné'), 25, 93);
-                    doc.text('Contact : ' + (this.audit.data.firstName || '') + ' ' + (this.audit.data.lastName || ''), 25, 100);
-                    doc.text('Email : ' + (this.audit.data.email || 'Non renseigné'), 25, 107);
+                        const doc = new jsPDF();
+                        const blueColor = [37, 99, 235];
+                        const brandDarkColor = [15, 23, 42]; 
+                        const darkColor = [15, 23, 42];
+                        const greyColor = [100, 116, 139];
 
-                    // 2. Enjeux
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(11);
-                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                    doc.text('2. ENJEUX OPÉRATIONNELS IDENTIFIÉS', 20, 135);
-                    
-                    const challengeLabel = this.audit.auditChallenges.find(c => c.id === this.audit.data.challenge)?.l || 'Non défini';
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(10);
-                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-                    doc.text('Défi prioritaire : ' + challengeLabel, 20, 145);
-                    
-                    const kpisLabel = this.audit.data.kpis.length > 0 ? this.audit.data.kpis.join(', ').toUpperCase() : 'Non renseigné';
-                    doc.text('Indicateurs de performance suivis : ' + kpisLabel, 20, 152);
+                        // --- Header Premium Noir avec Colibri ---
+                        doc.setFillColor(brandDarkColor[0], brandDarkColor[1], brandDarkColor[2]);
+                        doc.rect(0, 0, 210, 55, 'F');
 
-                    // 3. Analyse & Recommandation
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(11);
-                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                    doc.text('3. ANALYSE ET PRÉCONISATION', 20, 175);
-                    
-                    doc.setFont('helvetica', 'italic');
-                    doc.setFontSize(10.5);
-                    doc.setTextColor(60, 60, 60);
-                    
-                    let analysisText = "";
-                    if(this.audit.data.challenge === 'churn_signals') {
-                        analysisText = "L'analyse de vos signaux de désengagement suggère un besoin critique de proactivité. Il est impératif de mettre en place une stratégie CSM orientée expansion pour sécuriser votre MRR et transformer vos clients passifs en ambassadeurs.";
-                    } else if(['growth', 'low_adoption'].includes(this.audit.data.challenge)) {
-                        analysisText = "Votre accélération nécessite une structuration immédiate de vos parcours d'onboarding. L'objectif est de réduire le 'Time-to-Value' pour garantir une adoption produit optimale dès les premiers jours.";
-                    } else {
-                        analysisText = "La situation actuelle nécessite un renfort opérationnel ciblé pour absorber les pics de charge (ticketing, formation, support) sans complexifier votre organisation, tout en stabilisant vos processus internes.";
+                        // Image Colibri
+                        doc.addImage(loadedColibri, 'PNG', 130, -5, 80, 65);
+
+                        // Titre Stylisé (Quicksand + Gradient) via l'image générée
+                        doc.addImage(gradientTitleData, 'PNG', 20, 15, 100, 20);
+                        
+                        // Slogan sous le titre
+                        doc.setFontSize(10);
+                        doc.setFont('helvetica', 'normal');
+                        doc.setTextColor(255, 255, 255);
+                        doc.text('RENFORT OPÉRATIONNEL EXPERT | LE PARTENAIRE DE VOTRE SUCCÈS', 20, 38);
+
+                        // --- Corps du Document ---
+                        const startY = 75;
+
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(18);
+                        doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                        doc.text('DIAGNOSTIC STRATÉGIQUE', 20, startY);
+                        
+                        doc.setDrawColor(blueColor[0], blueColor[1], blueColor[2]);
+                        doc.setLineWidth(1);
+                        doc.line(20, startY + 5, 50, startY + 5);
+
+                        doc.setFontSize(10);
+                        doc.setFont('helvetica', 'normal');
+                        doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]);
+                        doc.text('Émis le : ' + new Date().toLocaleDateString('fr-FR'), 155, startY);
+
+                        // Identification Client
+                        doc.setFillColor(241, 245, 249);
+                        doc.rect(20, startY + 15, 170, 42, 'F');
+                        
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(11);
+                        doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                        doc.text('1. IDENTIFICATION CLIENT', 25, startY + 25);
+                        
+                        doc.setFont('helvetica', 'normal');
+                        doc.setFontSize(10);
+                        doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                        doc.text('Entreprise : ' + (this.audit.data.companyName || 'Non renseigné'), 25, startY + 33);
+                        doc.text('Contact : ' + (this.audit.data.firstName || '') + ' ' + (this.audit.data.lastName || ''), 25, startY + 40);
+                        doc.text('Email : ' + (this.audit.data.email || 'Non renseigné'), 25, startY + 47);
+
+                        // Enjeux
+                        const section2Y = startY + 75;
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(11);
+                        doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                        doc.text('2. ENJEUX OPÉRATIONNELS IDENTIFIÉS', 20, section2Y);
+                        
+                        const challengeLabel = this.audit.auditChallenges.find(c => c.id === this.audit.data.challenge)?.l || 'Non défini';
+                        doc.setFont('helvetica', 'normal');
+                        doc.setFontSize(10);
+                        doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                        doc.text('Défi prioritaire : ' + challengeLabel, 20, section2Y + 10);
+                        
+                        const kpisLabel = this.audit.data.kpis.length > 0 ? this.audit.data.kpis.join(', ').toUpperCase() : 'Non renseigné';
+                        doc.text('Indicateurs de performance suivis : ' + kpisLabel, 20, section2Y + 17);
+
+                        // Analyse
+                        const section3Y = section2Y + 40;
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(11);
+                        doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                        doc.text('3. ANALYSE ET PRÉCONISATION', 20, section3Y);
+                        
+                        doc.setFont('helvetica', 'italic');
+                        doc.setFontSize(10.5);
+                        doc.setTextColor(60, 60, 60);
+                        
+                        let analysisText = "";
+                        if(this.audit.data.challenge === 'churn_signals') {
+                            analysisText = "L'analyse de vos signaux de désengagement suggère un besoin critique de proactivité. Il est impératif de mettre en place une stratégie CSM orientée expansion pour sécuriser votre MRR et transformer vos clients passifs en ambassadeurs.";
+                        } else if(['growth', 'low_adoption'].includes(this.audit.data.challenge)) {
+                            analysisText = "Votre phase d'accélération nécessite une structuration immédiate de vos parcours d'onboarding. L'objectif est de réduire le 'Time-to-Value' pour garantir une adoption produit optimale dès les premiers jours.";
+                        } else {
+                            analysisText = "La situation actuelle nécessite un renfort opérationnel ciblé pour absorber les pics de charge (ticketing, formation, support) sans complexifier votre organisation, tout en stabilisant vos processus internes.";
+                        }
+                        
+                        const splitAnalysis = doc.splitTextToSize(analysisText, 170);
+                        doc.text(splitAnalysis, 20, section3Y + 10);
+
+                        // Solution
+                        const solutionY = section3Y + 40;
+                        doc.setDrawColor(37, 99, 235);
+                        doc.setLineWidth(0.8);
+                        doc.rect(20, solutionY, 170, 25);
+                        
+                        const offerName = this.audit.recommendedOffer === 1 ? 'ADOPTION PRODUIT' : (this.audit.recommendedOffer === 2 ? 'CUSTOMER CARE' : 'STRATÉGIE RÉTENTION');
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(14);
+                        doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                        doc.text('SOLUTION PRÉCONISÉE : ' + offerName, 30, solutionY + 16);
+
+                        // Pied de page
+                        doc.setFont('helvetica', 'normal');
+                        doc.setFontSize(8);
+                        doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]);
+                        const companyName = this.audit.data.companyName || 'Votre Entreprise';
+                        const footerText = 'Care & Success par Corinne Marsiac - ' + companyName;
+                        doc.text(footerText, 105, 290, null, null, 'center');
+                        
+                        doc.save('Diagnostic_CareSuccess_' + companyName.replace(/\s+/g, '_') + '.pdf');
+
+                    } catch (error) {
+                        console.error("Erreur lors de la génération du PDF:", error);
+                        alert("Une erreur est survenue lors de la création du PDF. Veuillez réessayer.");
+                    } finally {
+                        this.audit.loading = false;
                     }
-                    
-                    const splitAnalysis = doc.splitTextToSize(analysisText, 170);
-                    doc.text(splitAnalysis, 20, 185);
-
-                    // Encadré Solution Préconisée
-                    doc.setDrawColor(37, 99, 235);
-                    doc.setLineWidth(0.8);
-                    doc.rect(20, 215, 170, 25);
-                    
-                    const offerName = this.audit.recommendedOffer === 1 ? 'ADOPTION PRODUIT' : (this.audit.recommendedOffer === 2 ? 'CUSTOMER CARE' : 'STRATÉGIE RÉTENTION');
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(14);
-                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                    doc.text('SOLUTION PRÉCONISÉE : ' + offerName, 30, 231);
-
-                    // --- Footer ---
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(8);
-                    doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]);
-                    const companyName = this.audit.data.companyName || 'Votre Entreprise';
-                    const footerText = 'Care & Success par Corinne Marsiac - ' + companyName;
-                    doc.text(footerText, 105, 285, null, null, 'center');
-                    
-                    const fileName = 'Diagnostic_CareSuccess_' + companyName.replace(/\s+/g, '_') + '.pdf';
-                    doc.save(fileName);
                 }
             };
         }
@@ -406,7 +452,6 @@
         <div class="container mx-auto px-6 lg:px-12 flex items-center justify-between max-w-[1920px]">
             <div class="flex items-center">
                 <a href="#accueil">
-                    <!-- LOGO HEADER AGRANDI SUR MOBILE QUAND SCROLLED -->
                     <img src="https://lh3.googleusercontent.com/d/1r0tG2koxXGDPjoCw9dmlCtk6UisQYxDE" alt="Care & Success" 
                          class="transition-all duration-500 ease-in-out object-contain" 
                          :class="scrolled ? 'h-32 md:h-20 lg:h-24' : 'h-32 md:h-48 lg:h-[16rem]'">
@@ -455,8 +500,7 @@
                     <span class="block text-neutral-900">Votre Renfort</span>
                     <span class="block text-neutral-900">Opérationnel</span>
                     <span class="brand-gradient block relative w-fit whitespace-nowrap mx-auto">Care & Success.
-                        <!-- POSITION DU COLIBRI DÉCALÉE DAVANTAGE SUR LA DROITE SUR MOBILE -->
-                        <div class="absolute bottom-[-25%] -right-12 sm:-right-20 md:bottom-[10%] md:-right-[250px] lg:-right-[350px] w-[45%] md:w-[45%] lg:w-[50%] h-auto pointer-events-none transition-transform duration-150 ease-out z-0" :style="'transform: translateY(' + (scrollPos * -0.3) + 'px)'">
+                        <div class="absolute bottom-[-25%] -right-8 md:bottom-[10%] md:-right-[250px] lg:-right-[350px] w-[45%] md:w-[45%] lg:w-[50%] h-auto pointer-events-none transition-transform duration-150 ease-out z-0" :style="'transform: translateY(' + (scrollPos * -0.3) + 'px)'">
                             <div class="w-full h-full animate-arrival-hero">
                                 <div class="animate-float">
                                     <img src="https://lh3.googleusercontent.com/d/1ZKwRL-c7yJCE-H8-ZbH1jt_RStqn-Svq" alt="Colibri Hero" class="w-full h-auto colibri-interaction">
@@ -707,7 +751,7 @@
     <!-- SECTION AUDIT -->
     <section id="diagnostic-encart" class="py-24 md:py-48 bg-white px-6 text-center md:text-left">
         <div class="container mx-auto max-w-[1600px]">
-            <div class="reveal rounded-[5rem] overflow-hidden relative shadow-3xl border border-neutral-50 text-center md:text-left">
+            <div class="reveal rounded-[5rem] overflow-hidden relative shadow-3xl border border-neutral-50">
                 <div class="bg-brand-dark p-12 md:p-20 text-white flex flex-col md:flex-row justify-between items-center gap-12 text-center md:text-left">
                     <div class="text-center md:text-left">
                         <div class="label-partie uppercase">AUDIT STRATÉGIQUE</div>
@@ -751,7 +795,7 @@
                     </div>
                     <div x-show="audit.step === 3" x-cloak class="flex-1 text-center md:text-left">
                         <h3 class="text-3xl md:text-5xl font-black mb-12 text-neutral-900 text-center">Finalisons votre analyse</h3>
-                        <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                        <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto text-left">
                             <input type="text" x-model="audit.data.firstName" placeholder="Prénom" class="input-field h-14">
                             <input type="text" x-model="audit.data.lastName" placeholder="Nom" class="input-field h-14">
                             <input type="text" x-model="audit.data.companyName" placeholder="Entreprise" class="input-field h-14 md:col-span-2">
@@ -820,7 +864,6 @@
         <div class="container mx-auto max-w-[1920px]">
             <!-- TOP FOOTER -->
             <div class="grid grid-cols-1 lg:grid-cols-3 items-center gap-12 lg:gap-20 mb-20 text-center">
-                <!-- Navigation -->
                 <div class="order-2 lg:order-1 space-y-6 lg:text-left">
                     <span class="text-xs font-black uppercase tracking-[0.3em] border-b-2 border-brand-blue pb-3 inline-block lg:block">Navigation</span>
                     <div class="flex flex-col gap-3 text-lg font-bold text-neutral-500">
@@ -830,14 +873,12 @@
                     </div>
                 </div>
 
-                <!-- LOGO SECTION -->
                 <div class="order-1 lg:order-2 flex justify-center">
                     <a href="#accueil">
                         <img src="https://lh3.googleusercontent.com/d/1r0tG2koxXGDPjoCw9dmlCtk6UisQYxDE" alt="Logo" class="h-40 md:h-56 lg:h-72 opacity-90 hover:opacity-100 transition-all mx-auto">
                     </a>
                 </div>
                 
-                <!-- Contact -->
                 <div class="order-3 lg:order-3 space-y-6 lg:text-left">
                     <span class="text-xs font-black uppercase tracking-[0.3em] border-b-2 border-brand-blue pb-3 inline-block lg:block">Contact</span>
                     <div class="flex flex-col gap-3 text-lg font-bold text-neutral-500">
@@ -849,7 +890,6 @@
                 </div>
             </div>
 
-            <!-- BOTTOM LINE -->
             <div class="pt-12 border-t border-neutral-100 text-center">
                 <p class="text-[11px] font-black uppercase tracking-widest text-neutral-400 leading-relaxed mx-auto max-w-5xl px-4 text-center">
                     © 2026 • Care & Success • Renfort opérationnel Freelance • Expertise SaaS B2B • RH Tech / Paie
@@ -911,123 +951,143 @@
                     this.$nextTick(() => { document.getElementById('diagnostic-encart').scrollIntoView({behavior:'smooth'}); lucide.createIcons(); });
                 },
                 async downloadPDF() {
+                    this.audit.loading = true;
                     const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF();
-                    const blueColor = [37, 99, 235];
-                    const darkColor = [15, 23, 42];
-                    const greyColor = [100, 116, 139];
+                    const colibriImgUrl = "https://lh3.googleusercontent.com/d/1ZKwRL-c7yJCE-H8-ZbH1jt_RStqn-Svq";
 
-                    // --- Header Décoratif ---
-                    doc.setFillColor(37, 99, 235);
-                    doc.rect(0, 0, 210, 45, 'F');
-                    
-                    // Texte Header
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(28);
-                    doc.setTextColor(255, 255, 255);
-                    doc.text('CARE & SUCCESS', 20, 25);
-                    
-                    doc.setFontSize(10);
-                    doc.setFont('helvetica', 'normal');
-                    doc.text('RENFORT OPÉRATIONNEL EXPERT | CUSTOMER SUCCESS & CARE', 20, 32);
+                    const loadImage = (url) => {
+                        return new Promise((resolve, reject) => {
+                            const img = new Image();
+                            img.crossOrigin = "Anonymous";
+                            img.src = url;
+                            img.onload = () => resolve(img);
+                            img.onerror = (e) => reject(e);
+                        });
+                    };
 
-                    // --- Corps du Document ---
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(18);
-                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-                    doc.text('DIAGNOSTIC STRATÉGIQUE', 20, 60);
-                    
-                    doc.setDrawColor(blueColor[0], blueColor[1], blueColor[2]);
-                    doc.setLineWidth(1);
-                    doc.line(20, 65, 50, 65);
+                    const createGradientTitleCanvas = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 1000;
+                        canvas.height = 200;
+                        const ctx = canvas.getContext('2d');
+                        ctx.font = "bold 80px Quicksand, sans-serif";
+                        const gradient = ctx.createLinearGradient(0, 0, 600, 0);
+                        gradient.addColorStop(0, '#2563eb'); 
+                        gradient.addColorStop(1, '#a855f7'); 
+                        ctx.fillStyle = gradient;
+                        ctx.fillText("Care & Success", 0, 100);
+                        return canvas.toDataURL('image/png');
+                    };
 
-                    // Date
-                    doc.setFontSize(10);
-                    doc.setFont('helvetica', 'normal');
-                    doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]);
-                    doc.text('Émis le : ' + new Date().toLocaleDateString('fr-FR'), 155, 60);
+                    try {
+                        const loadedColibri = await loadImage(colibriImgUrl);
+                        const gradientTitleData = createGradientTitleCanvas();
 
-                    // 1. Identification Client
-                    doc.setFillColor(241, 245, 249);
-                    doc.rect(20, 75, 170, 42, 'F');
-                    
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(11);
-                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                    doc.text('1. IDENTIFICATION CLIENT', 25, 85);
-                    
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(10);
-                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-                    doc.text('Entreprise : ' + (this.audit.data.companyName || 'Non renseigné'), 25, 93);
-                    doc.text('Contact : ' + (this.audit.data.firstName || '') + ' ' + (this.audit.data.lastName || ''), 25, 100);
-                    doc.text('Email : ' + (this.audit.data.email || 'Non renseigné'), 25, 107);
+                        const doc = new jsPDF();
+                        const blueColor = [37, 99, 235];
+                        const brandDarkColor = [15, 23, 42]; 
+                        const darkColor = [15, 23, 42];
+                        const greyColor = [100, 116, 139];
 
-                    // 2. Enjeux
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(11);
-                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                    doc.text('2. ENJEUX OPÉRATIONNELS IDENTIFIÉS', 20, 135);
-                    
-                    const challengeLabel = this.audit.auditChallenges.find(c => c.id === this.audit.data.challenge)?.l || 'Non défini';
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(10);
-                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-                    doc.text('Défi prioritaire : ' + challengeLabel, 20, 145);
-                    
-                    const kpisLabel = this.audit.data.kpis.length > 0 ? this.audit.data.kpis.join(', ').toUpperCase() : 'Non renseigné';
-                    doc.text('Indicateurs de performance suivis : ' + kpisLabel, 20, 152);
+                        doc.setFillColor(brandDarkColor[0], brandDarkColor[1], brandDarkColor[2]);
+                        doc.rect(0, 0, 210, 55, 'F');
+                        doc.addImage(loadedColibri, 'PNG', 130, -5, 80, 65);
+                        doc.addImage(gradientTitleData, 'PNG', 20, 15, 100, 20);
+                        
+                        doc.setFontSize(10);
+                        doc.setFont('helvetica', 'normal');
+                        doc.setTextColor(255, 255, 255);
+                        doc.text('RENFORT OPÉRATIONNEL EXPERT | LE PARTENAIRE DE VOTRE SUCCÈS', 20, 38);
 
-                    // 3. Analyse & Recommandation
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(11);
-                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                    doc.text('3. ANALYSE ET PRÉCONISATION', 20, 175);
-                    
-                    doc.setFont('helvetica', 'italic');
-                    doc.setFontSize(10.5);
-                    doc.setTextColor(60, 60, 60);
-                    
-                    let analysisText = "";
-                    if(this.audit.data.challenge === 'churn_signals') {
-                        analysisText = "L'analyse de vos signaux de désengagement suggère un besoin critique de proactivité. Il est impératif de mettre en place une stratégie CSM orientée expansion pour sécuriser votre MRR et transformer vos clients passifs en ambassadeurs.";
-                    } else if(['growth', 'low_adoption'].includes(this.audit.data.challenge)) {
-                        analysisText = "Votre accélération nécessite une structuration immédiate de vos parcours d'onboarding. L'objectif est de réduire le 'Time-to-Value' pour garantir une adoption produit optimale dès les premiers jours.";
-                    } else {
-                        analysisText = "La situation actuelle nécessite un renfort opérationnel ciblé pour absorber les pics de charge (ticketing, formation, support) sans complexifier votre organisation, tout en stabilisant vos processus internes.";
+                        const startY = 75;
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(18);
+                        doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                        doc.text('DIAGNOSTIC STRATÉGIQUE', 20, startY);
+                        doc.setDrawColor(blueColor[0], blueColor[1], blueColor[2]);
+                        doc.setLineWidth(1);
+                        doc.line(20, startY + 5, 50, startY + 5);
+
+                        doc.setFontSize(10);
+                        doc.setFont('helvetica', 'normal');
+                        doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]);
+                        doc.text('Émis le : ' + new Date().toLocaleDateString('fr-FR'), 155, startY);
+
+                        doc.setFillColor(241, 245, 249);
+                        doc.rect(20, startY + 15, 170, 42, 'F');
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(11);
+                        doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                        doc.text('1. IDENTIFICATION CLIENT', 25, startY + 25);
+                        doc.setFont('helvetica', 'normal');
+                        doc.setFontSize(10);
+                        doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                        doc.text('Entreprise : ' + (this.audit.data.companyName || 'Non renseigné'), 25, startY + 33);
+                        doc.text('Contact : ' + (this.audit.data.firstName || '') + ' ' + (this.audit.data.lastName || ''), 25, startY + 40);
+                        doc.text('Email : ' + (this.audit.data.email || 'Non renseigné'), 25, startY + 47);
+
+                        const section2Y = startY + 75;
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(11);
+                        doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                        doc.text('2. ENJEUX OPÉRATIONNELS IDENTIFIÉS', 20, section2Y);
+                        const challengeLabel = this.audit.auditChallenges.find(c => c.id === this.audit.data.challenge)?.l || 'Non défini';
+                        doc.setFont('helvetica', 'normal');
+                        doc.setFontSize(10);
+                        doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                        doc.text('Défi prioritaire : ' + challengeLabel, 20, section2Y + 10);
+                        const kpisLabel = this.audit.data.kpis.length > 0 ? this.audit.data.kpis.join(', ').toUpperCase() : 'Non renseigné';
+                        doc.text('Indicateurs de performance suivis : ' + kpisLabel, 20, section2Y + 17);
+
+                        const section3Y = section2Y + 40;
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(11);
+                        doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                        doc.text('3. ANALYSE ET PRÉCONISATION', 20, section3Y);
+                        doc.setFont('helvetica', 'italic');
+                        doc.setFontSize(10.5);
+                        doc.setTextColor(60, 60, 60);
+                        let analysisText = "";
+                        if(this.audit.data.challenge === 'churn_signals') {
+                            analysisText = "L'analyse de vos signaux de désengagement suggère un besoin critique de proactivité. Il est impératif de mettre en place une stratégie CSM orientée expansion pour sécuriser votre MRR et transformer vos clients passifs en ambassadeurs.";
+                        } else if(['growth', 'low_adoption'].includes(this.audit.data.challenge)) {
+                            analysisText = "Votre phase d'accélération nécessite une structuration immédiate de vos parcours d'onboarding. L'objectif est de réduire le 'Time-to-Value' pour garantir une adoption produit optimale dès les premiers jours.";
+                        } else {
+                            analysisText = "La situation actuelle nécessite un renfort opérationnel ciblé pour absorber les pics de charge (ticketing, formation, support) sans complexifier votre organisation, tout en stabilisant vos processus internes.";
+                        }
+                        const splitAnalysis = doc.splitTextToSize(analysisText, 170);
+                        doc.text(splitAnalysis, 20, section3Y + 10);
+
+                        const solutionY = section3Y + 40;
+                        doc.setDrawColor(37, 99, 235);
+                        doc.setLineWidth(0.8);
+                        doc.rect(20, solutionY, 170, 25);
+                        const offerName = this.audit.recommendedOffer === 1 ? 'ADOPTION PRODUIT' : (this.audit.recommendedOffer === 2 ? 'CUSTOMER CARE' : 'STRATÉGIE RÉTENTION');
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(14);
+                        doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                        doc.text('SOLUTION PRÉCONISÉE : ' + offerName, 30, solutionY + 16);
+
+                        doc.setFont('helvetica', 'normal');
+                        doc.setFontSize(8);
+                        doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]);
+                        const companyName = this.audit.data.companyName || 'Votre Entreprise';
+                        const footerText = 'Care & Success par Corinne Marsiac - ' + companyName;
+                        doc.text(footerText, 105, 290, null, null, 'center');
+                        doc.save('Diagnostic_CareSuccess_' + companyName.replace(/\s+/g, '_') + '.pdf');
+
+                    } catch (error) {
+                        console.error("Erreur lors de la génération du PDF:", error);
+                        alert("Une erreur est survenue lors de la création du PDF. Veuillez réessayer.");
+                    } finally {
+                        this.audit.loading = false;
                     }
-                    
-                    const splitAnalysis = doc.splitTextToSize(analysisText, 170);
-                    doc.text(splitAnalysis, 20, 185);
-
-                    // Encadré Solution Préconisée
-                    doc.setDrawColor(37, 99, 235);
-                    doc.setLineWidth(0.8);
-                    doc.rect(20, 215, 170, 25);
-                    
-                    const offerName = this.audit.recommendedOffer === 1 ? 'ADOPTION PRODUIT' : (this.audit.recommendedOffer === 2 ? 'CUSTOMER CARE' : 'STRATÉGIE RÉTENTION');
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(14);
-                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                    doc.text('SOLUTION PRÉCONISÉE : ' + offerName, 30, 231);
-
-                    // --- Footer ---
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(8);
-                    doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]);
-                    const companyName = this.audit.data.companyName || 'Votre Entreprise';
-                    const footerText = 'Care & Success par Corinne Marsiac - ' + companyName;
-                    doc.text(footerText, 105, 285, null, null, 'center');
-                    
-                    const fileName = 'Diagnostic_CareSuccess_' + companyName.replace(/\s+/g, '_') + '.pdf';
-                    doc.save(fileName);
                 }
             };
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
-            
             const scrollProgress = document.getElementById('scroll-progress');
             window.addEventListener('scroll', () => {
                 const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
@@ -1035,16 +1095,12 @@
                 const scrolled = (winScroll / height) * 100;
                 if (scrollProgress) scrollProgress.style.width = scrolled + "%";
             });
-
             const observerOptions = { threshold: 0.15, rootMargin: '0px 0px -50px 0px' };
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => { 
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('reveal-visible');
-                    }
+                    if (entry.isIntersecting) entry.target.classList.add('reveal-visible');
                 });
             }, observerOptions);
-
             document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
         });
     </script>
