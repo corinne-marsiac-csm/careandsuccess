@@ -283,78 +283,111 @@
                     const blueColor = [37, 99, 235];
                     const darkColor = [15, 23, 42];
                     const greyColor = [100, 116, 139];
+
+                    // --- Header Décoratif ---
+                    doc.setFillColor(37, 99, 235);
+                    doc.rect(0, 0, 210, 45, 'F');
+                    
+                    // Texte Header
                     doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(22);
-                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                    doc.text('DIAGNOSTIC STRATÉGIQUE', 20, 25);
-                    doc.setFontSize(14);
-                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-                    doc.text('Care & Success - Renfort Opérationnel Expert', 20, 35);
+                    doc.setFontSize(28);
+                    doc.setTextColor(255, 255, 255);
+                    doc.text('CARE & SUCCESS', 20, 25);
+                    
                     doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text('RENFORT OPÉRATIONNEL EXPERT | CUSTOMER SUCCESS & CARE', 20, 32);
+
+                    // --- Corps du Document ---
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(18);
+                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                    doc.text('DIAGNOSTIC STRATÉGIQUE', 20, 60);
+                    
+                    doc.setDrawColor(blueColor[0], blueColor[1], blueColor[2]);
+                    doc.setLineWidth(1);
+                    doc.line(20, 65, 50, 65);
+
+                    // Date
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
                     doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]);
-                    doc.text('Date : ' + new Date().toLocaleDateString('fr-FR'), 20, 42);
-                    doc.setDrawColor(226, 232, 240);
-                    doc.line(20, 48, 190, 48);
-                    doc.setFontSize(14);
-                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                    doc.text('1. Identification Client', 20, 58);
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(11);
-                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-                    doc.text('Entreprise : ' + (this.audit.data.companyName || 'Information manquante'), 20, 68);
-                    doc.text('Contact : ' + (this.audit.data.firstName || 'Information manquante') + ' ' + (this.audit.data.lastName || ''), 20, 75);
-                    doc.text('Email : ' + (this.audit.data.email || 'Non renseigné') + ' | Tel : ' + (this.audit.data.phone || 'Information manquante'), 20, 82);
-                    doc.text('Web : ' + (this.audit.data.website || 'Information manquante') + ' | LinkedIn : ' + (this.audit.data.linkedin || 'Information manquante'), 20, 89);
+                    doc.text('Émis le : ' + new Date().toLocaleDateString('fr-FR'), 155, 60);
+
+                    // 1. Identification Client
+                    doc.setFillColor(241, 245, 249);
+                    doc.rect(20, 75, 170, 42, 'F');
+                    
                     doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(14);
+                    doc.setFontSize(11);
                     doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                    doc.text('2. Enjeu & Performance', 20, 104);
+                    doc.text('1. IDENTIFICATION CLIENT', 25, 85);
+                    
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(10);
+                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                    doc.text('Entreprise : ' + (this.audit.data.companyName || 'Non renseigné'), 25, 93);
+                    doc.text('Contact : ' + (this.audit.data.firstName || '') + ' ' + (this.audit.data.lastName || ''), 25, 100);
+                    doc.text('Email : ' + (this.audit.data.email || 'Non renseigné'), 25, 107);
+
+                    // 2. Enjeux
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(11);
+                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                    doc.text('2. ENJEUX OPÉRATIONNELS IDENTIFIÉS', 20, 135);
+                    
                     const challengeLabel = this.audit.auditChallenges.find(c => c.id === this.audit.data.challenge)?.l || 'Non défini';
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(10);
+                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                    doc.text('Défi prioritaire : ' + challengeLabel, 20, 145);
+                    
                     const kpisLabel = this.audit.data.kpis.length > 0 ? this.audit.data.kpis.join(', ').toUpperCase() : 'Non renseigné';
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(11);
-                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-                    doc.text('Défi majeur : ' + challengeLabel, 20, 114);
-                    doc.text('KPIs prioritaires : ' + kpisLabel, 20, 121);
+                    doc.text('Indicateurs de performance suivis : ' + kpisLabel, 20, 152);
+
+                    // 3. Analyse & Recommandation
                     doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(14);
-                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                    doc.text('3. Profil Organisationnel', 20, 136);
-                    doc.setFont('helvetica', 'normal');
                     doc.setFontSize(11);
-                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-                    const typeLabel = this.audit.data.companyType === 'startup' ? 'Startup/Scale-up' : (this.audit.data.companyType === 'sme' ? 'PME' : (this.audit.data.companyType === 'enterprise' ? 'Grand Compte' : 'Information manquante'));
-                    doc.text('Type : ' + typeLabel + ' | Secteur : ' + (this.audit.data.sector || 'Information manquante'), 20, 146);
-                    doc.text('Modèle : ' + (this.audit.data.csmModel || 'Information manquante') + ' Touch | Niveau Structuration : Non défini / 5', 20, 153);
-                    doc.setDrawColor(226, 232, 240);
-                    doc.line(20, 163, 190, 163);
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(14);
                     doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                    doc.text('ANALYSE ET RECOMMANDATION', 20, 175);
+                    doc.text('3. ANALYSE ET PRÉCONISATION', 20, 175);
+                    
                     doc.setFont('helvetica', 'italic');
-                    doc.setFontSize(11);
-                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                    doc.setFontSize(10.5);
+                    doc.setTextColor(60, 60, 60);
+                    
                     let analysisText = "";
                     if(this.audit.data.challenge === 'churn_signals') {
-                        analysisText = "Vos indicateurs suggèrent un besoin de proactivité; une stratégie CSM orientée expansion est indispensable pour sécuriser et faire croître votre MRR.";
+                        analysisText = "L'analyse de vos signaux de désengagement suggère un besoin critique de proactivité. Il est impératif de mettre en place une stratégie CSM orientée expansion pour sécuriser votre MRR et transformer vos clients passifs en ambassadeurs.";
                     } else if(['growth', 'low_adoption'].includes(this.audit.data.challenge)) {
-                        analysisText = "Votre accélération nécessite une structuration immédiate de vos parcours d'onboarding pour garantir la Time-to-Value et l'adoption produit.";
+                        analysisText = "Votre accélération nécessite une structuration immédiate de vos parcours d'onboarding. L'objectif est de réduire le 'Time-to-Value' pour garantir une adoption produit optimale dès les premiers jours.";
                     } else {
-                        analysisText = "La situation décrite nécessite un renfort opérationnel ciblé pour absorber les pics de charge sans complexifier votre organisation actuelle.";
+                        analysisText = "La situation actuelle nécessite un renfort opérationnel ciblé pour absorber les pics de charge (ticketing, formation, support) sans complexifier votre organisation, tout en stabilisant vos processus internes.";
                     }
+                    
                     const splitAnalysis = doc.splitTextToSize(analysisText, 170);
                     doc.text(splitAnalysis, 20, 185);
+
+                    // Encadré Solution Préconisée
+                    doc.setDrawColor(37, 99, 235);
+                    doc.setLineWidth(0.8);
+                    doc.rect(20, 215, 170, 25);
+                    
                     const offerName = this.audit.recommendedOffer === 1 ? 'ADOPTION PRODUIT' : (this.audit.recommendedOffer === 2 ? 'CUSTOMER CARE' : 'STRATÉGIE RÉTENTION');
                     doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(13);
+                    doc.setFontSize(14);
                     doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                    doc.text('SOLUTION PRÉCONISÉE : ' + offerName, 20, 205);
+                    doc.text('SOLUTION PRÉCONISÉE : ' + offerName, 30, 231);
+
+                    // --- Footer ---
                     doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(9);
+                    doc.setFontSize(8);
                     doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]);
-                    doc.text('Care & Success par Corinne Marsiac - Rapport confidentiel', 20, 285);
-                    doc.save('Diagnostic_CareSuccess_' + (this.audit.data.companyName || 'Lead').replace(/\s+/g, '_') + '.pdf');
+                    const companyName = this.audit.data.companyName || 'Votre Entreprise';
+                    const footerText = 'Care & Success par Corinne Marsiac - ' + companyName;
+                    doc.text(footerText, 105, 285, null, null, 'center');
+                    
+                    const fileName = 'Diagnostic_CareSuccess_' + companyName.replace(/\s+/g, '_') + '.pdf';
+                    doc.save(fileName);
                 }
             };
         }
@@ -373,7 +406,7 @@
         <div class="container mx-auto px-6 lg:px-12 flex items-center justify-between max-w-[1920px]">
             <div class="flex items-center">
                 <a href="#accueil">
-                    <!-- LOGO HEADER AGRANDI SUR MOBILE QUAND SCROLLED (h-32 au lieu de h-14) -->
+                    <!-- LOGO HEADER AGRANDI SUR MOBILE QUAND SCROLLED -->
                     <img src="https://lh3.googleusercontent.com/d/1r0tG2koxXGDPjoCw9dmlCtk6UisQYxDE" alt="Care & Success" 
                          class="transition-all duration-500 ease-in-out object-contain" 
                          :class="scrolled ? 'h-32 md:h-20 lg:h-24' : 'h-32 md:h-48 lg:h-[16rem]'">
@@ -418,13 +451,12 @@
     <section id="accueil" class="relative min-h-screen flex items-center justify-center bg-white px-6 md:px-12 pb-20 pt-64 overflow-hidden text-center">
         <div class="container mx-auto max-w-[1920px] flex flex-col items-center justify-center">
             <div class="relative w-full flex flex-col items-center justify-center">
-                <!-- TITRE HERO MOBILE LÉGÈREMENT RÉDUIT (text-4xl) -->
                 <h1 class="hero-title text-4xl sm:text-6xl md:text-[6.5rem] lg:text-[8.5rem] font-[900] text-neutral-900 flex flex-col items-center justify-center pointer-events-none leading-none tracking-tighter">
                     <span class="block text-neutral-900">Votre Renfort</span>
                     <span class="block text-neutral-900">Opérationnel</span>
                     <span class="brand-gradient block relative w-fit whitespace-nowrap mx-auto">Care & Success.
-                        <!-- POSITION DU COLIBRI AJUSTÉE POUR MOBILE (plus bas et plus à droite) -->
-                        <div class="absolute bottom-[-25%] -right-4 md:bottom-[10%] md:-right-[250px] lg:-right-[350px] w-[45%] md:w-[45%] lg:w-[50%] h-auto pointer-events-none transition-transform duration-150 ease-out z-0" :style="'transform: translateY(' + (scrollPos * -0.3) + 'px)'">
+                        <!-- POSITION DU COLIBRI DÉCALÉE DAVANTAGE SUR LA DROITE SUR MOBILE -->
+                        <div class="absolute bottom-[-25%] -right-12 sm:-right-20 md:bottom-[10%] md:-right-[250px] lg:-right-[350px] w-[45%] md:w-[45%] lg:w-[50%] h-auto pointer-events-none transition-transform duration-150 ease-out z-0" :style="'transform: translateY(' + (scrollPos * -0.3) + 'px)'">
                             <div class="w-full h-full animate-arrival-hero">
                                 <div class="animate-float">
                                     <img src="https://lh3.googleusercontent.com/d/1ZKwRL-c7yJCE-H8-ZbH1jt_RStqn-Svq" alt="Colibri Hero" class="w-full h-auto colibri-interaction">
@@ -458,42 +490,42 @@
             </div>
 
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                <div class="reveal situation-card" style="transition-delay: 100ms;">
+                <div class="reveal situation-card">
                     <div class="flex items-center gap-4">
                         <i data-lucide="rocket" class="text-brand-blue w-10 h-10"></i>
                         <h3 class="text-2xl font-bold text-white leading-tight">Accélération commerciale</h3>
                     </div>
                     <p class="text-slate-400 leading-relaxed font-medium">Un flux massif de nouveaux comptes à onboarder sans dégrader l'expérience client.</p>
                 </div>
-                <div class="reveal situation-card" style="transition-delay: 200ms;">
+                <div class="reveal situation-card">
                     <div class="flex items-center gap-4">
                         <i data-lucide="alert-circle" class="text-brand-blue w-10 h-10"></i>
                         <h3 class="text-2xl font-bold text-white leading-tight">Saturation du support</h3>
                     </div>
                     <p class="text-slate-400 leading-relaxed font-medium">Backlog critique de tickets techniques. Je prends les manettes pour rétablir vos SLAs.</p>
                 </div>
-                <div class="reveal situation-card" style="transition-delay: 300ms;">
+                <div class="reveal situation-card">
                     <div class="flex items-center gap-4">
                         <i data-lucide="trending-down" class="text-brand-blue w-10 h-10"></i>
                         <h3 class="text-2xl font-bold text-white leading-tight">Signaux de Churn</h3>
                     </div>
                     <p class="text-slate-400 leading-relaxed font-medium">Baisse d'usage ou comptes silencieux. J'interviens en urgence pour sécuriser votre MRR et relancer l'engagement.</p>
                 </div>
-                <div class="reveal situation-card" style="transition-delay: 400ms;">
+                <div class="reveal situation-card">
                     <div class="flex items-center gap-4">
                         <i data-lucide="refresh-cw" class="text-brand-blue w-10 h-10"></i>
                         <h3 class="text-2xl font-bold text-white leading-tight">Migration / Refonte</h3>
                     </div>
                     <p class="text-slate-400 leading-relaxed font-medium">Accompagnement opérationnel du passage vers une nouvelle interface pour prévenir le churn.</p>
                 </div>
-                <div class="reveal situation-card" style="transition-delay: 500ms;">
+                <div class="reveal situation-card">
                     <div class="flex items-center gap-4">
                         <i data-lucide="users" class="text-brand-blue w-10 h-10"></i>
                         <h3 class="text-2xl font-bold text-white leading-tight">Départ / Absence clé</h3>
                     </div>
                     <p class="text-slate-400 leading-relaxed font-medium">Garantir la continuité de service et la santé des comptes en phase de recrutement ou d'absence.</p>
                 </div>
-                <div class="reveal situation-card" style="transition-delay: 600ms;">
+                <div class="reveal situation-card">
                     <div class="flex items-center gap-4">
                         <i data-lucide="circle-dot" class="text-brand-blue w-10 h-10"></i>
                         <h3 class="text-2xl font-bold text-white leading-tight">Faible adoption produit</h3>
@@ -607,7 +639,6 @@
             <header class="text-center mb-24 reveal">
                 <div class="label-partie uppercase">SOLUTIONS OPÉRATIONNELLES</div>
                 <h2 class="text-5xl md:text-8xl font-[900] tracking-tighter leading-none mb-6 text-neutral-900">3 leviers pour <span class="brand-gradient">sécuriser</span> <br class="hidden md:block"> votre croissance.</h2>
-                <p class="text-xl md:text-2xl text-neutral-500 font-medium max-w-4xl mx-auto mt-10">Pourquoi recruter dans l'urgence quand vous pouvez activer un renfort expert et immédiatement productif ?</p>
             </header>
             <div class="grid lg:grid-cols-3 gap-10 md:gap-16 items-stretch text-left">
                 <div class="card-glass overflow-hidden rounded-4xl shadow-2xl reveal group hover-halo-emerald">
@@ -622,30 +653,26 @@
                         <ul class="space-y-4 mb-10 text-left">
                             <li class="flex items-start gap-4"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Kick-off, formation et parcours personnalisés</p></li>
                             <li class="flex items-start gap-4"><i data-lucide="zap" class="w-5 h-5 text-emerald-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Activation rapide des premiers use cases</p></li>
-                            <li class="flex items-start gap-4"><i data-lucide="trending-up" class="w-5 h-5 text-emerald-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Accélération du Time-to-Value (TTV)</p></li>
-                            <li class="flex items-start gap-4"><i data-lucide="search" class="w-5 h-5 text-emerald-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Suivi des premiers signaux d’usage et blocages</p></li>
                         </ul>
                         <div class="bg-black p-8 rounded-3xl mt-auto shadow-xl">
                             <h4 class="text-[10px] font-black uppercase text-emerald-400 mb-2 tracking-widest text-left">Impact</h4>
-                            <p class="text-sm text-white italic font-medium leading-relaxed text-left">"Utilisateurs actifs, engagés et autonomes dès les premiers jours."</p>
+                            <p class="text-sm text-white italic font-medium leading-relaxed text-left">"Utilisateurs engagés dès les premiers jours."</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="card-glass overflow-hidden rounded-4xl shadow-2xl reveal group hover-halo-blue">
+                <div class="card-glass overflow-hidden rounded-4xl shadow-2xl reveal group hover-halo-blue text-left">
                     <div class="relative h-64 overflow-hidden shrink-0 text-left">
                         <img src="https://images.unsplash.com/photo-1525130413817-d45c1d127c42?q=80&w=2070&auto=format&fit=crop" alt="Customer Care Expert" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                         <div class="absolute inset-0 bg-gradient-to-t from-white/95 via-transparent to-transparent"></div>
                     </div>
-                    <div class="p-10 pt-6 flex-grow flex flex-col">
+                    <div class="p-10 pt-6 flex-grow flex flex-col text-left">
                         <div class="text-[11px] font-black uppercase tracking-widest text-brand-blue mb-6 px-4 py-1.5 bg-blue-50 rounded-full w-fit">Satisfaction 5★</div>
                         <h3 class="text-3xl font-[900] mb-3 uppercase tracking-tight text-neutral-900 leading-none">Customer Care Expert</h3>
                         <p class="text-sm text-neutral-400 font-bold italic mb-8">Le support devient un levier de performance.</p>
                         <ul class="space-y-4 mb-10 text-left">
-                            <li class="flex items-start gap-4"><i data-lucide="layers" class="w-5 h-5 text-brand-blue shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Gestion fluide des tickets (priorisation, SLA, escalades)</p></li>
-                            <li class="flex items-start gap-4"><i data-lucide="shield-alert" class="w-5 h-5 text-brand-blue shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Résolution rapide des incidents et analyse causes racines</p></li>
-                            <li class="flex items-start gap-4"><i data-lucide="users" class="text-brand-blue w-5 h-5 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Coordination avec les équipes Produit et Tech</p></li>
-                            <li class="flex items-start gap-4"><i data-lucide="refresh-cw" class="text-brand-blue w-5 h-5 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Mise en place de process pour réduire les frictions</p></li>
+                            <li class="flex items-start gap-4"><i data-lucide="layers" class="w-5 h-5 text-brand-blue shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Gestion fluide des tickets et SLAs</p></li>
+                            <li class="flex items-start gap-4"><i data-lucide="shield-alert" class="w-5 h-5 text-brand-blue shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Analyse des causes racines et process</p></li>
                         </ul>
                         <div class="bg-brand-gradient p-8 rounded-3xl mt-auto shadow-xl text-left">
                             <h4 class="text-[10px] font-black uppercase text-white/70 mb-2 tracking-widest text-left">Impact</h4>
@@ -654,20 +681,18 @@
                     </div>
                 </div>
 
-                <div class="card-glass overflow-hidden rounded-4xl shadow-2xl reveal group hover-halo-violet">
+                <div class="card-glass overflow-hidden rounded-4xl shadow-2xl reveal group hover-halo-violet text-left">
                     <div class="relative h-64 overflow-hidden shrink-0 text-left">
                         <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2026&auto=format&fit=crop" alt="CSM Stratégique" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                         <div class="absolute inset-0 bg-gradient-to-t from-white/95 via-transparent to-transparent"></div>
                     </div>
-                    <div class="p-10 pt-6 flex-grow flex flex-col">
+                    <div class="p-10 pt-6 flex-grow flex flex-col text-left">
                         <div class="text-[11px] font-black uppercase tracking-widest text-violet-600 mb-6 px-4 py-1.5 bg-violet-50 rounded-full w-fit">Rétention & Expansion</div>
                         <h3 class="text-3xl font-[900] mb-3 uppercase tracking-tight text-neutral-900 leading-none">CSM Stratégique</h3>
                         <p class="text-sm text-neutral-400 font-bold italic mb-8">Sécuriser et développer vos comptes clés.</p>
                         <ul class="space-y-4 mb-10 text-left">
-                            <li class="flex items-start gap-4"><i data-lucide="activity" class="w-5 h-5 text-violet-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Suivi des comptes sensibles et détection risque de churn</p></li>
-                            <li class="flex items-start gap-4"><i data-lucide="bar-chart-3" class="w-5 h-5 text-violet-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Pilotage des KPIs (usage, NPS, Health Score)</p></li>
+                            <li class="flex items-start gap-4"><i data-lucide="activity" class="w-5 h-5 text-violet-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Suivi des comptes sensibles et Health Score</p></li>
                             <li class="flex items-start gap-4"><i data-lucide="plus-circle" class="w-5 h-5 text-violet-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Identification opportunités expansion (upsell/cross-sell)</p></li>
-                            <li class="flex items-start gap-4"><i data-lucide="git-merge" class="w-5 h-5 text-violet-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Alignement Sales et Produit pour maximiser la valeur</p></li>
                         </ul>
                         <div class="bg-black p-8 rounded-3xl mt-auto shadow-xl text-left">
                             <h4 class="text-[10px] font-black uppercase text-violet-400 mb-2 tracking-widest text-left">Impact</h4>
@@ -682,7 +707,7 @@
     <!-- SECTION AUDIT -->
     <section id="diagnostic-encart" class="py-24 md:py-48 bg-white px-6 text-center md:text-left">
         <div class="container mx-auto max-w-[1600px]">
-            <div class="reveal rounded-[5rem] overflow-hidden relative shadow-3xl border border-neutral-50">
+            <div class="reveal rounded-[5rem] overflow-hidden relative shadow-3xl border border-neutral-50 text-center md:text-left">
                 <div class="bg-brand-dark p-12 md:p-20 text-white flex flex-col md:flex-row justify-between items-center gap-12 text-center md:text-left">
                     <div class="text-center md:text-left">
                         <div class="label-partie uppercase">AUDIT STRATÉGIQUE</div>
@@ -748,7 +773,7 @@
 
                 <!-- RESULTS VIEW -->
                 <div x-show="audit.submitted" x-cloak class="bg-white flex flex-col min-h-[600px] text-left">
-                    <div class="relative h-[400px] overflow-hidden shrink-0">
+                    <div class="relative h-[400px] overflow-hidden shrink-0 text-left">
                         <img :src="audit.offerImages[audit.recommendedOffer]" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent"></div>
                         <div class="absolute bottom-12 left-6 md:left-24">
@@ -795,7 +820,7 @@
         <div class="container mx-auto max-w-[1920px]">
             <!-- TOP FOOTER -->
             <div class="grid grid-cols-1 lg:grid-cols-3 items-center gap-12 lg:gap-20 mb-20 text-center">
-                <!-- Navigation (Ordre 2 sur mobile) -->
+                <!-- Navigation -->
                 <div class="order-2 lg:order-1 space-y-6 lg:text-left">
                     <span class="text-xs font-black uppercase tracking-[0.3em] border-b-2 border-brand-blue pb-3 inline-block lg:block">Navigation</span>
                     <div class="flex flex-col gap-3 text-lg font-bold text-neutral-500">
@@ -805,15 +830,14 @@
                     </div>
                 </div>
 
-                <!-- LOGO SECTION (Ordre 1 sur mobile) -->
+                <!-- LOGO SECTION -->
                 <div class="order-1 lg:order-2 flex justify-center">
                     <a href="#accueil">
-                        <!-- LOGO FOOTER AGRANDI -->
                         <img src="https://lh3.googleusercontent.com/d/1r0tG2koxXGDPjoCw9dmlCtk6UisQYxDE" alt="Logo" class="h-40 md:h-56 lg:h-72 opacity-90 hover:opacity-100 transition-all mx-auto">
                     </a>
                 </div>
                 
-                <!-- Contact (Ordre 3 sur mobile) -->
+                <!-- Contact -->
                 <div class="order-3 lg:order-3 space-y-6 lg:text-left">
                     <span class="text-xs font-black uppercase tracking-[0.3em] border-b-2 border-brand-blue pb-3 inline-block lg:block">Contact</span>
                     <div class="flex flex-col gap-3 text-lg font-bold text-neutral-500">
@@ -825,7 +849,7 @@
                 </div>
             </div>
 
-            <!-- BOTTOM LINE : MENTION UNIQUE CENTRÉE -->
+            <!-- BOTTOM LINE -->
             <div class="pt-12 border-t border-neutral-100 text-center">
                 <p class="text-[11px] font-black uppercase tracking-widest text-neutral-400 leading-relaxed mx-auto max-w-5xl px-4 text-center">
                     © 2026 • Care & Success • Renfort opérationnel Freelance • Expertise SaaS B2B • RH Tech / Paie
@@ -892,78 +916,111 @@
                     const blueColor = [37, 99, 235];
                     const darkColor = [15, 23, 42];
                     const greyColor = [100, 116, 139];
+
+                    // --- Header Décoratif ---
+                    doc.setFillColor(37, 99, 235);
+                    doc.rect(0, 0, 210, 45, 'F');
+                    
+                    // Texte Header
                     doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(22);
-                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                    doc.text('DIAGNOSTIC STRATÉGIQUE', 20, 25);
-                    doc.setFontSize(14);
-                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-                    doc.text('Care & Success - Renfort Opérationnel Expert', 20, 35);
+                    doc.setFontSize(28);
+                    doc.setTextColor(255, 255, 255);
+                    doc.text('CARE & SUCCESS', 20, 25);
+                    
                     doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text('RENFORT OPÉRATIONNEL EXPERT | CUSTOMER SUCCESS & CARE', 20, 32);
+
+                    // --- Corps du Document ---
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(18);
+                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                    doc.text('DIAGNOSTIC STRATÉGIQUE', 20, 60);
+                    
+                    doc.setDrawColor(blueColor[0], blueColor[1], blueColor[2]);
+                    doc.setLineWidth(1);
+                    doc.line(20, 65, 50, 65);
+
+                    // Date
+                    doc.setFontSize(10);
+                    doc.setFont('helvetica', 'normal');
                     doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]);
-                    doc.text('Date : ' + new Date().toLocaleDateString('fr-FR'), 20, 42);
-                    doc.setDrawColor(226, 232, 240);
-                    doc.line(20, 48, 190, 48);
-                    doc.setFontSize(14);
-                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                    doc.text('1. Identification Client', 20, 58);
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(11);
-                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-                    doc.text('Entreprise : ' + (this.audit.data.companyName || 'Information manquante'), 20, 68);
-                    doc.text('Contact : ' + (this.audit.data.firstName || 'Information manquante') + ' ' + (this.audit.data.lastName || ''), 20, 75);
-                    doc.text('Email : ' + (this.audit.data.email || 'Non renseigné') + ' | Tel : ' + (this.audit.data.phone || 'Information manquante'), 20, 82);
-                    doc.text('Web : ' + (this.audit.data.website || 'Information manquante') + ' | LinkedIn : ' + (this.audit.data.linkedin || 'Information manquante'), 20, 89);
+                    doc.text('Émis le : ' + new Date().toLocaleDateString('fr-FR'), 155, 60);
+
+                    // 1. Identification Client
+                    doc.setFillColor(241, 245, 249);
+                    doc.rect(20, 75, 170, 42, 'F');
+                    
                     doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(14);
+                    doc.setFontSize(11);
                     doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                    doc.text('2. Enjeu & Performance', 20, 104);
+                    doc.text('1. IDENTIFICATION CLIENT', 25, 85);
+                    
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(10);
+                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                    doc.text('Entreprise : ' + (this.audit.data.companyName || 'Non renseigné'), 25, 93);
+                    doc.text('Contact : ' + (this.audit.data.firstName || '') + ' ' + (this.audit.data.lastName || ''), 25, 100);
+                    doc.text('Email : ' + (this.audit.data.email || 'Non renseigné'), 25, 107);
+
+                    // 2. Enjeux
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(11);
+                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                    doc.text('2. ENJEUX OPÉRATIONNELS IDENTIFIÉS', 20, 135);
+                    
                     const challengeLabel = this.audit.auditChallenges.find(c => c.id === this.audit.data.challenge)?.l || 'Non défini';
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(10);
+                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                    doc.text('Défi prioritaire : ' + challengeLabel, 20, 145);
+                    
                     const kpisLabel = this.audit.data.kpis.length > 0 ? this.audit.data.kpis.join(', ').toUpperCase() : 'Non renseigné';
-                    doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(11);
-                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-                    doc.text('Défi majeur : ' + challengeLabel, 20, 114);
-                    doc.text('KPIs prioritaires : ' + kpisLabel, 20, 121);
+                    doc.text('Indicateurs de performance suivis : ' + kpisLabel, 20, 152);
+
+                    // 3. Analyse & Recommandation
                     doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(14);
-                    doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                    doc.text('3. Profil Organisationnel', 20, 136);
-                    doc.setFont('helvetica', 'normal');
                     doc.setFontSize(11);
-                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-                    const typeLabel = this.audit.data.companyType === 'startup' ? 'Startup/Scale-up' : (this.audit.data.companyType === 'sme' ? 'PME' : (this.audit.data.companyType === 'enterprise' ? 'Grand Compte' : 'Information manquante'));
-                    doc.text('Type : ' + typeLabel + ' | Secteur : ' + (this.audit.data.sector || 'Information manquante'), 20, 146);
-                    doc.text('Modèle : ' + (this.audit.data.csmModel || 'Information manquante') + ' Touch | Niveau Structuration : Non défini / 5', 20, 153);
-                    doc.setDrawColor(226, 232, 240);
-                    doc.line(20, 163, 190, 163);
-                    doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(14);
                     doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                    doc.text('ANALYSE ET RECOMMANDATION', 20, 175);
+                    doc.text('3. ANALYSE ET PRÉCONISATION', 20, 175);
+                    
                     doc.setFont('helvetica', 'italic');
-                    doc.setFontSize(11);
-                    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                    doc.setFontSize(10.5);
+                    doc.setTextColor(60, 60, 60);
+                    
                     let analysisText = "";
                     if(this.audit.data.challenge === 'churn_signals') {
-                        analysisText = "Vos indicateurs suggèrent un besoin de proactivité; une stratégie CSM orientée expansion est indispensable pour sécuriser et faire croître votre MRR.";
+                        analysisText = "L'analyse de vos signaux de désengagement suggère un besoin critique de proactivité. Il est impératif de mettre en place une stratégie CSM orientée expansion pour sécuriser votre MRR et transformer vos clients passifs en ambassadeurs.";
                     } else if(['growth', 'low_adoption'].includes(this.audit.data.challenge)) {
-                        analysisText = "Votre accélération nécessite une structuration immédiate de vos parcours d'onboarding pour garantir la Time-to-Value et l'adoption produit.";
+                        analysisText = "Votre accélération nécessite une structuration immédiate de vos parcours d'onboarding. L'objectif est de réduire le 'Time-to-Value' pour garantir une adoption produit optimale dès les premiers jours.";
                     } else {
-                        analysisText = "La situation décrite nécessite un renfort opérationnel ciblé pour absorber les pics de charge sans complexifier votre organisation actuelle.";
+                        analysisText = "La situation actuelle nécessite un renfort opérationnel ciblé pour absorber les pics de charge (ticketing, formation, support) sans complexifier votre organisation, tout en stabilisant vos processus internes.";
                     }
+                    
                     const splitAnalysis = doc.splitTextToSize(analysisText, 170);
                     doc.text(splitAnalysis, 20, 185);
+
+                    // Encadré Solution Préconisée
+                    doc.setDrawColor(37, 99, 235);
+                    doc.setLineWidth(0.8);
+                    doc.rect(20, 215, 170, 25);
+                    
                     const offerName = this.audit.recommendedOffer === 1 ? 'ADOPTION PRODUIT' : (this.audit.recommendedOffer === 2 ? 'CUSTOMER CARE' : 'STRATÉGIE RÉTENTION');
                     doc.setFont('helvetica', 'bold');
-                    doc.setFontSize(13);
+                    doc.setFontSize(14);
                     doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                    doc.text('SOLUTION PRÉCONISÉE : ' + offerName, 20, 205);
+                    doc.text('SOLUTION PRÉCONISÉE : ' + offerName, 30, 231);
+
+                    // --- Footer ---
                     doc.setFont('helvetica', 'normal');
-                    doc.setFontSize(9);
+                    doc.setFontSize(8);
                     doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]);
-                    doc.text('Care & Success par Corinne Marsiac - Rapport confidentiel', 20, 285);
-                    doc.save('Diagnostic_CareSuccess_' + (this.audit.data.companyName || 'Lead').replace(/\s+/g, '_') + '.pdf');
+                    const companyName = this.audit.data.companyName || 'Votre Entreprise';
+                    const footerText = 'Care & Success par Corinne Marsiac - ' + companyName;
+                    doc.text(footerText, 105, 285, null, null, 'center');
+                    
+                    const fileName = 'Diagnostic_CareSuccess_' + companyName.replace(/\s+/g, '_') + '.pdf';
+                    doc.save(fileName);
                 }
             };
         }
