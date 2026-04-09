@@ -294,9 +294,13 @@
                         canvas.height = 300;
                         const ctx = canvas.getContext('2d');
                         ctx.font = "bold 120px Quicksand, sans-serif";
-                        const gradient = ctx.createLinearGradient(0, 0, 800, 0);
-                        gradient.addColorStop(0, '#2563eb'); 
-                        gradient.addColorStop(1, '#a855f7'); 
+                        
+                        // Dégradé tryptique : #005ebf, #29bfff, #c252ff
+                        const gradient = ctx.createLinearGradient(0, 0, 900, 0);
+                        gradient.addColorStop(0, '#005ebf'); 
+                        gradient.addColorStop(0.5, '#29bfff'); 
+                        gradient.addColorStop(1, '#c252ff'); 
+                        
                         ctx.fillStyle = gradient;
                         ctx.fillText("Care & Success", 0, 150);
                         return canvas.toDataURL('image/png');
@@ -319,7 +323,7 @@
                         // Image Colibri repositionnée pour déborder élégamment vers le bas
                         doc.addImage(loadedColibri, 'PNG', 125, -5, 85, 75);
 
-                        // Titre Stylisé AGRANDI (Quicksand + Gradient)
+                        // Titre Stylisé AGRANDI avec tryptique de couleurs (Quicksand + Gradient)
                         doc.addImage(gradientTitleData, 'PNG', 20, 12, 130, 26);
                         
                         doc.setFontSize(10);
@@ -450,7 +454,6 @@
         <div class="container mx-auto px-6 lg:px-12 flex items-center justify-between max-w-[1920px]">
             <div class="flex items-center">
                 <a href="#accueil">
-                    <!-- LOGO HEADER AGRANDI SUR MOBILE QUAND SCROLLED -->
                     <img src="https://lh3.googleusercontent.com/d/1r0tG2koxXGDPjoCw9dmlCtk6UisQYxDE" alt="Care & Success" 
                          class="transition-all duration-500 ease-in-out object-contain" 
                          :class="scrolled ? 'h-32 md:h-20 lg:h-24' : 'h-32 md:h-48 lg:h-[16rem]'">
@@ -495,12 +498,10 @@
     <section id="accueil" class="relative min-h-screen flex items-center justify-center bg-white px-6 md:px-12 pb-20 pt-64 overflow-hidden text-center">
         <div class="container mx-auto max-w-[1920px] flex flex-col items-center justify-center">
             <div class="relative w-full flex flex-col items-center justify-center">
-                <!-- TITRE HERO MOBILE LÉGÈREMENT RÉDUIT POUR ÉVITER LE CHEVAUCHEMENT (text-[2.5rem]) -->
                 <h1 class="hero-title text-[2.5rem] sm:text-6xl md:text-[6.5rem] lg:text-[8.5rem] font-[900] text-neutral-900 flex flex-col items-center justify-center pointer-events-none leading-none tracking-tighter">
                     <span class="block text-neutral-900">Votre Renfort</span>
                     <span class="block text-neutral-900">Opérationnel</span>
                     <span class="brand-gradient block relative w-fit whitespace-nowrap mx-auto">Care & Success.
-                        <!-- POSITION DU COLIBRI DÉCALÉE À DROITE SUR MOBILE (-right-12) -->
                         <div class="absolute bottom-[-25%] -right-12 sm:-right-20 md:bottom-[10%] md:-right-[250px] lg:-right-[350px] w-[45%] md:w-[45%] lg:w-[50%] h-auto pointer-events-none transition-transform duration-150 ease-out z-0" :style="'transform: translateY(' + (scrollPos * -0.3) + 'px)'">
                             <div class="w-full h-full animate-arrival-hero">
                                 <div class="animate-float">
@@ -534,7 +535,7 @@
                 </p>
             </div>
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 text-left text-white">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                 <div class="reveal situation-card">
                     <div class="flex items-center gap-4">
                         <i data-lucide="rocket" class="text-brand-blue w-10 h-10"></i>
@@ -875,7 +876,7 @@
                     </div>
                 </div>
 
-                <!-- LOGO SECTION (Centré) -->
+                <!-- LOGO SECTION -->
                 <div class="order-1 lg:order-2 flex justify-center">
                     <a href="#accueil">
                         <img src="https://lh3.googleusercontent.com/d/1r0tG2koxXGDPjoCw9dmlCtk6UisQYxDE" alt="Logo" class="h-40 md:h-56 lg:h-72 opacity-90 hover:opacity-100 transition-all mx-auto">
@@ -976,9 +977,13 @@
                         canvas.height = 300;
                         const ctx = canvas.getContext('2d');
                         ctx.font = "bold 120px Quicksand, sans-serif";
-                        const gradient = ctx.createLinearGradient(0, 0, 800, 0);
-                        gradient.addColorStop(0, '#2563eb'); 
-                        gradient.addColorStop(1, '#a855f7'); 
+                        
+                        // Dégradé tryptique selon image_301178.png : #005ebf, #29bfff, #c252ff
+                        const gradient = ctx.createLinearGradient(0, 0, 900, 0);
+                        gradient.addColorStop(0, '#005ebf'); 
+                        gradient.addColorStop(0.5, '#29bfff'); 
+                        gradient.addColorStop(1, '#c252ff'); 
+                        
                         ctx.fillStyle = gradient;
                         ctx.fillText("Care & Success", 0, 150);
                         return canvas.toDataURL('image/png');
@@ -1001,7 +1006,7 @@
                         // Image Colibri repositionnée pour déborder élégamment vers le bas
                         doc.addImage(loadedColibri, 'PNG', 125, -5, 85, 75);
 
-                        // Titre Stylisé AGRANDI (Quicksand + Gradient)
+                        // Titre Stylisé AGRANDI avec tryptique de couleurs (Quicksand + Gradient)
                         doc.addImage(gradientTitleData, 'PNG', 20, 12, 130, 26);
                         
                         doc.setFontSize(10);
