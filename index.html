@@ -159,6 +159,9 @@
             color: #cbd5e1;
             transition: all 0.3s ease;
         }
+        .method-letter-btn:hover .letter, .method-letter-btn.active .letter {
+            color: #2563eb;
+        }
 
         .display-screen {
             background: white;
@@ -189,7 +192,6 @@
             box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
         }
 
-        /* STYLE DES ÉTIQUETTES UNIFORMISÉ : TEXTE BLANC SUR FOND BLEU */
         .label-partie {
             display: inline-block;
             background-color: #2563eb;
@@ -221,7 +223,6 @@
             box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3);
         }
 
-        /* NOUVEAUX STYLES DIAGNOSTIC FIDÈLES AU CODE FOURNI */
         .option-card {
             border: 1px solid #e2e8f0; background: white; border-radius: 1.5rem;
             transition: all 0.3s cubic-bezier(0.2, 1, 0.3, 1); cursor: pointer;
@@ -250,7 +251,7 @@
                 activeMethod: 0,
                 formData: { 
                     challenge: '', industry: '', maturity: '', pressureLevel: '', mainImpact: '', 
-                    mainBlocker: '', trackedKPIs: [], pressureKPI: '', toolStack: [], toolUsage: '',
+                    trackedKPIs: [], pressureKPI: '', toolStack: [], toolUsage: '',
                     interventionType: '', timing: '', expectedResult: '', firstName: '', lastName: '', 
                     companyName: '', email: '', website: '', linkedin: '', phone: '', jobTitle: '', finalAction: '' 
                 },
@@ -277,181 +278,100 @@
                 },
                 get recommendedOffer() {
                     const c = this.formData.challenge;
-                    if (c === 'onboarding') return { 
-                        title: 'Adoption Produit', 
-                        desc: 'Sécuriser l\'engagement dès les premiers jours pour garantir un succès durable.', 
-                        img: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop'
-                    };
-                    if (c === 'support' || c === 'resources') return { 
-                        title: 'Customer Care', 
-                        desc: 'Fluidifier vos flux de demandes pour rétablir vos SLAs et soulager l\'équipe.', 
-                        img: 'https://images.unsplash.com/photo-1525130413817-d45c1d127c42?q=80&w=2070&auto=format&fit=crop'
-                    };
-                    return { 
-                        title: 'Success Stratégie', 
-                        desc: 'Identifier les risques et transformer vos comptes clients en leviers de croissance.', 
-                        img: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2026&auto=format&fit=crop'
-                    };
+                    if (c === 'onboarding') return { title: 'Adoption Produit', img: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop' };
+                    if (c === 'support' || c === 'resources') return { title: 'Customer Care', img: 'https://images.unsplash.com/photo-1525130413817-d45c1d127c42?q=80&w=2070&auto=format&fit=crop' };
+                    return { title: 'Success Stratégie', img: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2026&auto=format&fit=crop' };
                 },
-                nextStep() { 
-                    if(this.step < 9) {
-                        this.step++;
-                        this.$nextTick(() => lucide.createIcons());
-                    }
-                },
-                prevStep() { 
-                    if(this.step > 1) {
-                        this.step--;
-                        this.$nextTick(() => lucide.createIcons());
-                    }
-                },
+                nextStep() { if(this.step < 9) { this.step++; this.$nextTick(() => lucide.createIcons()); } },
+                prevStep() { if(this.step > 1) { this.step--; this.$nextTick(() => lucide.createIcons()); } },
                 async submitAudit() {
-                    this.loading = true;
-                    await new Promise(r => setTimeout(r, 2500));
-                    this.loading = false;
-                    this.showRecommendation = true;
-                    this.$nextTick(() => { lucide.createIcons(); });
+                    this.loading = true; await new Promise(r => setTimeout(r, 2500));
+                    this.loading = false; this.showRecommendation = true; this.$nextTick(() => lucide.createIcons());
                 },
-                confirmRecommendation() {
+                confirmRecommendation() { this.showRecommendation = false; this.submitted = true; this.$nextTick(() => lucide.createIcons()); },
+                resetAudit() {
+                    this.step = 1;
+                    this.submitted = false;
                     this.showRecommendation = false;
-                    this.submitted = true;
-                    this.$nextTick(() => { lucide.createIcons(); });
+                    this.formData = { 
+                        challenge: '', industry: '', maturity: '', pressureLevel: '', mainImpact: '', 
+                        trackedKPIs: [], pressureKPI: '', toolStack: [], toolUsage: '',
+                        interventionType: '', timing: '', expectedResult: '', firstName: '', lastName: '', 
+                        companyName: '', email: '', website: '', linkedin: '', phone: '', jobTitle: '', finalAction: '' 
+                    };
+                    this.$nextTick(() => { 
+                        lucide.createIcons(); 
+                        document.getElementById('diagnostic-encart').scrollIntoView({behavior:'smooth'});
+                    });
                 },
                 async downloadPDF() {
                     this.loading = true;
                     const { jsPDF } = window.jspdf;
                     const colibriImgUrl = "https://lh3.googleusercontent.com/d/1ZKwRL-c7yJCE-H8-ZbH1jt_RStqn-Svq";
-
-                    const loadImage = (url) => {
-                        return new Promise((resolve, reject) => {
-                            const img = new Image();
-                            img.crossOrigin = "Anonymous";
-                            img.src = url;
-                            img.onload = () => resolve(img);
-                            img.onerror = (e) => reject(e);
-                        });
-                    };
-
-                    const createGradientTitleCanvas = () => {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = 1200;
-                        canvas.height = 300;
-                        const ctx = canvas.getContext('2d');
-                        ctx.font = "bold 120px Quicksand, sans-serif";
-                        const gradient = ctx.createLinearGradient(0, 0, 800, 0);
-                        gradient.addColorStop(0, '#005ebf'); 
-                        gradient.addColorStop(0.5, '#29bfff'); 
-                        gradient.addColorStop(1, '#c252ff'); 
-                        ctx.fillStyle = gradient;
-                        ctx.fillText("Care & Success", 0, 150);
-                        return canvas.toDataURL('image/png');
-                    };
+                    const loadImage = (url) => new Promise((resolve, reject) => { const img = new Image(); img.crossOrigin = "Anonymous"; img.src = url; img.onload = () => resolve(img); img.onerror = (e) => reject(e); });
+                    const createTitleCanvas = () => { const canvas = document.createElement('canvas'); canvas.width = 1200; canvas.height = 300; const ctx = canvas.getContext('2d'); ctx.font = "bold 120px Quicksand, sans-serif"; const gradient = ctx.createLinearGradient(0, 0, 900, 0); gradient.addColorStop(0, '#005ebf'); gradient.addColorStop(0.5, '#29bfff'); gradient.addColorStop(1, '#c252ff'); ctx.fillStyle = gradient; ctx.fillText("Care & Success", 0, 150); return canvas.toDataURL('image/png'); };
 
                     try {
-                        const loadedColibri = await loadImage(colibriImgUrl);
-                        const gradientTitleData = createGradientTitleCanvas();
-
+                        const [loadedColibri, gradientTitleData] = await Promise.all([loadImage(colibriImgUrl), createTitleCanvas()]);
                         const doc = new jsPDF();
-                        const blueColor = [37, 99, 235];
-                        const brandDarkColor = [15, 23, 42]; 
-                        const darkColor = [15, 23, 42];
-                        const greyColor = [100, 116, 139];
+                        const blueColor = [37, 99, 235], darkColor = [15, 23, 42], greyColor = [100, 116, 139], marginX = 20;
+                        let currentY = 75;
 
-                        doc.setFillColor(brandDarkColor[0], brandDarkColor[1], brandDarkColor[2]);
-                        doc.rect(0, 0, 210, 55, 'F');
-                        doc.addImage(loadedColibri, 'PNG', 125, -5, 85, 75);
-                        doc.addImage(gradientTitleData, 'PNG', 20, 12, 130, 26);
-                        
-                        doc.setFontSize(10);
-                        doc.setFont('helvetica', 'normal');
-                        doc.setTextColor(255, 255, 255);
+                        doc.setFillColor(darkColor[0], darkColor[1], darkColor[2]); doc.rect(0, 0, 210, 55, 'F');
+                        doc.addImage(loadedColibri, 'PNG', 125, -5, 85, 75); doc.addImage(gradientTitleData, 'PNG', 20, 12, 110, 22);
+                        doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.setTextColor(255, 255, 255);
                         doc.text('RENFORT OPÉRATIONNEL EXPERT | LE PARTENAIRE DE VOTRE SUCCÈS', 20, 42);
 
-                        const startY = 85; 
-                        doc.setFont('helvetica', 'bold');
-                        doc.setFontSize(18);
-                        doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-                        doc.text('DIAGNOSTIC STRATÉGIQUE', 20, startY);
-                        doc.setDrawColor(blueColor[0], blueColor[1], blueColor[2]);
-                        doc.setLineWidth(1);
-                        doc.line(20, startY + 5, 50, startY + 5);
+                        doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                        doc.text('VOTRE DIAGNOSTIC STRATÉGIQUE', marginX, currentY); currentY += 4;
+                        doc.setDrawColor(blueColor[0], blueColor[1], blueColor[2]); doc.setLineWidth(1.5); doc.line(marginX, currentY, marginX + 30, currentY);
+                        doc.setFontSize(10); doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]); doc.text('Émis le ' + new Date().toLocaleDateString('fr-FR'), 160, currentY - 5);
+                        currentY += 15;
 
-                        doc.setFontSize(10);
-                        doc.setFont('helvetica', 'normal');
-                        doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]);
-                        doc.text('Émis le : ' + new Date().toLocaleDateString('fr-FR'), 155, startY);
+                        const drawSection = (title, data) => {
+                            doc.setFillColor(241, 245, 249); doc.rect(marginX, currentY, 170, 8, 'F');
+                            doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                            doc.text(title.toUpperCase(), marginX + 5, currentY + 5.5);
+                            currentY += 14; doc.setFontSize(10); doc.setTextColor(60, 60, 60);
+                            data.forEach(item => {
+                                doc.setFont('helvetica', 'bold'); doc.text(item.label + ' :', marginX + 5, currentY);
+                                doc.setFont('helvetica', 'normal'); const wrapped = doc.splitTextToSize(item.value || 'Non renseigné', 120);
+                                doc.text(wrapped, marginX + 45, currentY); currentY += (wrapped.length * 5) + 2;
+                            });
+                            currentY += 5;
+                        };
 
-                        doc.setFillColor(241, 245, 249);
-                        doc.rect(20, startY + 15, 170, 42, 'F');
-                        doc.setFont('helvetica', 'bold');
-                        doc.setFontSize(11);
-                        doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                        doc.text('1. IDENTIFICATION CLIENT', 25, startY + 25);
-                        doc.setFont('helvetica', 'normal');
-                        doc.setFontSize(10);
-                        doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-                        doc.text('Entreprise : ' + (this.formData.companyName || 'Non renseigné'), 25, startY + 33);
-                        doc.text('Contact : ' + (this.formData.firstName || '') + ' ' + (this.formData.lastName || ''), 25, startY + 40);
-                        doc.text('Email : ' + (this.formData.email || 'Non renseigné'), 25, startY + 47);
+                        drawSection('Profil & Secteur', [{ label: 'Entreprise', value: this.formData.companyName }, { label: 'Secteur', value: this.formData.industry }, { label: 'Maturité', value: this.formData.maturity }, { label: 'Contact', value: this.formData.firstName + ' ' + this.formData.lastName }]);
+                        drawSection('Performance', [{ label: 'Défi', value: this.challengeLabel }, { label: 'Pression', value: this.formData.pressureLevel }, { label: 'Impact', value: this.formData.mainImpact }, { label: 'KPIs', value: this.formData.trackedKPIs.join(', ') }]);
+                        drawSection('Intervention', [{ label: 'Stack', value: this.formData.toolStack.join(', ') }, { label: 'Type', value: this.formData.interventionType }, { label: 'Timing', value: this.formData.timing }, { label: 'Objectif', value: this.formData.expectedResult }]);
 
-                        const section2Y = startY + 75;
-                        doc.setFont('helvetica', 'bold');
-                        doc.setFontSize(11);
-                        doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                        doc.text('2. ENJEUX OPÉRATIONNELS IDENTIFIÉS', 20, section2Y);
-                        doc.setFont('helvetica', 'normal');
-                        doc.setFontSize(10);
-                        doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-                        doc.text('Défi prioritaire : ' + this.challengeLabel, 20, section2Y + 10);
-                        const kpisLabel = this.formData.trackedKPIs.length > 0 ? this.formData.trackedKPIs.join(', ').toUpperCase() : 'Non renseigné';
-                        doc.text('Indicateurs de performance suivis : ' + kpisLabel, 20, section2Y + 17);
+                        currentY += 5; doc.setFillColor(darkColor[0], darkColor[1], darkColor[2]); doc.rect(marginX, currentY, 170, 35, 'F');
+                        doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(255, 255, 255); doc.text('PRÉCONISATION STRATÉGIQUE CARE & SUCCESS', marginX + 10, currentY + 12);
+                        doc.setFontSize(16); doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]); doc.text(this.recommendedOffer.title.toUpperCase(), marginX + 10, currentY + 24);
 
-                        const section3Y = section2Y + 40;
-                        doc.setFont('helvetica', 'bold');
-                        doc.setFontSize(11);
-                        doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                        doc.text('3. ANALYSE ET PRÉCONISATION', 20, section3Y);
-                        doc.setFont('helvetica', 'italic');
-                        doc.setFontSize(10.5);
-                        doc.setTextColor(60, 60, 60);
-                        
-                        let analysisText = "";
-                        if(this.formData.challenge === 'support') {
-                            analysisText = "La situation actuelle nécessite un renfort opérationnel ciblé pour absorber les pics de charge (ticketing, formation, support) sans complexifier votre organisation, tout en stabilisant vos processus internes.";
-                        } else if(['onboarding', 'adopt'].includes(this.formData.challenge)) {
-                            analysisText = "Votre phase d'accélération nécessite une structuration immédiate de vos parcours d'onboarding. L'objectif est de réduire le 'Time-to-Value' pour garantir une adoption produit optimale dès les premiers jours.";
-                        } else {
-                            analysisText = "L'analyse de vos enjeux suggère un besoin critique de proactivité. Il est impératif de mettre en place une stratégie orientée expansion pour sécuriser votre MRR et transformer vos clients passifs en ambassadeurs.";
-                        }
-                        
-                        const splitAnalysis = doc.splitTextToSize(analysisText, 170);
-                        doc.text(splitAnalysis, 20, section3Y + 10);
-
-                        const solutionY = section3Y + 40;
-                        doc.setDrawColor(37, 99, 235);
-                        doc.setLineWidth(0.8);
-                        doc.rect(20, solutionY, 170, 25);
-                        doc.setFont('helvetica', 'bold');
-                        doc.setFontSize(14);
-                        doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                        doc.text('SOLUTION PRÉCONISÉE : ' + this.recommendedOffer.title.toUpperCase(), 30, solutionY + 16);
-
-                        doc.setFont('helvetica', 'normal');
-                        doc.setFontSize(8);
-                        doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]);
                         const companyName = this.formData.companyName || 'Votre Entreprise';
-                        const footerText = 'Care & Success par Corinne Marsiac - ' + companyName;
-                        doc.text(footerText, 105, 290, null, null, 'center');
+                        doc.setFontSize(8); doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]); doc.text('Care & Success par Corinne Marsiac - ' + companyName, 105, 290, null, null, 'center');
                         doc.save('Diagnostic_CareSuccess_' + companyName.replace(/\s+/g, '_') + '.pdf');
-
-                    } catch (error) {
-                        console.error("Erreur PDF:", error);
-                    } finally {
-                        this.audit.loading = false;
-                    }
+                    } catch (error) { console.error("Erreur PDF:", error); } finally { this.loading = false; }
                 }
             };
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            window.addEventListener('scroll', () => {
+                const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrolledWidth = (winScroll / height) * 100;
+                const scrollProgress = document.getElementById('scroll-progress');
+                if (scrollProgress) scrollProgress.style.width = scrolledWidth + "%";
+            });
+            const observerOptions = { threshold: 0.15, rootMargin: '0px 0px -50px 0px' };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('reveal-visible'); });
+            }, observerOptions);
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        });
     </script>
 </head>
 <body class="bg-white text-neutral-900 antialiased font-sans"
@@ -540,10 +460,10 @@
         <div class="container mx-auto max-w-[1440px]">
             <div class="reveal mb-16 md:mb-24 text-center lg:text-left">
                 <div class="label-partie uppercase">RENFORT OPÉRATIONNEL</div>
-                <h2 class="text-5xl md:text-8xl font-[900] tracking-tighter leading-none mb-8 text-white">
+                <h2 class="text-5xl md:text-8xl font-[900] tracking-tighter leading-none mb-8 text-white text-center lg:text-left">
                     Quand m'activer en <span class="brand-gradient">renfort pur.</span>
                 </h2>
-                <p class="text-xl md:text-2xl text-slate-400 font-medium max-w-3xl">
+                <p class="text-xl md:text-2xl text-slate-400 font-medium max-w-3xl text-center lg:text-left">
                     J'interviens pour débloquer immédiatement ces situations critiques qui freinent votre exécution :
                 </p>
             </div>
@@ -638,138 +558,12 @@
         </div>
     </section>
 
-    <!-- SECTION MÉTHODE COLIBRI -->
-    <section id="framework" class="py-24 md:py-48 bg-neutral-50 overflow-hidden px-6 text-center">
-        <div class="container mx-auto max-w-[1440px]">
-            <div class="reveal mb-24">
-                <div class="label-partie uppercase">MÉTHODE COLIBRI™</div>
-                <h2 class="text-5xl md:text-8xl font-[900] tracking-tighter leading-none mb-12 text-neutral-900">Une structure agile. <br><span class="brand-gradient">Des résultats concrets.</span></h2>
-                <div class="bg-black p-8 md:p-10 rounded-[3rem] border border-neutral-800 mb-10 inline-block shadow-2xl">
-                    <p class="text-white font-medium italic text-xl md:text-2xl leading-relaxed">"Intervention ciblée pour absorber les tensions sans complexifier l’organisation de votre département Customer Success."</p>
-                </div>
-            </div>
-            
-            <div class="reveal max-w-6xl mx-auto">
-                <div class="flex flex-wrap lg:flex-nowrap gap-3 justify-center mb-8">
-                    <template x-for="(step, index) in colibriSteps" :key="index">
-                        <div @mouseenter="activeMethod = index"
-                             @click="activeMethod = index"
-                             class="method-letter-btn"
-                             :class="activeMethod === index ? 'active' : ''">
-                            <div class="letter" x-text="step.l"></div>
-                            <div class="subtitle" x-text="step.st.split(' ')[0]"></div>
-                        </div>
-                    </template>
-                </div>
-
-                <div class="display-screen text-left">
-                    <template x-for="(step, index) in colibriSteps" :key="index">
-                        <div x-show="activeMethod === index" 
-                             x-transition:enter="transition ease-out duration-300"
-                             x-transition:enter-start="opacity-0 translate-y-4"
-                             x-transition:enter-end="opacity-100 translate-y-0"
-                             class="w-full">
-                            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 text-left">
-                                <div>
-                                    <h3 class="text-4xl md:text-6xl font-black text-brand-blue" x-text="step.t"></h3>
-                                    <p class="text-sm font-black uppercase tracking-[0.2em] text-slate-400 mt-2" x-text="step.st"></p>
-                                </div>
-                                <div class="text-8xl font-black text-slate-100 absolute right-12 top-1/2 -translate-y-1/2 select-none pointer-events-none" x-text="step.l"></div>
-                            </div>
-                            <p class="text-2xl text-neutral-900 font-extrabold mb-10 max-w-2xl leading-tight text-left" x-text="step.p"></p>
-                            <div class="grid md:grid-cols-2 gap-4 text-left">
-                                <template x-for="(detail, dIdx) in step.details" :key="dIdx">
-                                    <div class="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 text-left">
-                                        <div class="w-2 h-2 bg-brand-blue rounded-full"></div>
-                                        <span class="text-[15px] text-slate-600 font-bold" x-text="detail"></span>
-                                    </div>
-                                </template>
-                            </div>
-                        </div>
-                    </template>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- SECTION SOLUTIONS -->
-    <section id="offres" class="py-24 md:py-48 bg-[#f8faff] px-6 text-center">
-        <div class="container mx-auto max-w-[1600px]">
-            <header class="text-center mb-24 reveal">
-                <div class="label-partie uppercase">SOLUTIONS OPÉRATIONNELLES</div>
-                <h2 class="text-5xl md:text-8xl font-[900] tracking-tighter leading-none mb-6 text-neutral-900">3 leviers pour <span class="brand-gradient">sécuriser</span> <br class="hidden md:block"> votre croissance.</h2>
-            </header>
-            <div class="grid lg:grid-cols-3 gap-10 md:gap-16 items-stretch text-left">
-                <div class="card-glass overflow-hidden rounded-4xl shadow-2xl reveal group hover-halo-emerald">
-                    <div class="relative h-64 overflow-hidden shrink-0 text-left">
-                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop" alt="Adoption Produit" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-t from-white/95 via-transparent to-transparent"></div>
-                    </div>
-                    <div class="p-10 pt-6 flex-grow flex flex-col">
-                        <div class="text-[11px] font-black uppercase tracking-widest text-emerald-600 mb-6 px-4 py-1.5 bg-emerald-50 rounded-full w-fit">Onboarding Client</div>
-                        <h3 class="text-3xl font-[900] mb-3 uppercase tracking-tight text-neutral-900 leading-none">Adoption Produit</h3>
-                        <p class="text-sm text-neutral-400 font-bold italic mb-8">L'autonomie client comme priorité.</p>
-                        <ul class="space-y-4 mb-10 text-left">
-                            <li class="flex items-start gap-4"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Kick-off, formation et parcours personnalisés</p></li>
-                            <li class="flex items-start gap-4"><i data-lucide="zap" class="w-5 h-5 text-emerald-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Activation rapide des premiers use cases</p></li>
-                        </ul>
-                        <div class="bg-black p-8 rounded-3xl mt-auto shadow-xl">
-                            <h4 class="text-[10px] font-black uppercase text-emerald-400 mb-2 tracking-widest text-left">Impact</h4>
-                            <p class="text-sm text-white italic font-medium leading-relaxed text-left">"Utilisateurs engagés dès les premiers jours."</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-glass overflow-hidden rounded-4xl shadow-2xl reveal group hover-halo-blue text-left">
-                    <div class="relative h-64 overflow-hidden shrink-0 text-left">
-                        <img src="https://images.unsplash.com/photo-1525130413817-d45c1d127c42?q=80&w=2070&auto=format&fit=crop" alt="Customer Care Expert" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-t from-white/95 via-transparent to-transparent"></div>
-                    </div>
-                    <div class="p-10 pt-6 flex-grow flex flex-col text-left">
-                        <div class="text-[11px] font-black uppercase tracking-widest text-brand-blue mb-6 px-4 py-1.5 bg-blue-50 rounded-full w-fit">Satisfaction 5★</div>
-                        <h3 class="text-3xl font-[900] mb-3 uppercase tracking-tight text-neutral-900 leading-none">Customer Care Expert</h3>
-                        <p class="text-sm text-neutral-400 font-bold italic mb-8">Le support devient un levier de performance.</p>
-                        <ul class="space-y-4 mb-10 text-left">
-                            <li class="flex items-start gap-4"><i data-lucide="layers" class="w-5 h-5 text-brand-blue shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Gestion fluide des tickets et SLAs</p></li>
-                            <li class="flex items-start gap-4"><i data-lucide="shield-alert" class="text-brand-blue w-5 h-5 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Analyse des causes racines et process</p></li>
-                        </ul>
-                        <div class="bg-brand-gradient p-8 rounded-3xl mt-auto shadow-xl text-left">
-                            <h4 class="text-[10px] font-black uppercase text-white/70 mb-2 tracking-widest text-left">Impact</h4>
-                            <p class="text-sm text-white italic font-medium leading-relaxed text-left">"Moins de tickets, moins de friction, plus de satisfaction et de rétention."</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-glass overflow-hidden rounded-4xl shadow-2xl reveal group hover-halo-violet text-left">
-                    <div class="relative h-64 overflow-hidden shrink-0 text-left">
-                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2026&auto=format&fit=crop" alt="CSM Stratégique" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-t from-white/95 via-transparent to-transparent"></div>
-                    </div>
-                    <div class="p-10 pt-6 flex-grow flex flex-col text-left">
-                        <div class="text-[11px] font-black uppercase tracking-widest text-violet-600 mb-6 px-4 py-1.5 bg-violet-50 rounded-full w-fit">Rétention & Expansion</div>
-                        <h3 class="text-3xl font-[900] mb-3 uppercase tracking-tight text-neutral-900 leading-none">CSM Stratégique</h3>
-                        <p class="text-sm text-neutral-400 font-bold italic mb-8">Sécuriser et développer vos comptes clés.</p>
-                        <ul class="space-y-4 mb-10 text-left">
-                            <li class="flex items-start gap-4"><i data-lucide="activity" class="w-5 h-5 text-violet-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Suivi des comptes sensibles et Health Score</p></li>
-                            <li class="flex items-start gap-4"><i data-lucide="plus-circle" class="w-5 h-5 text-violet-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Identification opportunités expansion (upsell/cross-sell)</p></li>
-                        </ul>
-                        <div class="bg-black p-8 rounded-3xl mt-auto shadow-xl text-left">
-                            <h4 class="text-[10px] font-black uppercase text-violet-400 mb-2 tracking-widest text-left">Impact</h4>
-                            <p class="text-sm text-white italic font-medium leading-relaxed text-left">"Churn réduit, MRR sécurisé et croissance des comptes existants."</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- SECTION AUDIT STRATÉGIQUE (DIAGNOSTIC OPÉRATIONNEL) -->
     <section id="diagnostic-encart" class="py-24 md:py-48 bg-slate-50 px-6">
         <div class="container mx-auto" :class="showRecommendation || submitted ? 'max-w-6xl' : 'max-w-4xl'">
             
             <!-- AUDIT QUESTIONS FLOW -->
             <div x-show="!submitted && !showRecommendation" class="reveal reveal-visible" x-transition:enter="transition ease-out duration-300">
-                <!-- PROGRESS -->
                 <div class="mb-12 text-center">
                     <div class="label-partie mb-6">Questionnaire Stratégique : Étape <span x-text="step"></span>/9</div>
                     <div class="h-2 w-full bg-slate-200 rounded-full overflow-hidden max-w-md mx-auto">
@@ -778,25 +572,19 @@
                 </div>
 
                 <div class="bg-white rounded-[3rem] p-8 md:p-16 shadow-3xl border border-slate-100 min-h-[600px] flex flex-col">
-                    
-                    <!-- STEP 1: DÉFI OPÉRATIONNEL -->
                     <div x-show="step === 1" class="space-y-8">
                         <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center leading-tight">
                             Quel est aujourd’hui votre principal <br><span class="brand-gradient">défi opérationnel</span> côté client ?
                         </h2>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
                             <template x-for="item in challengesList">
-                                <button @click="formData.challenge = item.id; nextStep()" 
-                                        class="option-card p-6 text-left flex flex-col gap-2"
-                                        :class="formData.challenge === item.id ? 'active' : ''">
+                                <button @click="formData.challenge = item.id; nextStep()" class="option-card p-6 text-left flex flex-col gap-2" :class="formData.challenge === item.id ? 'active' : ''">
                                     <span class="font-bold text-slate-900" x-text="item.title"></span>
                                     <span class="text-xs text-slate-400 font-bold uppercase tracking-wider" x-text="item.desc"></span>
                                 </button>
                             </template>
                         </div>
                     </div>
-
-                    <!-- STEP 2: CONTEXTE MÉTIER -->
                     <div x-show="step === 2" class="space-y-8">
                         <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center">Dans quel <span class="brand-gradient">secteur</span> évoluez-vous ?</h2>
                         <div class="space-y-6 max-w-lg mx-auto">
@@ -820,8 +608,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- STEP 3: QUALIFICATION OPÉRATIONNELLE -->
                     <div x-show="step === 3" class="space-y-8">
                         <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center leading-tight">Qualification <span class="brand-gradient">Opérationnelle</span></h2>
                         <div class="space-y-6 max-w-lg mx-auto">
@@ -846,8 +632,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- STEP 4: KPI -->
                     <div x-show="step === 4" class="space-y-8">
                         <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center">Analyse des <span class="brand-gradient">Indicateurs</span></h2>
                         <div class="space-y-6 max-w-lg mx-auto">
@@ -875,8 +659,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- STEP 5: OUTILS -->
                     <div x-show="step === 5" class="space-y-8">
                         <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center">Votre <span class="brand-gradient">Stack Outils</span></h2>
                         <div class="space-y-6 max-w-lg mx-auto">
@@ -901,8 +683,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- STEP 6: INTERVENTION -->
                     <div x-show="step === 6" class="space-y-8">
                         <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center">Type de <span class="brand-gradient">Renfort</span></h2>
                         <div class="space-y-6 max-w-lg mx-auto">
@@ -922,8 +702,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- STEP 7: PROJECTION -->
                     <div x-show="step === 7" class="space-y-8">
                         <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center leading-tight">Projection & <span class="brand-gradient">Impact</span></h2>
                         <div class="grid gap-3 max-w-lg mx-auto">
@@ -935,8 +713,6 @@
                             </template>
                         </div>
                     </div>
-
-                    <!-- STEP 8: CONTACT -->
                     <div x-show="step === 8" class="space-y-8">
                         <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center">Vos <span class="brand-gradient">Coordonnées</span></h2>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto text-left">
@@ -945,13 +721,8 @@
                             <input type="text" x-model="formData.jobTitle" placeholder="Fonction" class="input-field md:col-span-2">
                             <input type="text" x-model="formData.companyName" placeholder="Entreprise *" class="input-field md:col-span-2">
                             <input type="email" x-model="formData.email" placeholder="Email professionnel *" class="input-field md:col-span-2">
-                            <input type="url" x-model="formData.website" placeholder="Site web" class="input-field">
-                            <input type="text" x-model="formData.phone" placeholder="Téléphone (optionnel)" class="input-field">
-                            <input type="url" x-model="formData.linkedin" placeholder="LinkedIn (optionnel)" class="input-field md:col-span-2">
                         </div>
                     </div>
-
-                    <!-- STEP 9: ACTION FINALE -->
                     <div x-show="step === 9" class="space-y-8">
                         <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center leading-tight">Souhaitez-vous <span class="brand-gradient">valider ?</span></h2>
                         <div class="grid gap-3 max-w-lg mx-auto">
@@ -961,12 +732,11 @@
                         </div>
                     </div>
 
-                    <!-- NAVIGATION -->
                     <div class="mt-auto pt-12 flex items-center justify-between gap-6 max-w-2xl mx-auto w-full">
                         <button x-show="step > 1" @click="prevStep()" class="px-8 py-4 rounded-full border-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-slate-50 transition-all flex items-center gap-2">
                             <i data-lucide="chevron-left" class="w-4 h-4"></i> Précédent
                         </button>
-                        <div class="flex-1">
+                        <div class="flex-1 text-center">
                             <button x-show="step < 9 && step !== 1 && step !== 7" @click="nextStep()" class="w-full px-8 py-4 bg-black text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl flex items-center justify-center gap-2 transition-all hover:scale-105">
                                 Suivant <i data-lucide="chevron-right" class="w-4 h-4"></i>
                             </button>
@@ -979,9 +749,9 @@
                 </div>
             </div>
 
-            <!-- RESULTS PAGE (RECOMMENDATION) -->
+            <!-- RESULTS PAGE -->
             <div x-show="showRecommendation" x-cloak class="reveal reveal-visible bg-white rounded-[4rem] overflow-hidden shadow-4xl border border-slate-100" x-transition:enter="transition ease-out duration-500">
-                <div class="bg-brand-dark p-12 md:p-20 text-white">
+                <div class="bg-brand-dark p-12 md:p-20 text-white text-left">
                     <div class="label-partie mb-6">Audit Stratégique</div>
                     <h2 class="text-4xl md:text-7xl font-black tracking-tighter leading-tight">Diagnostic <br><span class="brand-gradient">Opérationnel</span></h2>
                 </div>
@@ -992,7 +762,7 @@
                     <div class="absolute bottom-12 left-10 md:left-24 flex items-end gap-10">
                         <div class="flex-1 text-left">
                             <div class="label-partie bg-brand-blue text-white mb-6">Offre Prioritaire</div>
-                            <h2 class="text-5xl md:text-8xl font-black text-neutral-900 tracking-tighter leading-none text-left" x-text="recommendedOffer.title"></h2>
+                            <h2 class="text-5xl md:text-8xl font-black text-neutral-900 tracking-tighter leading-none" x-text="recommendedOffer.title"></h2>
                         </div>
                     </div>
                 </div>
@@ -1000,12 +770,11 @@
                 <div class="p-12 md:p-24 bg-white">
                     <div class="max-w-4xl space-y-12 text-left">
                         <div class="space-y-6">
-                            <h3 class="text-3xl font-black uppercase tracking-tight text-neutral-900 text-left">Analyse Effectuée</h3>
-                            <p class="text-xl text-slate-600 font-medium leading-relaxed text-left">
+                            <h3 class="text-3xl font-black uppercase tracking-tight text-neutral-900">Analyse Effectuée</h3>
+                            <p class="text-xl text-slate-600 font-medium leading-relaxed">
                                 Au vu de votre enjeu sur <strong class="text-brand-blue" x-text="challengeLabel"></strong>, j'ai identifié l'offre <strong x-text="recommendedOffer.title"></strong> comme étant le levier opérationnel le plus impactant pour vous aujourd'hui.
                             </p>
                         </div>
-                        
                         <div class="flex flex-wrap gap-6 justify-start">
                             <button @click="confirmRecommendation()" class="px-12 py-6 bg-brand-gradient text-white rounded-full font-black uppercase text-sm shadow-2xl hover:scale-105 transition-all">Confirmer et Finaliser</button>
                             <button @click="downloadPDF()" class="px-10 py-6 bg-neutral-900 text-white rounded-full font-black uppercase text-sm shadow-xl flex items-center gap-3 hover:bg-neutral-800 transition-colors">
@@ -1022,13 +791,9 @@
                     <div class="absolute inset-0 bg-brand-blue/20 blur-[100px] rounded-full scale-150 animate-pulse"></div>
                     <img src="https://lh3.googleusercontent.com/d/1ZKwRL-c7yJCE-H8-ZbH1jt_RStqn-Svq" alt="Succès" class="relative w-48 h-auto mx-auto animate-float drop-shadow-3xl colibri-interaction">
                 </div>
-                
                 <div class="max-w-2xl mx-auto space-y-10">
                     <h2 class="text-5xl md:text-7xl font-black tracking-tight text-neutral-900 leading-none">C'est dans la <span class="brand-gradient">boîte !</span></h2>
-                    <p class="text-2xl text-slate-500 font-medium leading-relaxed">
-                        Merci <span class="text-brand-blue font-bold" x-text="formData.firstName"></span> ! Votre diagnostic stratégique a été transmis avec succès.
-                    </p>
-
+                    <p class="text-2xl text-slate-500 font-medium leading-relaxed">Merci <span class="text-brand-blue font-bold" x-text="formData.firstName"></span> ! Votre diagnostic stratégique a été transmis avec succès.</p>
                     <div class="bg-white p-10 rounded-[3rem] shadow-3xl border border-slate-100 text-left space-y-8">
                         <h4 class="text-xs font-black uppercase tracking-[0.2em] text-slate-300 border-b pb-4">Prochaines étapes</h4>
                         <div class="flex items-start gap-6">
@@ -1040,52 +805,14 @@
                             <p class="text-slate-600 font-bold leading-tight text-lg">Recontact sous 24h ouvrées pour fixer notre premier échange conseil.</p>
                         </div>
                     </div>
-
-                    <div class="pt-8">
-                        <a href="https://calendly.com/corinne-marsiac-careandsuccess/30min" target="_blank" 
-                           class="inline-flex items-center gap-4 px-16 py-7 bg-black text-white rounded-full font-black uppercase tracking-widest hover:scale-110 transition-all shadow-4xl">
-                            Planifier l'échange (Calendly) <i data-lucide="calendar" class="w-6 h-6"></i>
-                        </a>
+                    <div class="pt-8 flex flex-col gap-4 items-center">
+                        <a href="https://calendly.com/corinne-marsiac-careandsuccess/30min" target="_blank" class="inline-flex items-center gap-4 px-16 py-7 bg-black text-white rounded-full font-black uppercase tracking-widest hover:scale-110 transition-all shadow-4xl">Planifier l'échange (Calendly) <i data-lucide="calendar" class="w-6 h-6"></i></a>
+                        <!-- BOUTON RELANCER LE DIAGNOSTIC -->
+                        <button @click="resetAudit()" class="text-slate-400 hover:text-brand-blue font-bold uppercase text-xs tracking-widest transition-colors flex items-center gap-2">
+                            <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Relancer le diagnostic
+                        </button>
                     </div>
                 </div>
-            </div>
-
-            <!-- CAROUSEL CITATIONS -->
-            <div x-show="!showRecommendation && !submitted" class="mt-24 text-center" x-data="{ active: 0, quotes: [
-                { t: 'Pour les SaaS en environnement réglementé, la précision est la clé de la confiance.', a: 'Care&Success' },
-                { t: 'Le Success n\'est pas un service, c\'est une culture de la rétention.', a: 'Care&Success' },
-                { t: 'Un onboarding réussi est l\'assurance contre le churn précoce.', a: 'Care&Success' }
-            ], init() { setInterval(() => { this.active = (this.active + 1) % this.quotes.length; }, 6000); } }">
-                <div class="relative h-32 flex items-center justify-center">
-                    <template x-for="(q, idx) in quotes" :key="idx">
-                        <div x-show="active === idx" 
-                             x-transition:enter="transition ease-out duration-500" 
-                             x-transition:enter-start="opacity-0 translate-y-4"
-                             x-transition:enter-end="opacity-100 translate-y-0"
-                             x-transition:leave="transition ease-in duration-300"
-                             x-transition:leave-end="opacity-0 -translate-y-4"
-                             class="absolute w-full inline-flex items-center justify-center gap-6 p-8 rounded-4xl bg-white shadow-xl border border-slate-50 italic text-slate-500 text-sm">
-                            <img src="https://lh3.googleusercontent.com/d/1LJfMlbhJatlaRiCFA2TgbD60scJNjpHB" class="w-16 h-16 rounded-full border-2 border-brand-blue/20">
-                            <span class="text-left leading-relaxed text-lg text-slate-600">
-                                "<span x-text="q.t"></span>" — <strong class="text-slate-900 not-italic" x-text="q.a"></strong>
-                            </span>
-                        </div>
-                    </template>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- SECTION CONTACT -->
-    <section id="contact" class="py-24 md:py-48 bg-white px-6 text-center">
-        <div class="container mx-auto max-w-[1920px]">
-            <div class="relative overflow-hidden bg-neutral-950 rounded-[5rem] p-12 md:p-32 reveal text-center group shadow-3xl">
-                <h2 class="text-5xl md:text-8xl font-[900] tracking-tighter mb-12 leading-tight text-white text-center">Construisons votre <span class="brand-gradient">réussite ensemble</span></h2>
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-8 relative z-10">
-                    <a href="https://calendly.com/corinne-marsiac-careandsuccess/30min" target="_blank" class="w-full sm:w-auto px-16 py-6 bg-brand-gradient text-white rounded-full font-black uppercase tracking-widest text-sm transition-all duration-500 hover:scale-110 flex items-center justify-center gap-4 shadow-2xl shadow-indigo-500/30">Prendre RDV <i data-lucide="calendar" class="w-5 h-5"></i></a>
-                    <a href="mailto:careandsuccess.partner@gmail.com" class="w-full sm:w-auto px-16 py-6 border border-white/20 text-white rounded-full font-black uppercase tracking-widest text-sm transition-all duration-500 hover:scale-110 hover:bg-white/10 flex items-center justify-center gap-4">E-mail <i data-lucide="mail" class="w-5 h-5"></i></a>
-                </div>
-                <div class="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 40px 40px;"></div>
             </div>
         </div>
     </section>
@@ -1093,9 +820,7 @@
     <!-- FOOTER -->
     <footer class="py-24 bg-white border-t border-neutral-100 px-6">
         <div class="container mx-auto max-w-[1920px]">
-            <!-- TOP FOOTER -->
             <div class="grid grid-cols-1 lg:grid-cols-3 items-center gap-12 lg:gap-20 mb-20 text-center">
-                <!-- Navigation (Ordre 2 sur mobile) -->
                 <div class="order-2 lg:order-1 space-y-6 lg:text-left">
                     <span class="text-xs font-black uppercase tracking-[0.3em] border-b-2 border-brand-blue pb-3 inline-block lg:block">Navigation</span>
                     <div class="flex flex-col gap-3 text-lg font-bold text-neutral-500">
@@ -1104,15 +829,9 @@
                         <a href="#framework" class="hover:text-blue-600 transition-colors">Méthode Colibri™</a>
                     </div>
                 </div>
-
-                <!-- LOGO SECTION (Ordre 1 sur mobile) -->
                 <div class="order-1 lg:order-2 flex justify-center">
-                    <a href="#accueil">
-                        <img src="https://lh3.googleusercontent.com/d/1r0tG2koxXGDPjoCw9dmlCtk6UisQYxDE" alt="Logo" class="h-48 md:h-64 lg:h-80 opacity-90 hover:opacity-100 transition-all mx-auto">
-                    </a>
+                    <a href="#accueil"><img src="https://lh3.googleusercontent.com/d/1r0tG2koxXGDPjoCw9dmlCtk6UisQYxDE" alt="Logo" class="h-40 md:h-56 lg:h-72 opacity-90 hover:opacity-100 transition-all mx-auto"></a>
                 </div>
-                
-                <!-- Contact (Ordre 3 sur mobile) -->
                 <div class="order-3 lg:order-3 space-y-6 lg:text-left">
                     <span class="text-xs font-black uppercase tracking-[0.3em] border-b-2 border-brand-blue pb-3 inline-block lg:block">Contact</span>
                     <div class="flex flex-col gap-3 text-lg font-bold text-neutral-500">
@@ -1123,8 +842,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- BOTTOM LINE : MENTION UNIQUE CENTRÉE -->
             <div class="pt-12 border-t border-neutral-100 text-center">
                 <p class="text-[11px] font-black uppercase tracking-widest text-neutral-400 leading-relaxed mx-auto max-w-5xl px-4 text-center">
                     © 2026 • Care & Success • Renfort opérationnel Freelance • Expertise SaaS B2B • RH Tech / Paie
@@ -1136,17 +853,10 @@
     <script>
         function AppState() {
             return {
-                scrolled: false, 
-                mobileMenu: false, 
-                scrollPos: 0, 
-                step: 1, 
-                loading: false, 
-                submitted: false, 
-                showRecommendation: false,
-                activeMethod: 0,
+                scrolled: false, mobileMenu: false, scrollPos: 0, step: 1, loading: false, submitted: false, showRecommendation: false, activeMethod: 0,
                 formData: { 
                     challenge: '', industry: '', maturity: '', pressureLevel: '', mainImpact: '', 
-                    mainBlocker: '', trackedKPIs: [], pressureKPI: '', toolStack: [], toolUsage: '',
+                    trackedKPIs: [], pressureKPI: '', toolStack: [], toolUsage: '',
                     interventionType: '', timing: '', expectedResult: '', firstName: '', lastName: '', 
                     companyName: '', email: '', website: '', linkedin: '', phone: '', jobTitle: '', finalAction: '' 
                 },
@@ -1168,183 +878,84 @@
                     { l: 'R', t: 'RETENIR', st: 'Action Churn', p: 'Agir proactivement avant le désengagement.', details: ['Relances ciblées des utilisateurs inactifs', 'Suivi spécifique des comptes sensibles', 'Mise en avant des succès rapides (quick wins)'] },
                     { l: 'I', t: 'ITÉRER', st: 'Améliorer', p: 'Optimiser en continu via les retours terrain.', details: ['Remontées régulières vers l\'équipe Produit', 'Ajustement des process selon les résultats', 'Optimisation constante des playbooks'] }
                 ],
-                get challengeLabel() {
-                    return this.challengesList.find(c => c.id === this.formData.challenge)?.title || 'votre défi';
-                },
+                get challengeLabel() { return this.challengesList.find(c => c.id === this.formData.challenge)?.title || 'votre défi'; },
                 get recommendedOffer() {
                     const c = this.formData.challenge;
-                    if (c === 'onboarding') return { 
-                        title: 'Adoption Produit', 
-                        desc: 'Sécuriser l\'engagement dès les premiers jours pour garantir un succès durable.', 
-                        img: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop'
-                    };
-                    if (c === 'support' || c === 'resources') return { 
-                        title: 'Customer Care', 
-                        desc: 'Fluidifier vos flux de demandes pour rétablir vos SLAs et soulager l\'équipe.', 
-                        img: 'https://images.unsplash.com/photo-1525130413817-d45c1d127c42?q=80&w=2070&auto=format&fit=crop'
-                    };
-                    return { 
-                        title: 'Success Stratégie', 
-                        desc: 'Identifier les risques et transformer vos comptes clients en leviers de croissance.', 
-                        img: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2026&auto=format&fit=crop'
-                    };
+                    if (c === 'onboarding') return { title: 'Adoption Produit', img: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop' };
+                    if (c === 'support' || c === 'resources') return { title: 'Customer Care', img: 'https://images.unsplash.com/photo-1525130413817-d45c1d127c42?q=80&w=2070&auto=format&fit=crop' };
+                    return { title: 'Success Stratégie', img: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2026&auto=format&fit=crop' };
                 },
-                nextStep() { 
-                    if(this.step < 9) {
-                        this.step++;
-                        this.$nextTick(() => lucide.createIcons());
-                    }
-                },
-                prevStep() { 
-                    if(this.step > 1) {
-                        this.step--;
-                        this.$nextTick(() => lucide.createIcons());
-                    }
-                },
+                nextStep() { if(this.step < 9) { this.step++; this.$nextTick(() => lucide.createIcons()); } },
+                prevStep() { if(this.step > 1) { this.step--; this.$nextTick(() => lucide.createIcons()); } },
                 async submitAudit() {
-                    this.loading = true;
-                    await new Promise(r => setTimeout(r, 2500));
-                    this.loading = false;
-                    this.showRecommendation = true;
-                    this.$nextTick(() => { lucide.createIcons(); });
+                    this.loading = true; await new Promise(r => setTimeout(r, 2500));
+                    this.loading = false; this.showRecommendation = true; this.$nextTick(() => lucide.createIcons());
                 },
-                confirmRecommendation() {
+                confirmRecommendation() { this.showRecommendation = false; this.submitted = true; this.$nextTick(() => lucide.createIcons()); },
+                resetAudit() {
+                    this.step = 1;
+                    this.submitted = false;
                     this.showRecommendation = false;
-                    this.submitted = true;
-                    this.$nextTick(() => { lucide.createIcons(); });
+                    this.formData = { 
+                        challenge: '', industry: '', maturity: '', pressureLevel: '', mainImpact: '', 
+                        trackedKPIs: [], pressureKPI: '', toolStack: [], toolUsage: '',
+                        interventionType: '', timing: '', expectedResult: '', firstName: '', lastName: '', 
+                        companyName: '', email: '', website: '', linkedin: '', phone: '', jobTitle: '', finalAction: '' 
+                    };
+                    this.$nextTick(() => { 
+                        lucide.createIcons(); 
+                        document.getElementById('diagnostic-encart').scrollIntoView({behavior:'smooth'});
+                    });
                 },
                 async downloadPDF() {
                     this.loading = true;
                     const { jsPDF } = window.jspdf;
                     const colibriImgUrl = "https://lh3.googleusercontent.com/d/1ZKwRL-c7yJCE-H8-ZbH1jt_RStqn-Svq";
-
-                    const loadImage = (url) => {
-                        return new Promise((resolve, reject) => {
-                            const img = new Image();
-                            img.crossOrigin = "Anonymous";
-                            img.src = url;
-                            img.onload = () => resolve(img);
-                            img.onerror = (e) => reject(e);
-                        });
-                    };
-
-                    const createGradientTitleCanvas = () => {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = 1200;
-                        canvas.height = 300;
-                        const ctx = canvas.getContext('2d');
-                        ctx.font = "bold 120px Quicksand, sans-serif";
-                        const gradient = ctx.createLinearGradient(0, 0, 800, 0);
-                        gradient.addColorStop(0, '#005ebf'); 
-                        gradient.addColorStop(0.5, '#29bfff'); 
-                        gradient.addColorStop(1, '#c252ff'); 
-                        ctx.fillStyle = gradient;
-                        ctx.fillText("Care & Success", 0, 150);
-                        return canvas.toDataURL('image/png');
-                    };
+                    const loadImage = (url) => new Promise((resolve, reject) => { const img = new Image(); img.crossOrigin = "Anonymous"; img.src = url; img.onload = () => resolve(img); img.onerror = (e) => reject(e); });
+                    const createTitleCanvas = () => { const canvas = document.createElement('canvas'); canvas.width = 1200; canvas.height = 300; const ctx = canvas.getContext('2d'); ctx.font = "bold 120px Quicksand, sans-serif"; const gradient = ctx.createLinearGradient(0, 0, 900, 0); gradient.addColorStop(0, '#005ebf'); gradient.addColorStop(0.5, '#29bfff'); gradient.addColorStop(1, '#c252ff'); ctx.fillStyle = gradient; ctx.fillText("Care & Success", 0, 150); return canvas.toDataURL('image/png'); };
 
                     try {
-                        const loadedColibri = await loadImage(colibriImgUrl);
-                        const gradientTitleData = createGradientTitleCanvas();
-
+                        const [loadedColibri, gradientTitleData] = await Promise.all([loadImage(colibriImgUrl), createTitleCanvas()]);
                         const doc = new jsPDF();
-                        const blueColor = [37, 99, 235];
-                        const brandDarkColor = [15, 23, 42]; 
-                        const darkColor = [15, 23, 42];
-                        const greyColor = [100, 116, 139];
+                        const blueColor = [37, 99, 235], darkColor = [15, 23, 42], greyColor = [100, 116, 139], marginX = 20;
+                        let currentY = 75;
 
-                        doc.setFillColor(brandDarkColor[0], brandDarkColor[1], brandDarkColor[2]);
-                        doc.rect(0, 0, 210, 55, 'F');
-                        doc.addImage(loadedColibri, 'PNG', 125, -5, 85, 75);
-                        doc.addImage(gradientTitleData, 'PNG', 20, 12, 130, 26);
-                        
-                        doc.setFontSize(10);
-                        doc.setFont('helvetica', 'normal');
-                        doc.setTextColor(255, 255, 255);
+                        doc.setFillColor(darkColor[0], darkColor[1], darkColor[2]); doc.rect(0, 0, 210, 55, 'F');
+                        doc.addImage(loadedColibri, 'PNG', 125, -5, 85, 75); doc.addImage(gradientTitleData, 'PNG', 20, 12, 110, 22);
+                        doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.setTextColor(255, 255, 255);
                         doc.text('RENFORT OPÉRATIONNEL EXPERT | LE PARTENAIRE DE VOTRE SUCCÈS', 20, 42);
 
-                        const startY = 85; 
-                        doc.setFont('helvetica', 'bold');
-                        doc.setFontSize(18);
-                        doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-                        doc.text('DIAGNOSTIC STRATÉGIQUE', 20, startY);
-                        doc.setDrawColor(blueColor[0], blueColor[1], blueColor[2]);
-                        doc.setLineWidth(1);
-                        doc.line(20, startY + 5, 50, startY + 5);
+                        doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+                        doc.text('VOTRE DIAGNOSTIC STRATÉGIQUE', marginX, currentY); currentY += 4;
+                        doc.setDrawColor(blueColor[0], blueColor[1], blueColor[2]); doc.setLineWidth(1.5); doc.line(marginX, currentY, marginX + 30, currentY);
+                        doc.setFontSize(10); doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]); doc.text('Émis le ' + new Date().toLocaleDateString('fr-FR'), 160, currentY - 5);
+                        currentY += 15;
 
-                        doc.setFontSize(10);
-                        doc.setFont('helvetica', 'normal');
-                        doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]);
-                        doc.text('Émis le : ' + new Date().toLocaleDateString('fr-FR'), 155, startY);
+                        const drawSection = (title, data) => {
+                            doc.setFillColor(241, 245, 249); doc.rect(marginX, currentY, 170, 8, 'F');
+                            doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
+                            doc.text(title.toUpperCase(), marginX + 5, currentY + 5.5);
+                            currentY += 14; doc.setFontSize(10); doc.setTextColor(60, 60, 60);
+                            data.forEach(item => {
+                                doc.setFont('helvetica', 'bold'); doc.text(item.label + ' :', marginX + 5, currentY);
+                                doc.setFont('helvetica', 'normal'); const wrapped = doc.splitTextToSize(item.value || 'Non renseigné', 120);
+                                doc.text(wrapped, marginX + 45, currentY); currentY += (wrapped.length * 5) + 2;
+                            });
+                            currentY += 5;
+                        };
 
-                        doc.setFillColor(241, 245, 249);
-                        doc.rect(20, startY + 15, 170, 42, 'F');
-                        doc.setFont('helvetica', 'bold');
-                        doc.setFontSize(11);
-                        doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                        doc.text('1. IDENTIFICATION CLIENT', 25, startY + 25);
-                        doc.setFont('helvetica', 'normal');
-                        doc.setFontSize(10);
-                        doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-                        doc.text('Entreprise : ' + (this.formData.companyName || 'Non renseigné'), 25, startY + 33);
-                        doc.text('Contact : ' + (this.formData.firstName || '') + ' ' + (this.formData.lastName || ''), 25, startY + 40);
-                        doc.text('Email : ' + (this.formData.email || 'Non renseigné'), 25, startY + 47);
+                        drawSection('Profil & Secteur', [{ label: 'Entreprise', value: this.formData.companyName }, { label: 'Secteur', value: this.formData.industry }, { label: 'Maturité', value: this.formData.maturity }, { label: 'Contact', value: this.formData.firstName + ' ' + this.formData.lastName }]);
+                        drawSection('Performance', [{ label: 'Défi', value: this.challengeLabel }, { label: 'Pression', value: this.formData.pressureLevel }, { label: 'Impact', value: this.formData.mainImpact }, { label: 'KPIs', value: this.formData.trackedKPIs.join(', ') }]);
+                        drawSection('Intervention', [{ label: 'Stack', value: this.formData.toolStack.join(', ') }, { label: 'Type', value: this.formData.interventionType }, { label: 'Timing', value: this.formData.timing }, { label: 'Objectif', value: this.formData.expectedResult }]);
 
-                        const section2Y = startY + 75;
-                        doc.setFont('helvetica', 'bold');
-                        doc.setFontSize(11);
-                        doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                        doc.text('2. ENJEUX OPÉRATIONNELS IDENTIFIÉS', 20, section2Y);
-                        doc.setFont('helvetica', 'normal');
-                        doc.setFontSize(10);
-                        doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-                        doc.text('Défi prioritaire : ' + this.challengeLabel, 20, section2Y + 10);
-                        const kpisLabel = this.formData.trackedKPIs.length > 0 ? this.formData.trackedKPIs.join(', ').toUpperCase() : 'Non renseigné';
-                        doc.text('Indicateurs de performance suivis : ' + kpisLabel, 20, section2Y + 17);
+                        currentY += 5; doc.setFillColor(darkColor[0], darkColor[1], darkColor[2]); doc.rect(marginX, currentY, 170, 35, 'F');
+                        doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(255, 255, 255); doc.text('PRÉCONISATION STRATÉGIQUE CARE & SUCCESS', marginX + 10, currentY + 12);
+                        doc.setFontSize(16); doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]); doc.text(this.recommendedOffer.title.toUpperCase(), marginX + 10, currentY + 24);
 
-                        const section3Y = section2Y + 40;
-                        doc.setFont('helvetica', 'bold');
-                        doc.setFontSize(11);
-                        doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                        doc.text('3. ANALYSE ET PRÉCONISATION', 20, section3Y);
-                        doc.setFont('helvetica', 'italic');
-                        doc.setFontSize(10.5);
-                        doc.setTextColor(60, 60, 60);
-                        
-                        let analysisText = "";
-                        if(this.formData.challenge === 'support') {
-                            analysisText = "La situation actuelle nécessite un renfort opérationnel ciblé pour absorber les pics de charge (ticketing, formation, support) sans complexifier votre organisation, tout en stabilisant vos processus internes.";
-                        } else if(['onboarding', 'adopt'].includes(this.formData.challenge)) {
-                            analysisText = "Votre phase d'accélération nécessite une structuration immédiate de vos parcours d'onboarding. L'objectif est de réduire le 'Time-to-Value' pour garantir une adoption produit optimale dès les premiers jours.";
-                        } else {
-                            analysisText = "L'analyse de vos enjeux suggère un besoin critique de proactivité. Il est impératif de mettre en place une stratégie orientée expansion pour sécuriser votre MRR et transformer vos clients passifs en ambassadeurs.";
-                        }
-                        
-                        const splitAnalysis = doc.splitTextToSize(analysisText, 170);
-                        doc.text(splitAnalysis, 20, section3Y + 10);
-
-                        const solutionY = section3Y + 40;
-                        doc.setDrawColor(37, 99, 235);
-                        doc.setLineWidth(0.8);
-                        doc.rect(20, solutionY, 170, 25);
-                        doc.setFont('helvetica', 'bold');
-                        doc.setFontSize(14);
-                        doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]);
-                        doc.text('SOLUTION PRÉCONISÉE : ' + this.recommendedOffer.title.toUpperCase(), 30, solutionY + 16);
-
-                        doc.setFont('helvetica', 'normal');
-                        doc.setFontSize(8);
-                        doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]);
                         const companyName = this.formData.companyName || 'Votre Entreprise';
-                        const footerText = 'Care & Success par Corinne Marsiac - ' + companyName;
-                        doc.text(footerText, 105, 290, null, null, 'center');
+                        doc.setFontSize(8); doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]); doc.text('Care & Success par Corinne Marsiac - ' + companyName, 105, 290, null, null, 'center');
                         doc.save('Diagnostic_CareSuccess_' + companyName.replace(/\s+/g, '_') + '.pdf');
-
-                    } catch (error) {
-                        console.error("Erreur PDF:", error);
-                    } finally {
-                        this.loading = false;
-                    }
+                    } catch (error) { console.error("Erreur PDF:", error); } finally { this.loading = false; }
                 }
             };
         }
@@ -1360,9 +971,7 @@
             });
             const observerOptions = { threshold: 0.15, rootMargin: '0px 0px -50px 0px' };
             const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => { 
-                    if (entry.isIntersecting) entry.target.classList.add('reveal-visible');
-                });
+                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('reveal-visible'); });
             }, observerOptions);
             document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
         });
