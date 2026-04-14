@@ -256,8 +256,8 @@
                     { l: 'C', t: 'CADRER', st: 'Rôles & Règles', p: 'Structurer qui fait quoi, pour quels clients.', details: ['Attribution claire des comptes clés', 'Définition des règles de gestion support', 'Mise en place des priorités opérationnelles'] },
                     { l: 'O', t: 'OBSERVER', st: 'Analyse Terrain', p: 'Identifier rapidement les points de friction.', details: ['Audit approfondi des tickets récurrents', 'Détection des comptes en baisse d\'usage', 'Repérage des signaux faibles de churn'] },
                     { l: 'L', t: 'LISSER', st: 'Zéro Friction', p: 'Supprimer les obstacles du parcours client.', details: ['Simplification des parcours d\'onboarding', 'Ajustement des messages automatiques', 'Correction immédiate des points de blocage'] },
-                    { l: 'I', t: 'IMPLÉMENTER', st: 'Outiller', p: 'Équiper vos équipes pour agir efficacement.', details: ['Création de templates de réponses et relances', 'Mise en place de Playbooks actionnables', 'Automatisation des tâches répétitives'] },
-                    { l: 'B', t: 'BALISER', st: 'Suivre les KPI', p: 'Mesurer le succès par les bons indicateurs.', details: ['Suivi du taux d\'activation réel', 'Analyse du volume et de la résolution tickets', 'Mise en place de Health Scores simples'] },
+                    { l: 'I', t: 'IMPLÉMENTER', st: 'Outiller', p: 'Équiper vos équipes pour agir efficacement.', details: ['Création de templates de réponses et relances', 'Mise en place des Playbooks actionnables', 'Automatisation des tâches répétitives'] },
+                    { l: 'B', t: 'BALISER', st: 'Suivre les KPI', p: 'Mesurer le succès par les bons indicateurs.', details: ['Suivi du taux d\'activation réel', 'Analyse du volume et de la résolution tickets', 'Mise en place des Health Scores simples'] },
                     { l: 'R', t: 'RETENIR', st: 'Action Churn', p: 'Agir proactivement avant le désengagement.', details: ['Relances ciblées des utilisateurs inactifs', 'Suivi spécifique des comptes sensibles', 'Mise en avant des succès rapides (quick wins)'] },
                     { l: 'I', t: 'ITÉRER', st: 'Améliorer', p: 'Optimiser en continu via les retours terrain.', details: ['Remontées régulières vers l\'équipe Produit', 'Ajustement des process selon les résultats', 'Optimisation constante des playbooks'] }
                 ],
@@ -270,27 +270,125 @@
                 },
                 nextStep() { if(this.step < 9) { this.step++; this.$nextTick(() => lucide.createIcons()); } },
                 prevStep() { if(this.step > 1) { this.step--; this.$nextTick(() => lucide.createIcons()); } },
+
+                /**
+                 * ENVOI DES DONNÉES ET GÉNÉRATION PDF TECHNIQUE POUR E-MAIL
+                 */
                 async submitAudit() {
-                    this.loading = true; await new Promise(r => setTimeout(r, 2000));
-                    this.loading = false; this.showRecommendation = true; this.$nextTick(() => lucide.createIcons());
+                    this.loading = true;
+                    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw0SwbVXhY3pocn_NyeMWCnvEAUliX6a9rKpTqYllaR24TP1BuAgSG_1gCGC237-Lyf/exec';
+
+                    try {
+                        // 1. Génération du PDF pour l'envoi email
+                        const { jsPDF } = window.jspdf;
+                        const doc = new jsPDF();
+                        const marginX = 20; 
+                        let y = 30;
+
+                        // Entête
+                        doc.setFillColor(15, 23, 42); 
+                        doc.rect(0, 0, 210, 45, 'F');
+                        doc.setFont('helvetica', 'bold'); 
+                        doc.setFontSize(22); 
+                        doc.setTextColor(255, 255, 255);
+                        doc.text("Care & Success", marginX, 25);
+                        doc.setFontSize(10); 
+                        doc.text('DIAGNOSTIC OPÉRATIONNEL STRATÉGIQUE', marginX, 35);
+
+                        y = 65;
+                        doc.setTextColor(15, 23, 42); 
+                        doc.setFontSize(18); 
+                        doc.text("SYNTHÈSE DE VOTRE AUDIT", marginX, y); 
+                        y += 15;
+
+                        const drawRow = (title, value) => {
+                            doc.setFillColor(241, 245, 249); 
+                            doc.rect(marginX, y, 170, 8, 'F');
+                            doc.setFontSize(10); 
+                            doc.setTextColor(37, 99, 235);
+                            doc.text(title.toUpperCase(), marginX + 5, y + 5.5);
+                            y += 14; 
+                            doc.setTextColor(60, 60, 60); 
+                            doc.setFont('helvetica', 'normal');
+                            const wrappedText = doc.splitTextToSize(String(value || 'Non renseigné'), 120);
+                            doc.text(wrappedText, marginX + 45, y); 
+                            y += (wrappedText.length * 5) + 2;
+                        };
+
+                        drawRow('Entreprise', this.formData.companyName);
+                        drawRow('Secteur', this.formData.industry);
+                        drawRow('Contact', this.formData.firstName + ' ' + this.formData.lastName);
+                        drawRow('Défi', this.challengeLabel);
+                        drawRow('Pression', this.formData.pressureLevel);
+                        drawRow('Recommandation', this.recommendedOffer.title);
+
+                        const pdfBase64 = doc.output('datauristring').split(',')[1];
+
+                        // 2. Préparation du payload
+                        const payload = {
+                            ...this.formData,
+                            challengeLabel: this.challengeLabel,
+                            recommendedOffer: this.recommendedOffer.title,
+                            pdfData: pdfBase64,
+                            fileName: `Diagnostic_CareSuccess_${this.formData.companyName.replace(/\s+/g, '_')}.pdf`
+                        };
+
+                        // 3. Envoi au serveur Google (Emailing)
+                        await fetch(SCRIPT_URL, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        // 4. Passage à la page de recommandation
+                        this.loading = false;
+                        this.showRecommendation = true;
+                        this.$nextTick(() => lucide.createIcons());
+
+                    } catch (error) {
+                        console.error("Erreur lors de l'envoi :", error);
+                        // On continue quand même vers la recommandation pour ne pas bloquer l'utilisateur
+                        this.loading = false;
+                        this.showRecommendation = true;
+                        this.$nextTick(() => lucide.createIcons());
+                    }
                 },
+
                 confirmRecommendation() { this.showRecommendation = false; this.submitted = true; this.$nextTick(() => lucide.createIcons()); },
                 resetAudit() {
                     this.step = 1; this.submitted = false; this.showRecommendation = false;
                     this.formData = { challenge: '', industry: '', maturity: '', pressureLevel: '', mainImpact: '', trackedKPIs: [], pressureKPI: '', toolStack: [], toolUsage: '', interventionType: '', timing: '', expectedResult: '', firstName: '', lastName: '', companyName: '', email: '', website: '', linkedin: '', phone: '', jobTitle: '', finalAction: '' };
                     this.$nextTick(() => { lucide.createIcons(); document.getElementById('diagnostic-encart').scrollIntoView({behavior:'smooth'}); });
                 },
+
+                /**
+                 * TÉLÉCHARGEMENT PDF HAUTE QUALITÉ POUR L'UTILISATEUR
+                 */
                 async downloadPDF() {
                     this.loading = true;
                     const { jsPDF } = window.jspdf;
                     const colibriImgUrl = "https://lh3.googleusercontent.com/d/1ZKwRL-c7yJCE-H8-ZbH1jt_RStqn-Svq";
-                    const loadImage = (url) => new Promise((resolve, reject) => { const img = new Image(); img.crossOrigin = "Anonymous"; img.src = url; img.onload = () => resolve(img); img.onerror = (e) => reject(e); });
-                    const createTitleCanvas = () => { const canvas = document.createElement('canvas'); canvas.width = 1200; canvas.height = 300; const ctx = canvas.getContext('2d'); ctx.font = "bold 120px Quicksand, sans-serif"; 
+                    
+                    const loadImage = (url) => new Promise((resolve, reject) => { 
+                        const img = new Image(); 
+                        img.crossOrigin = "Anonymous"; 
+                        img.src = url; 
+                        img.onload = () => resolve(img); 
+                        img.onerror = (e) => reject(e); 
+                    });
+
+                    const createTitleCanvas = () => { 
+                        const canvas = document.createElement('canvas'); 
+                        canvas.width = 1200; canvas.height = 300; 
+                        const ctx = canvas.getContext('2d'); 
+                        ctx.font = "bold 120px Quicksand, sans-serif"; 
                         const gradient = ctx.createLinearGradient(0, 0, 900, 0);
                         gradient.addColorStop(0, '#005ebf'); 
                         gradient.addColorStop(0.5, '#29bfff'); 
                         gradient.addColorStop(1, '#c252ff'); 
-                        ctx.fillStyle = gradient; ctx.fillText("Care & Success", 0, 150); return canvas.toDataURL('image/png'); 
+                        ctx.fillStyle = gradient; ctx.fillText("Care & Success", 0, 150); 
+                        return canvas.toDataURL('image/png'); 
                     };
 
                     try {
@@ -438,7 +536,7 @@
     </section>
 
     <!-- SECTION QUAND M'APPELER -->
-    <section class="bg-brand-dark py-24 md:py-48 px-6 overflow-hidden">
+    <section class="bg-brand-dark py-24 md:py-48 px-6 overflow-hidden bg-slate-900">
         <div class="container mx-auto max-w-[1440px]">
             <div class="reveal mb-16 md:mb-24 text-center lg:text-left">
                 <div class="label-partie uppercase">RENFORT OPÉRATIONNEL</div>
@@ -450,90 +548,90 @@
                 </p>
             </div>
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 text-left text-white text-center">
-                <div class="reveal situation-card text-left">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 text-left text-white">
+                <div class="reveal situation-card">
                     <div class="flex items-center gap-4">
                         <i data-lucide="rocket" class="text-brand-blue w-10 h-10"></i>
                         <h3 class="text-2xl font-bold text-white leading-tight">Accélération commerciale</h3>
                     </div>
-                    <p class="text-slate-400 leading-relaxed font-medium italic text-left">Flux massif de nouveaux comptes à onboarder sans dégrader l'expérience client.</p>
+                    <p class="text-slate-400 leading-relaxed font-medium italic">Flux massif de nouveaux comptes à onboarder sans dégrader l'expérience client.</p>
                 </div>
-                <div class="reveal situation-card text-left">
+                <div class="reveal situation-card">
                     <div class="flex items-center gap-4">
                         <i data-lucide="alert-circle" class="text-brand-blue w-10 h-10"></i>
                         <h3 class="text-2xl font-bold text-white leading-tight">Saturation du support</h3>
                     </div>
-                    <p class="text-slate-400 leading-relaxed font-medium italic text-left">Backlog critique de tickets techniques. Je prends les manettes pour rétablir vos SLAs.</p>
+                    <p class="text-slate-400 leading-relaxed font-medium italic">Backlog critique de tickets techniques. Je prends les manettes pour rétablir vos SLAs.</p>
                 </div>
-                <div class="reveal situation-card text-left text-left">
-                    <div class="flex items-center gap-4 text-left">
+                <div class="reveal situation-card">
+                    <div class="flex items-center gap-4">
                         <i data-lucide="trending-down" class="text-brand-blue w-10 h-10"></i>
-                        <h3 class="text-2xl font-bold text-white leading-tight text-left">Signaux de Churn</h3>
+                        <h3 class="text-2xl font-bold text-white leading-tight">Signaux de Churn</h3>
                     </div>
-                    <p class="text-slate-400 leading-relaxed font-medium italic text-left text-left">Baisse d'usage ou comptes silencieux. J'interviens pour sécuriser votre MRR.</p>
+                    <p class="text-slate-400 leading-relaxed font-medium italic">Baisse d'usage ou comptes silencieux. J'interviens pour sécuriser votre MRR.</p>
                 </div>
-                <div class="reveal situation-card text-left">
-                    <div class="flex items-center gap-4 text-left">
+                <div class="reveal situation-card">
+                    <div class="flex items-center gap-4">
                         <i data-lucide="refresh-cw" class="text-brand-blue w-10 h-10"></i>
                         <h3 class="text-2xl font-bold text-white leading-tight">Migration / Refonte</h3>
                     </div>
-                    <p class="text-slate-400 leading-relaxed font-medium italic text-left">Accompagnement opérationnel du passage vers une nouvelle interface.</p>
+                    <p class="text-slate-400 leading-relaxed font-medium italic">Accompagnement opérationnel du passage vers une nouvelle interface.</p>
                 </div>
-                <div class="reveal situation-card text-left">
-                    <div class="flex items-center gap-4 text-left">
+                <div class="reveal situation-card">
+                    <div class="flex items-center gap-4">
                         <i data-lucide="users" class="text-brand-blue w-10 h-10"></i>
                         <h3 class="text-2xl font-bold text-white leading-tight">Départ / Absence clé</h3>
                     </div>
-                    <p class="text-slate-400 leading-relaxed font-medium italic text-left text-left">Garantir la continuité de service et la santé des comptes en phase de recrutement ou d'absence.</p>
+                    <p class="text-slate-400 leading-relaxed font-medium italic">Garantir la continuité de service et la santé des comptes en phase de recrutement ou d'absence.</p>
                 </div>
-                <div class="reveal situation-card text-left text-left">
-                    <div class="flex items-center gap-4 text-left">
-                        <i data-lucide="target" class="text-brand-blue w-10 h-10 text-left"></i>
-                        <h3 class="text-2xl font-bold text-white leading-tight text-left">Faible adoption produit</h3>
+                <div class="reveal situation-card">
+                    <div class="flex items-center gap-4">
+                        <i data-lucide="target" class="text-brand-blue w-10 h-10"></i>
+                        <h3 class="text-2xl font-bold text-white leading-tight">Faible adoption produit</h3>
                     </div>
-                    <p class="text-slate-400 leading-relaxed font-medium italic text-left text-left">Manque de stickiness. J'active les leviers d'usage pour ancrer le produit dans le quotidien client.</p>
+                    <p class="text-slate-400 leading-relaxed font-medium italic">Manque de stickiness. J'active les leviers d'usage pour ancrer le produit dans le quotidien client.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- SECTION À PROPOS DE MOI -->
-    <section id="a-propos" class="bg-black text-white py-24 md:py-48 relative overflow-hidden text-center text-center">
-        <div class="container mx-auto px-6 md:px-12 max-w-[1920px] relative z-10 text-center">
-            <div class="grid lg:grid-cols-12 gap-16 lg:gap-32 items-center text-center">
-                <div class="lg:col-span-5 reveal text-center text-center">
-                    <div class="relative bg-neutral-900 border border-white/10 rounded-[3rem] p-10 md:p-16 group inline-block text-center shadow-3xl text-center">
-                        <div class="relative inline-block mb-8 text-center text-center">
-                            <div class="absolute inset-0 bg-blue-600/20 blur-[100px] rounded-full text-center"></div>
-                            <div class="relative w-56 h-56 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-white/5 shadow-2xl text-center text-center">
-                                <img src="https://lh3.googleusercontent.com/d/1LJfMlbhJatlaRiCFA2TgbD60scJNjpHB" alt="Corinne Marsiac" class="w-full h-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 scale-105 group-hover:scale-110 text-center">
+    <section id="a-propos" class="bg-black text-white py-24 md:py-48 relative overflow-hidden">
+        <div class="container mx-auto px-6 md:px-12 max-w-[1920px] relative z-10">
+            <div class="grid lg:grid-cols-12 gap-16 lg:gap-32 items-center">
+                <div class="lg:col-span-5 reveal text-center">
+                    <div class="relative bg-neutral-900 border border-white/10 rounded-[3rem] p-10 md:p-16 group inline-block shadow-3xl">
+                        <div class="relative inline-block mb-8">
+                            <div class="absolute inset-0 bg-blue-600/20 blur-[100px] rounded-full"></div>
+                            <div class="relative w-56 h-56 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-white/5 shadow-2xl">
+                                <img src="https://lh3.googleusercontent.com/d/1LJfMlbhJatlaRiCFA2TgbD60scJNjpHB" alt="Corinne Marsiac" class="w-full h-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 scale-105 group-hover:scale-110">
                             </div>
                         </div>
-                        <h3 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-4 text-center">Corinne Marsiac</h3>
-                        <div class="flex flex-col items-center text-center text-center text-center">
-                            <p class="text-white text-xs font-black uppercase tracking-[0.3em] text-center leading-relaxed text-center">Customer Success & Customer Care Manager</p>
-                            <div class="w-20 h-1.5 bg-brand-blue mt-5 rounded-full text-center"></div>
+                        <h3 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-4">Corinne Marsiac</h3>
+                        <div class="flex flex-col items-center">
+                            <p class="text-white text-xs font-black uppercase tracking-[0.3em] leading-relaxed">Customer Success & Customer Care Manager</p>
+                            <div class="w-20 h-1.5 bg-brand-blue mt-5 rounded-full"></div>
                         </div>
                     </div>
                 </div>
                 <div class="lg:col-span-7 reveal text-left">
                     <div class="mb-12">
-                        <div class="label-partie uppercase text-center">À PROPOS DE MOI</div>
-                        <h2 class="text-5xl md:text-7xl font-[900] tracking-tighter leading-tight mb-10 text-white text-left">Une expertise terrain au service de <span class="brand-gradient">votre rétention client</span></h2>
-                        <p class="text-2xl md:text-3xl text-neutral-300 leading-relaxed font-medium mb-10 text-left">Professionnelle de la relation client avec plus de <span class="text-white font-bold border-b-2 border-white/20">10 ans d’expérience</span> en environnement SaaS B2B.</p>
+                        <div class="label-partie uppercase">À PROPOS DE MOI</div>
+                        <h2 class="text-5xl md:text-7xl font-[900] tracking-tighter leading-tight mb-10 text-white">Une expertise terrain au service de <span class="brand-gradient">votre rétention client</span></h2>
+                        <p class="text-2xl md:text-3xl text-neutral-300 leading-relaxed font-medium mb-10">Professionnelle de la relation client avec plus de <span class="text-white font-bold border-b-2 border-white/20">10 ans d’expérience</span> en environnement SaaS B2B.</p>
                     </div>
-                    <div class="grid md:grid-cols-2 gap-y-8 gap-x-12 mb-20 text-neutral-200 text-left text-left">
-                        <div class="flex items-center gap-6 group justify-start transition-transform hover:translate-x-2 text-left text-left text-left"><div class="w-8 h-8 rounded-full bg-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue transition-colors text-left text-left"><i data-lucide="check" class="w-4 h-4 text-brand-blue group-hover:text-white text-left text-left"></i></div><span class="font-bold text-xl text-left text-left">Onboarding & Adoption</span></div>
-                        <div class="flex items-center gap-6 group justify-start transition-transform hover:translate-x-2 text-left text-left text-left"><div class="w-8 h-8 rounded-full bg-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue transition-colors text-left text-left"><i data-lucide="check" class="w-4 h-4 text-brand-blue group-hover:text-white text-left text-left"></i></div><span class="font-bold text-xl text-left text-left">Care & Ticketing</span></div>
-                        <div class="flex items-center gap-6 group justify-start transition-transform hover:translate-x-2 text-left text-left text-left text-left"><div class="w-8 h-8 rounded-full bg-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue transition-colors text-left text-left text-left"><i data-lucide="check" class="w-4 h-4 text-brand-blue group-hover:text-white text-left text-left text-left"></i></div><span class="font-bold text-xl text-left text-left">Stratégie de Rétention</span></div>
-                        <div class="flex items-center gap-6 group justify-start transition-transform hover:translate-x-2 text-left text-left text-left text-left text-left"><div class="w-8 h-8 rounded-full bg-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue transition-colors text-left text-left text-left text-left text-left"><i data-lucide="check" class="w-4 h-4 text-brand-blue group-hover:text-white text-left text-left text-left text-left"></i></div><span class="font-bold text-xl text-left text-left">Pilotage KPI : NPS, CSAT</span></div>
+                    <div class="grid md:grid-cols-2 gap-y-8 gap-x-12 mb-20 text-neutral-200">
+                        <div class="flex items-center gap-6 group transition-transform hover:translate-x-2"><div class="w-8 h-8 rounded-full bg-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue transition-colors"><i data-lucide="check" class="w-4 h-4 text-brand-blue group-hover:text-white"></i></div><span class="font-bold text-xl">Onboarding & Adoption</span></div>
+                        <div class="flex items-center gap-6 group transition-transform hover:translate-x-2"><div class="w-8 h-8 rounded-full bg-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue transition-colors"><i data-lucide="check" class="w-4 h-4 text-brand-blue group-hover:text-white"></i></div><span class="font-bold text-xl">Care & Ticketing</span></div>
+                        <div class="flex items-center gap-6 group transition-transform hover:translate-x-2"><div class="w-8 h-8 rounded-full bg-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue transition-colors"><i data-lucide="check" class="w-4 h-4 text-brand-blue group-hover:text-white"></i></div><span class="font-bold text-xl">Stratégie de Rétention</span></div>
+                        <div class="flex items-center gap-6 group transition-transform hover:translate-x-2"><div class="w-8 h-8 rounded-full bg-brand-blue/20 flex items-center justify-center group-hover:bg-brand-blue transition-colors"><i data-lucide="check" class="w-4 h-4 text-brand-blue group-hover:text-white"></i></div><span class="font-bold text-xl">Pilotage KPI : NPS, CSAT</span></div>
                     </div>
-                    <div class="pt-12 border-t border-white/10 flex flex-wrap gap-3 justify-center md:justify-start text-left text-left text-left">
-                        <div class="cert-bubble px-4 py-2 border border-white/20 rounded-full text-xs font-bold uppercase tracking-widest text-slate-400 text-left text-left">CSM Kare School</div>
-                        <div class="cert-bubble px-4 py-2 border border-white/20 rounded-full text-xs font-bold uppercase tracking-widest text-slate-400 text-left text-left text-left">CCSM Level 1</div>
-                        <div class="cert-bubble px-4 py-2 border border-white/20 rounded-full text-xs font-bold uppercase tracking-widest text-slate-400 text-left text-left text-left text-left">Customer Care Generation</div>
-                        <div class="cert-bubble px-4 py-2 border border-white/20 rounded-full text-xs font-bold uppercase tracking-widest text-slate-400 text-left text-left text-left text-left text-left">Salesforce Admin</div>
-                        <div class="cert-bubble px-4 py-2 border border-white/20 rounded-full text-xs font-bold uppercase tracking-widest text-slate-400 text-left text-left text-left text-left text-left text-left">Expertise RH Tech</div>
+                    <div class="pt-12 border-t border-white/10 flex flex-wrap gap-3">
+                        <div class="px-4 py-2 border border-white/20 rounded-full text-xs font-bold uppercase tracking-widest text-slate-400">CSM Kare School</div>
+                        <div class="px-4 py-2 border border-white/20 rounded-full text-xs font-bold uppercase tracking-widest text-slate-400">CCSM Level 1</div>
+                        <div class="px-4 py-2 border border-white/20 rounded-full text-xs font-bold uppercase tracking-widest text-slate-400">Customer Care Generation</div>
+                        <div class="px-4 py-2 border border-white/20 rounded-full text-xs font-bold uppercase tracking-widest text-slate-400">Salesforce Admin</div>
+                        <div class="px-4 py-2 border border-white/20 rounded-full text-xs font-bold uppercase tracking-widest text-slate-400">Expertise RH Tech</div>
                     </div>
                 </div>
             </div>
@@ -541,49 +639,49 @@
     </section>
 
     <!-- SECTION FRAMEWORK COLIBRI™ -->
-    <section id="framework" class="py-24 md:py-48 bg-neutral-50 overflow-hidden px-6 text-center text-center text-center">
-        <div class="container mx-auto max-w-[1440px] text-center text-center text-center">
-            <div class="reveal mb-24 text-center text-center">
-                <div class="label-partie uppercase text-center text-center text-center">MÉTHODE COLIBRI™</div>
-                <h2 class="text-5xl md:text-8xl font-[900] tracking-tighter leading-none mb-12 text-neutral-900 text-center text-center">Une structure agile. <br><span class="brand-gradient">Des résultats concrets.</span></h2>
-                <div class="bg-black p-8 md:p-10 rounded-[3rem] border border-neutral-800 mb-10 inline-block shadow-2xl text-center text-center">
-                    <p class="text-white font-medium italic text-xl md:text-2xl leading-relaxed text-center text-center">"Intervention ciblée pour absorber les tensions sans complexifier l’organisation de votre département Customer Success."</p>
+    <section id="framework" class="py-24 md:py-48 bg-neutral-50 overflow-hidden px-6">
+        <div class="container mx-auto max-w-[1440px] text-center">
+            <div class="reveal mb-24">
+                <div class="label-partie uppercase">MÉTHODE COLIBRI™</div>
+                <h2 class="text-5xl md:text-8xl font-[900] tracking-tighter leading-none mb-12 text-neutral-900">Une structure agile. <br><span class="brand-gradient">Des résultats concrets.</span></h2>
+                <div class="bg-black p-8 md:p-10 rounded-[3rem] border border-neutral-800 mb-10 inline-block shadow-2xl">
+                    <p class="text-white font-medium italic text-xl md:text-2xl leading-relaxed">"Intervention ciblée pour absorber les tensions sans complexifier l’organisation de votre département Customer Success."</p>
                 </div>
             </div>
             
-            <div class="reveal max-w-6xl mx-auto text-center text-center text-center text-center">
-                <div class="flex flex-wrap lg:flex-nowrap gap-3 justify-center mb-8 text-center text-center text-center">
+            <div class="reveal max-w-6xl mx-auto">
+                <div class="flex flex-wrap lg:flex-nowrap gap-3 justify-center mb-8">
                     <template x-for="(step, index) in colibriSteps" :key="index">
                         <div @mouseenter="activeMethod = index"
                              @click="activeMethod = index"
-                             class="method-letter-btn text-center text-center text-center"
+                             class="method-letter-btn"
                              :class="activeMethod === index ? 'active' : ''">
-                            <div class="letter text-center text-center text-center" x-text="step.l"></div>
-                            <div class="subtitle text-center text-center text-center" x-text="step.st.split(' ')[0]"></div>
+                            <div class="letter" x-text="step.l"></div>
+                            <div class="subtitle" x-text="step.st.split(' ')[0]"></div>
                         </div>
                     </template>
                 </div>
 
-                <div class="display-screen text-left text-left text-left text-left text-left">
+                <div class="display-screen text-left">
                     <template x-for="(step, index) in colibriSteps" :key="index">
                         <div x-show="activeMethod === index" 
                              x-transition:enter="transition ease-out duration-300"
                              x-transition:enter-start="opacity-0 translate-y-4"
                              x-transition:enter-end="opacity-100 translate-y-0"
-                             class="w-full text-left text-left text-left text-left">
-                            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 text-left text-left">
-                                <div class="text-left text-left text-left text-left">
-                                    <h3 class="text-4xl md:text-6xl font-black text-brand-blue text-left text-left text-left" x-text="step.t"></h3>
-                                    <p class="text-sm font-black uppercase tracking-[0.2em] text-slate-400 mt-2 text-left text-left text-left" x-text="step.st"></p>
+                             class="w-full">
+                            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                                <div>
+                                    <h3 class="text-4xl md:text-6xl font-black text-brand-blue" x-text="step.t"></h3>
+                                    <p class="text-sm font-black uppercase tracking-[0.2em] text-slate-400 mt-2" x-text="step.st"></p>
                                 </div>
-                                <div class="text-8xl font-black text-slate-100 absolute right-12 top-1/2 -translate-y-1/2 select-none pointer-events-none text-left text-left text-left" x-text="step.l"></div>
+                                <div class="text-8xl font-black text-slate-100 absolute right-12 top-1/2 -translate-y-1/2 select-none pointer-events-none" x-text="step.l"></div>
                             </div>
-                            <p class="text-2xl text-neutral-900 font-extrabold mb-10 max-w-2xl leading-tight text-left text-left text-left" x-text="step.p"></p>
-                            <div class="grid md:grid-cols-2 gap-4 text-left text-left text-left">
+                            <p class="text-2xl text-neutral-900 font-extrabold mb-10 max-w-2xl leading-tight" x-text="step.p"></p>
+                            <div class="grid md:grid-cols-2 gap-4">
                                 <template x-for="(detail, dIdx) in step.details" :key="dIdx">
-                                    <div class="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100 text-left text-left text-left text-left">
-                                        <div class="w-2 h-2 bg-brand-blue rounded-full text-left text-left text-left"></div>
-                                        <span class="text-[15px] text-slate-600 font-bold text-left text-left text-left" x-text="detail"></span>
+                                    <div class="flex items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                                        <div class="w-2 h-2 bg-brand-blue rounded-full"></div>
+                                        <span class="text-[15px] text-slate-600 font-bold" x-text="detail"></span>
                                     </div>
                                 </template>
                             </div>
@@ -595,75 +693,75 @@
     </section>
 
     <!-- SECTION SOLUTIONS -->
-    <section id="offres" class="py-24 md:py-48 bg-[#f8faff] px-6 text-center text-center text-center">
-        <div class="container mx-auto max-w-[1600px] text-center text-center text-center">
-            <header class="text-center mb-24 reveal text-center text-center text-center">
-                <div class="label-partie uppercase text-center text-center text-center text-center">SOLUTIONS OPÉRATIONNELLES</div>
-                <h2 class="text-5xl md:text-8xl font-[900] tracking-tighter leading-none mb-6 text-neutral-900 text-center text-center">3 leviers pour <span class="brand-gradient">sécuriser</span> <br class="hidden md:block"> votre croissance.</h2>
+    <section id="offres" class="py-24 md:py-48 bg-[#f8faff] px-6">
+        <div class="container mx-auto max-w-[1600px]">
+            <header class="text-center mb-24 reveal">
+                <div class="label-partie uppercase">SOLUTIONS OPÉRATIONNELLES</div>
+                <h2 class="text-5xl md:text-8xl font-[900] tracking-tighter leading-none mb-6 text-neutral-900">3 leviers pour <span class="brand-gradient">sécuriser</span> <br class="hidden md:block"> votre croissance.</h2>
             </header>
-            <div class="grid lg:grid-cols-3 gap-10 md:gap-16 items-stretch text-left text-left text-left">
+            <div class="grid lg:grid-cols-3 gap-10 md:gap-16 items-stretch">
                 <!-- ADOPTION PRODUIT -->
-                <div class="card-glass overflow-hidden rounded-4xl shadow-2xl reveal group hover-halo-emerald text-left text-left">
-                    <div class="relative h-64 overflow-hidden shrink-0 text-left text-left text-left text-left">
-                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop" alt="Adoption Produit" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 text-left text-left">
-                        <div class="absolute inset-0 bg-gradient-to-t from-white/95 via-transparent to-transparent text-left text-left text-left text-left"></div>
+                <div class="bg-white overflow-hidden rounded-4xl shadow-2xl reveal group">
+                    <div class="relative h-64 overflow-hidden shrink-0">
+                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop" alt="Adoption Produit" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-white/95 via-transparent to-transparent"></div>
                     </div>
-                    <div class="p-10 pt-6 flex-grow flex flex-col text-left text-left text-left text-left">
-                        <div class="text-[11px] font-black uppercase tracking-widest text-emerald-600 mb-6 px-4 py-1.5 bg-emerald-50 rounded-full w-fit text-left">Onboarding Client</div>
-                        <h3 class="text-3xl font-[900] mb-3 uppercase tracking-tight text-neutral-900 leading-none text-left">Adoption Produit</h3>
-                        <p class="text-sm text-neutral-400 font-bold italic mb-8 text-left">L'autonomie client comme priorité.</p>
-                        <ul class="space-y-4 mb-10 text-left text-left text-left">
-                            <li class="flex items-start gap-4 text-left text-left text-left text-left text-left"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-600 shrink-0 text-left text-left text-left text-left text-left text-left"></i><p class="text-sm text-slate-600 font-medium leading-relaxed text-left text-left text-left text-left text-left text-left text-left">Cadrage du parcours d'activation</p></li>
-                            <li class="flex items-start gap-4 text-left text-left text-left text-left text-left text-left"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-600 shrink-0 text-left text-left text-left text-left text-left text-left text-left text-left"></i><p class="text-sm text-slate-600 font-medium leading-relaxed text-left text-left text-left text-left text-left text-left text-left text-left">Kick-offs & formations structurés</p></li>
-                            <li class="flex items-start gap-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-600 shrink-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left"></i><p class="text-sm text-slate-600 font-medium leading-relaxed text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Réduction du Time-to-Value</p></li>
+                    <div class="p-10 pt-6 flex-grow flex flex-col">
+                        <div class="text-[11px] font-black uppercase tracking-widest text-emerald-600 mb-6 px-4 py-1.5 bg-emerald-50 rounded-full w-fit">Onboarding Client</div>
+                        <h3 class="text-3xl font-[900] mb-3 uppercase tracking-tight text-neutral-900 leading-none">Adoption Produit</h3>
+                        <p class="text-sm text-neutral-400 font-bold italic mb-8">L'autonomie client comme priorité.</p>
+                        <ul class="space-y-4 mb-10">
+                            <li class="flex items-start gap-4"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Cadrage du parcours d'activation</p></li>
+                            <li class="flex items-start gap-4"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Kick-offs & formations structurés</p></li>
+                            <li class="flex items-start gap-4"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Réduction du Time-to-Value</p></li>
                         </ul>
-                        <div class="bg-black p-8 rounded-3xl mt-auto shadow-xl text-left text-left text-left text-left text-left text-left">
-                            <h4 class="text-[10px] font-black uppercase text-emerald-400 mb-2 tracking-widest text-left text-left text-left text-left text-left text-left text-left">Impact</h4>
-                            <p class="text-sm text-white italic font-medium leading-relaxed text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">"Utilisateurs engagés dès les premiers jours."</p>
+                        <div class="bg-black p-8 rounded-3xl mt-auto shadow-xl">
+                            <h4 class="text-[10px] font-black uppercase text-emerald-400 mb-2 tracking-widest">Impact</h4>
+                            <p class="text-sm text-white italic font-medium leading-relaxed">"Utilisateurs engagés dès les premiers jours."</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- CUSTOMER CARE -->
-                <div class="card-glass overflow-hidden rounded-4xl shadow-2xl reveal group hover-halo-blue text-left text-left text-left">
-                    <div class="relative h-64 overflow-hidden shrink-0 text-left text-left text-left text-left text-left text-left text-left">
-                        <img src="https://images.unsplash.com/photo-1525130413817-d45c1d127c42?q=80&w=2070&auto=format&fit=crop" alt="Customer Care" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 text-left text-left text-left">
-                        <div class="absolute inset-0 bg-gradient-to-t from-white/95 via-transparent to-transparent text-left text-left text-left text-left text-left text-left text-left text-left"></div>
+                <div class="bg-white overflow-hidden rounded-4xl shadow-2xl reveal group">
+                    <div class="relative h-64 overflow-hidden shrink-0">
+                        <img src="https://images.unsplash.com/photo-1525130413817-d45c1d127c42?q=80&w=2070&auto=format&fit=crop" alt="Customer Care" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-white/95 via-transparent to-transparent"></div>
                     </div>
-                    <div class="p-10 pt-6 flex-grow flex flex-col text-left text-left text-left text-left text-left text-left">
-                        <div class="text-[11px] font-black uppercase tracking-widest text-brand-blue mb-6 px-4 py-1.5 bg-blue-50 rounded-full w-fit text-left">Satisfaction 5★</div>
-                        <h3 class="text-3xl font-[900] mb-3 uppercase tracking-tight text-neutral-900 leading-none text-left">Customer Care Expert</h3>
-                        <p class="text-sm text-neutral-400 font-bold italic mb-8 text-left">Le support devient un levier de performance.</p>
-                        <ul class="space-y-4 mb-10 text-left text-left text-left text-left text-left">
-                            <li class="flex items-start gap-4 text-left text-left text-left text-left text-left text-left"><i data-lucide="check-circle-2" class="w-5 h-5 text-brand-blue shrink-0 text-left text-left text-left text-left text-left text-left text-left"></i><p class="text-sm text-slate-600 font-medium leading-relaxed text-left text-left text-left text-left text-left text-left text-left text-left">Triage et priorisation des tickets</p></li>
-                            <li class="flex items-start gap-4 text-left text-left text-left text-left text-left text-left text-left text-left"><i data-lucide="check-circle-2" class="w-5 h-5 text-brand-blue shrink-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left"></i><p class="text-sm text-slate-600 font-medium leading-relaxed text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Optimisation des Macros & Help Center</p></li>
-                            <li class="flex items-start gap-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><i data-lucide="check-circle-2" class="w-5 h-5 text-brand-blue shrink-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"></i><p class="text-sm text-slate-600 font-medium leading-relaxed text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Coordination Support / Produit</p></li>
+                    <div class="p-10 pt-6 flex-grow flex flex-col">
+                        <div class="text-[11px] font-black uppercase tracking-widest text-brand-blue mb-6 px-4 py-1.5 bg-blue-50 rounded-full w-fit">Satisfaction 5★</div>
+                        <h3 class="text-3xl font-[900] mb-3 uppercase tracking-tight text-neutral-900 leading-none">Customer Care Expert</h3>
+                        <p class="text-sm text-neutral-400 font-bold italic mb-8">Le support devient un levier de performance.</p>
+                        <ul class="space-y-4 mb-10">
+                            <li class="flex items-start gap-4"><i data-lucide="check-circle-2" class="w-5 h-5 text-brand-blue shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Triage et priorisation des tickets</p></li>
+                            <li class="flex items-start gap-4"><i data-lucide="check-circle-2" class="w-5 h-5 text-brand-blue shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Optimisation des Macros & Help Center</p></li>
+                            <li class="flex items-start gap-4"><i data-lucide="check-circle-2" class="w-5 h-5 text-brand-blue shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Coordination Support / Produit</p></li>
                         </ul>
-                        <div class="bg-brand-gradient p-8 rounded-3xl mt-auto shadow-xl text-left text-left text-left text-left text-left text-left text-left text-left">
-                            <h4 class="text-[10px] font-black uppercase text-white/70 mb-2 tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left text-left">Impact</h4>
-                            <p class="text-sm text-white italic font-medium leading-relaxed text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">"Moins de tickets, moins de friction, plus de satisfaction."</p>
+                        <div class="bg-brand-gradient p-8 rounded-3xl mt-auto shadow-xl">
+                            <h4 class="text-[10px] font-black uppercase text-white/70 mb-2 tracking-widest">Impact</h4>
+                            <p class="text-sm text-white italic font-medium leading-relaxed">"Moins de tickets, moins de friction, plus de satisfaction."</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- SUCCESS STRATÉGIQUE -->
-                <div class="card-glass overflow-hidden rounded-4xl shadow-2xl reveal group hover-halo-violet text-left text-left text-left text-left text-left">
-                    <div class="relative h-64 overflow-hidden shrink-0 text-left text-left text-left text-left text-left text-left text-left text-left">
-                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2026&auto=format&fit=crop" alt="Success Stratégie" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 text-left text-left text-left text-left text-left">
-                        <div class="absolute inset-0 bg-gradient-to-t from-white/95 via-transparent to-transparent text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"></div>
+                <div class="bg-white overflow-hidden rounded-4xl shadow-2xl reveal group">
+                    <div class="relative h-64 overflow-hidden shrink-0">
+                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2026&auto=format&fit=crop" alt="Success Stratégie" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-white/95 via-transparent to-transparent"></div>
                     </div>
-                    <div class="p-10 pt-6 flex-grow flex flex-col text-left text-left text-left text-left text-left text-left text-left">
-                        <div class="text-[11px] font-black uppercase tracking-widest text-violet-600 mb-6 px-4 py-1.5 bg-violet-50 rounded-full w-fit text-left text-left">Rétention & Expansion</div>
-                        <h3 class="text-3xl font-[900] mb-3 uppercase tracking-tight text-neutral-900 leading-none text-left text-left text-left text-left text-left">CSM Stratégique</h3>
-                        <p class="text-sm text-neutral-400 font-bold italic mb-8 text-left text-left text-left text-left">Sécuriser et développer vos comptes clés.</p>
-                        <ul class="space-y-4 mb-10 text-left text-left text-left text-left text-left text-left text-left">
-                            <li class="flex items-start gap-4 text-left text-left text-left text-left text-left text-left text-left text-left"><i data-lucide="check-circle-2" class="w-5 h-5 text-violet-600 shrink-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left"></i><p class="text-sm text-slate-600 font-medium leading-relaxed text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Suivi proactif des comptes sensibles</p></li>
-                            <li class="flex items-start gap-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><i data-lucide="check-circle-2" class="w-5 h-5 text-violet-600 shrink-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"></i><p class="text-sm text-slate-600 font-medium leading-relaxed text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Health checks & Routines de pilotage</p></li>
-                            <li class="flex items-start gap-4 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"><i data-lucide="check-circle-2" class="w-5 h-5 text-violet-600 shrink-0 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left"></i><p class="text-sm text-slate-600 font-medium leading-relaxed text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Opportunités de renouvellement</p></li>
+                    <div class="p-10 pt-6 flex-grow flex flex-col">
+                        <div class="text-[11px] font-black uppercase tracking-widest text-violet-600 mb-6 px-4 py-1.5 bg-violet-50 rounded-full w-fit">Rétention & Expansion</div>
+                        <h3 class="text-3xl font-[900] mb-3 uppercase tracking-tight text-neutral-900 leading-none">CSM Stratégique</h3>
+                        <p class="text-sm text-neutral-400 font-bold italic mb-8">Sécuriser et développer vos comptes clés.</p>
+                        <ul class="space-y-4 mb-10">
+                            <li class="flex items-start gap-4"><i data-lucide="check-circle-2" class="w-5 h-5 text-violet-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Suivi proactif des comptes sensibles</p></li>
+                            <li class="flex items-start gap-4"><i data-lucide="check-circle-2" class="w-5 h-5 text-violet-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Health checks & Routines de pilotage</p></li>
+                            <li class="flex items-start gap-4"><i data-lucide="check-circle-2" class="w-5 h-5 text-violet-600 shrink-0"></i><p class="text-sm text-slate-600 font-medium leading-relaxed">Opportunités de renouvellement</p></li>
                         </ul>
-                        <div class="bg-black p-8 rounded-3xl mt-auto shadow-xl text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                            <h4 class="text-[10px] font-black uppercase text-violet-400 mb-2 tracking-widest text-left text-left text-left text-left text-left text-left text-left text-left">Impact</h4>
-                            <p class="text-sm text-white italic font-medium leading-relaxed text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">"Churn réduit, MRR sécurisé et croissance des comptes."</p>
+                        <div class="bg-black p-8 rounded-3xl mt-auto shadow-xl">
+                            <h4 class="text-[10px] font-black uppercase text-violet-400 mb-2 tracking-widest">Impact</h4>
+                            <p class="text-sm text-white italic font-medium leading-relaxed">"Churn réduit, MRR sécurisé et croissance des comptes."</p>
                         </div>
                     </div>
                 </div>
@@ -672,53 +770,53 @@
     </section>
 
     <!-- SECTION DIAGNOSTIC OPÉRATIONNEL -->
-    <section id="diagnostic-encart" class="py-24 md:py-48 bg-slate-50 px-6 text-center text-center text-center text-center">
-        <div class="container mx-auto text-center text-center text-center" :class="showRecommendation || submitted ? 'max-w-6xl' : 'max-w-4xl'">
+    <section id="diagnostic-encart" class="py-24 md:py-48 bg-slate-50 px-6">
+        <div class="container mx-auto" :class="showRecommendation || submitted ? 'max-w-6xl' : 'max-w-4xl'">
             
             <!-- AUDIT QUESTIONS FLOW -->
-            <div x-show="!submitted && !showRecommendation" class="reveal reveal-visible text-center text-center text-center" x-transition:enter="transition ease-out duration-300">
-                <div class="mb-12 text-center text-center text-center text-center text-center text-center">
-                    <div class="label-partie mb-6 text-center text-center text-center">Questionnaire Stratégique : Étape <span x-text="step"></span>/9</div>
-                    <div class="h-2 w-full bg-slate-200 rounded-full overflow-hidden max-w-md mx-auto text-center text-center text-center text-center">
+            <div x-show="!submitted && !showRecommendation" class="reveal reveal-visible" x-transition:enter="transition ease-out duration-300">
+                <div class="mb-12 text-center">
+                    <div class="label-partie mb-6">Questionnaire Stratégique : Étape <span x-text="step"></span>/9</div>
+                    <div class="h-2 w-full bg-slate-200 rounded-full overflow-hidden max-w-md mx-auto">
                         <div class="h-full bg-brand-gradient transition-all duration-500" :style="'width: ' + (step/9)*100 + '%'"></div>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-[3rem] p-8 md:p-16 shadow-3xl border border-slate-100 min-h-[600px] flex flex-col text-center text-center text-center text-center text-center">
+                <div class="bg-white rounded-[3rem] p-8 md:p-16 shadow-3xl border border-slate-100 min-h-[600px] flex flex-col">
                     <!-- STEP 1: DÉFI OPÉRATIONNEL -->
-                    <div x-show="step === 1" class="space-y-8 text-center text-center text-center text-center text-center">
-                        <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center leading-tight text-center text-center text-center text-center">
+                    <div x-show="step === 1" class="space-y-8">
+                        <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center leading-tight">
                             Quel est aujourd’hui votre principal <br><span class="brand-gradient">défi opérationnel</span> côté client ?
                         </h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto text-left text-left text-left text-left">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
                             <template x-for="item in challengesList">
                                 <button @click="formData.challenge = item.id; nextStep()" class="option-card p-6 text-left flex flex-col gap-2" :class="formData.challenge === item.id ? 'active' : ''">
-                                    <span class="font-bold text-slate-900 text-left text-left text-left text-left" x-text="item.title"></span>
-                                    <span class="text-xs text-slate-400 font-bold uppercase tracking-wider text-left text-left text-left text-left text-left" x-text="item.desc"></span>
+                                    <span class="font-bold text-slate-900" x-text="item.title"></span>
+                                    <span class="text-xs text-slate-400 font-bold uppercase tracking-wider" x-text="item.desc"></span>
                                 </button>
                             </template>
                         </div>
                     </div>
 
                     <!-- STEP 2: CONTEXTE MÉTIER -->
-                    <div x-show="step === 2" class="space-y-8 text-center text-center text-center text-center text-center">
-                        <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center text-center text-center text-center">Dans quel <span class="brand-gradient">secteur</span> évoluez-vous ?</h2>
-                        <div class="space-y-6 max-w-lg mx-auto text-left text-left text-left text-left">
-                            <div class="text-left text-left text-left text-left text-left">
+                    <div x-show="step === 2" class="space-y-8">
+                        <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center">Dans quel <span class="brand-gradient">secteur</span> évoluez-vous ?</h2>
+                        <div class="space-y-6 max-w-lg mx-auto">
+                            <div>
                                 <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-2">Secteur d'activité</label>
                                 <select x-model="formData.industry" class="input-field appearance-none bg-slate-50">
                                     <option value="">Sélectionner...</option>
                                     <template x-for="opt in sectors"><option :value="opt" x-text="opt"></option></template>
                                 </select>
                             </div>
-                            <div x-show="formData.industry === 'Autre (champ libre)'" class="text-left text-left text-left text-left">
+                            <div x-show="formData.industry === 'Autre (champ libre)'">
                                 <input type="text" x-model="formData.industryOther" placeholder="Précisez votre secteur..." class="input-field">
                             </div>
-                            <div class="text-left text-left text-left text-left text-left text-left">
-                                <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-2 text-left text-left">Maturité organisationnelle</label>
-                                <div class="grid grid-cols-2 gap-3 text-left text-left text-left text-left">
+                            <div>
+                                <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-2">Maturité organisationnelle</label>
+                                <div class="grid grid-cols-2 gap-3">
                                     <template x-for="m in ['Startup (0–20)', 'Scale-up (20–200)', 'PME (200–1000)', 'Grand groupe']">
-                                        <button @click="formData.maturity = m" class="option-card p-4 text-xs font-black text-center text-center text-center text-center" :class="formData.maturity === m ? 'active' : ''" x-text="m"></button>
+                                        <button @click="formData.maturity = m" class="option-card p-4 text-xs font-black" :class="formData.maturity === m ? 'active' : ''" x-text="m"></button>
                                     </template>
                                 </div>
                             </div>
@@ -726,18 +824,18 @@
                     </div>
 
                     <!-- STEP 3: QUALIFICATION OPÉRATIONNELLE -->
-                    <div x-show="step === 3" class="space-y-8 text-center text-center text-center text-center text-center">
-                        <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center leading-tight text-center text-center text-center text-center">Qualification <span class="brand-gradient">Opérationnelle</span></h2>
-                        <div class="space-y-6 max-w-lg mx-auto text-left text-left text-left text-left">
-                            <div class="text-left text-left text-left text-left text-left text-left">
+                    <div x-show="step === 3" class="space-y-8">
+                        <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center leading-tight">Qualification <span class="brand-gradient">Opérationnelle</span></h2>
+                        <div class="space-y-6 max-w-lg mx-auto">
+                            <div>
                                 <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3 ml-2">Situation actuelle</label>
-                                <div class="grid gap-2 text-left text-left text-left text-left text-left">
+                                <div class="grid gap-2">
                                     <template x-for="p in ['Sous contrôle mais tendue', 'Difficile à tenir au quotidien', 'Critique (impact immédiat)']">
-                                        <button @click="formData.pressureLevel = p" class="option-card p-4 text-left font-bold text-sm text-left text-left text-left" :class="formData.pressureLevel === p ? 'active' : ''" x-text="p"></button>
+                                        <button @click="formData.pressureLevel = p" class="option-card p-4 text-left font-bold text-sm" :class="formData.pressureLevel === p ? 'active' : ''" x-text="p"></button>
                                     </template>
                                 </div>
                             </div>
-                            <div class="group text-left text-left text-left text-left text-left text-left text-left">
+                            <div class="group">
                                 <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-2">Impact principal</label>
                                 <select x-model="formData.mainImpact" class="input-field">
                                     <option value="">Sélectionner...</option>
@@ -752,23 +850,23 @@
                     </div>
 
                     <!-- STEP 4: ANALYSE DES INDICATEURS -->
-                    <div x-show="step === 4" class="space-y-8 text-center text-center text-center text-center text-center text-center">
-                        <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center text-center text-center text-center text-center">Analyse des <span class="brand-gradient">Indicateurs</span></h2>
-                        <div class="space-y-6 max-w-lg mx-auto text-left text-left text-left text-left text-left text-left">
-                            <div class="text-left text-left text-left text-left">
+                    <div x-show="step === 4" class="space-y-8">
+                        <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center">Analyse des <span class="brand-gradient">Indicateurs</span></h2>
+                        <div class="space-y-6 max-w-lg mx-auto text-left">
+                            <div>
                                 <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3 ml-2">Indicateurs suivis</label>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-left text-left text-left text-left text-left text-left text-left">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     <template x-for="k in ['SLA / temps de réponse', 'Volume / backlog', 'NPS / CSAT', 'Churn / rétention', 'Activation / adoption', 'Aucun']">
-                                        <label class="option-card p-4 flex items-center gap-3 cursor-pointer text-left text-left text-left text-left text-left text-left text-left" :class="formData.trackedKPIs.includes(k) ? 'active' : ''">
-                                            <input type="checkbox" :value="k" x-model="formData.trackedKPIs" class="hidden text-left text-left text-left text-left text-left text-left text-left">
-                                            <span class="text-xs font-black uppercase text-left text-left text-left text-left text-left" x-text="k"></span>
+                                        <label class="option-card p-4 flex items-center gap-3 cursor-pointer" :class="formData.trackedKPIs.includes(k) ? 'active' : ''">
+                                            <input type="checkbox" :value="k" x-model="formData.trackedKPIs" class="hidden">
+                                            <span class="text-xs font-black uppercase" x-text="k"></span>
                                         </label>
                                     </template>
                                 </div>
                             </div>
-                            <div class="group text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                                <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-2 text-left text-left text-left text-left text-left">KPI le plus en difficulté</label>
-                                <select x-model="formData.pressureKPI" class="input-field text-left">
+                            <div class="group">
+                                <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-2">KPI le plus en difficulté</label>
+                                <select x-model="formData.pressureKPI" class="input-field">
                                     <option value="">Sélectionner...</option>
                                     <option value="sla">Délais de réponse / SLA</option>
                                     <option value="volume">Volume / backlog</option>
@@ -781,21 +879,21 @@
                     </div>
 
                     <!-- STEP 5: STACK OUTILS -->
-                    <div x-show="step === 5" class="space-y-8 text-center md:text-left text-center text-center text-center text-center text-center text-center">
-                        <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center text-center text-center text-center text-center">Votre <span class="brand-gradient">Stack Outils</span></h2>
-                        <div class="space-y-6 max-w-lg mx-auto text-left text-left text-left text-left text-left text-left text-left text-left">
-                            <div class="grid grid-cols-2 gap-3 text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                    <div x-show="step === 5" class="space-y-8">
+                        <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center">Votre <span class="brand-gradient">Stack Outils</span></h2>
+                        <div class="space-y-6 max-w-lg mx-auto">
+                            <div class="grid grid-cols-2 gap-3">
                                 <template x-for="t in ['Zendesk', 'Intercom', 'HubSpot', 'Salesforce', 'Freshdesk', 'Front / Gorgias', 'Notion / Airtable']">
-                                    <label class="option-card p-4 flex items-center gap-3 cursor-pointer text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left" :class="formData.toolStack.includes(t) ? 'active' : ''">
-                                        <input type="checkbox" :value="t" x-model="formData.toolStack" class="hidden text-left text-left text-left">
-                                        <span class="text-xs font-black uppercase text-left text-left text-left text-left text-left text-left text-left" x-text="t"></span>
+                                    <label class="option-card p-4 flex items-center gap-3 cursor-pointer" :class="formData.toolStack.includes(t) ? 'active' : ''">
+                                        <input type="checkbox" :value="t" x-model="formData.toolStack" class="hidden">
+                                        <span class="text-xs font-black uppercase" x-text="t"></span>
                                     </label>
                                 </template>
                             </div>
-                            <input type="text" x-model="formData.toolStackOther" placeholder="Autre outil..." class="input-field text-left text-left text-left text-left text-left text-left text-left text-left">
-                            <div class="group text-left text-left text-left text-left text-left text-left">
-                                <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Maîtrise actuelle</label>
-                                <select x-model="formData.toolUsage" class="input-field text-left text-left">
+                            <input type="text" x-model="formData.toolStackOther" placeholder="Autre outil..." class="input-field">
+                            <div class="group text-left">
+                                <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-2">Maîtrise actuelle</label>
+                                <select x-model="formData.toolUsage" class="input-field">
                                     <option value="">Sélectionner...</option>
                                     <option value="ok">Bien maîtrisés</option>
                                     <option value="under">Sous-exploités</option>
@@ -807,17 +905,17 @@
                     </div>
 
                     <!-- STEP 6: INTERVENTION -->
-                    <div x-show="step === 6" class="space-y-8 text-center text-center text-center text-center text-center text-center text-center text-center">
-                        <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center text-center text-center text-center text-center">Type de <span class="brand-gradient">Renfort</span></h2>
-                        <div class="space-y-6 max-w-lg mx-auto text-left text-left text-left text-left text-left text-left text-left text-left">
-                            <div class="grid gap-3 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
+                    <div x-show="step === 6" class="space-y-8">
+                        <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center">Type de <span class="brand-gradient">Renfort</span></h2>
+                        <div class="space-y-6 max-w-lg mx-auto">
+                            <div class="grid gap-3">
                                 <template x-for="it in ['Prise en charge opérationnelle immédiate', 'Gestion de situations complexes', 'Organisation et priorisation', 'Réduction durable de la charge']">
-                                    <button @click="formData.interventionType = it" class="option-card p-5 text-left font-bold text-sm text-left text-left text-left text-left text-left text-left" :class="formData.interventionType === it ? 'active' : ''" x-text="it"></button>
+                                    <button @click="formData.interventionType = it" class="option-card p-5 text-left font-bold text-sm" :class="formData.interventionType === it ? 'active' : ''" x-text="it"></button>
                                 </template>
                             </div>
-                            <div class="group text-left text-left text-left text-left text-left text-left text-left">
-                                <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-2 text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">Délai souhaité</label>
-                                <select x-model="formData.timing" class="input-field text-left text-left">
+                            <div class="group text-left">
+                                <label class="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2 ml-2">Délai souhaité</label>
+                                <select x-model="formData.timing" class="input-field">
                                     <option value="">Sélectionner...</option>
                                     <option value="now">Immédiatement</option>
                                     <option value="soon">Prochaines semaines</option>
@@ -828,56 +926,56 @@
                     </div>
 
                     <!-- STEP 7: PROJECTION -->
-                    <div x-show="step === 7" class="space-y-8 text-center md:text-left text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center">
-                        <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center leading-tight text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center">Projection & <span class="brand-gradient">Impact</span></h2>
-                        <div class="grid gap-3 max-w-lg mx-auto text-left text-left text-left text-left text-left text-left">
+                    <div x-show="step === 7" class="space-y-8">
+                        <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center leading-tight">Projection & <span class="brand-gradient">Impact</span></h2>
+                        <div class="grid gap-3 max-w-lg mx-auto">
                             <template x-for="r in ['Moins de backlog', 'Clients plus satisfaits', 'Réduction du churn', 'Équipe plus sereine', 'Plus de temps stratégique']">
-                                <button @click="formData.expectedResult = r; nextStep()" class="option-card p-6 text-left font-bold flex justify-between items-center text-left text-left text-left text-left text-left text-left text-left text-left" :class="formData.expectedResult === r ? 'active' : ''">
+                                <button @click="formData.expectedResult = r; nextStep()" class="option-card p-6 text-left font-bold flex justify-between items-center" :class="formData.expectedResult === r ? 'active' : ''">
                                     <span x-text="r"></span>
-                                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300 text-left text-left"></i>
+                                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-300"></i>
                                 </button>
                             </template>
                         </div>
                     </div>
 
                     <!-- STEP 8: COORDONNÉES -->
-                    <div x-show="step === 8" class="space-y-8 text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center">
-                        <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center text-center text-center text-center">Vos <span class="brand-gradient">Coordonnées</span></h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto text-left text-left text-left text-left text-left text-left">
-                            <input type="text" x-model="formData.firstName" placeholder="Prénom *" class="input-field text-left">
-                            <input type="text" x-model="formData.lastName" placeholder="Nom *" class="input-field text-left text-left">
-                            <input type="text" x-model="formData.jobTitle" placeholder="Fonction" class="input-field md:col-span-2 text-left text-left text-left">
-                            <input type="text" x-model="formData.companyName" placeholder="Entreprise *" class="input-field md:col-span-2 text-left text-left text-left text-left text-left">
-                            <input type="email" x-model="formData.email" placeholder="Email professionnel *" class="input-field md:col-span-2 text-left text-left text-left text-left text-left text-left text-left">
-                            <input type="tel" x-model="formData.phone" placeholder="Numéro de téléphone *" class="input-field md:col-span-2 font-bold text-brand-blue border-brand-blue/20 text-left text-left text-left text-left text-left text-left text-left text-left">
+                    <div x-show="step === 8" class="space-y-8">
+                        <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center">Vos <span class="brand-gradient">Coordonnées</span></h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+                            <input type="text" x-model="formData.firstName" placeholder="Prénom *" class="input-field">
+                            <input type="text" x-model="formData.lastName" placeholder="Nom *" class="input-field">
+                            <input type="text" x-model="formData.jobTitle" placeholder="Fonction" class="input-field md:col-span-2">
+                            <input type="text" x-model="formData.companyName" placeholder="Entreprise *" class="input-field md:col-span-2">
+                            <input type="email" x-model="formData.email" placeholder="Email professionnel *" class="input-field md:col-span-2">
+                            <input type="tel" x-model="formData.phone" placeholder="Numéro de téléphone *" class="input-field md:col-span-2 font-bold text-brand-blue border-brand-blue/20">
                         </div>
                     </div>
 
                     <!-- STEP 9: VALIDATION -->
-                    <div x-show="step === 9" class="space-y-8 text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center">
-                        <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center leading-tight text-center text-center text-center text-center text-center text-center text-center">Souhaitez-vous <span class="brand-gradient">valider ?</span></h2>
-                        <div class="grid gap-3 max-w-lg mx-auto text-center text-center text-center text-center text-center">
+                    <div x-show="step === 9" class="space-y-8">
+                        <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center leading-tight">Souhaitez-vous <span class="brand-gradient">valider ?</span></h2>
+                        <div class="grid gap-3 max-w-lg mx-auto">
                             <template x-for="a in ['Être recontacté rapidement', 'Planifier un échange', 'Recevoir une recommandation']">
-                                <button @click="formData.finalAction = a" class="option-card p-6 text-left font-black uppercase text-xs tracking-widest text-center text-center text-center text-center text-center" :class="formData.finalAction === a ? 'active' : ''" x-text="a"></button>
+                                <button @click="formData.finalAction = a" class="option-card p-6 text-left font-black uppercase text-xs tracking-widest text-center" :class="formData.finalAction === a ? 'active' : ''" x-text="a"></button>
                             </template>
                         </div>
                     </div>
 
                     <!-- NAVIGATION -->
-                    <div class="mt-auto pt-12 flex items-center justify-between gap-6 max-w-2xl mx-auto w-full text-center text-center text-center text-center text-center text-center text-center text-center text-center">
-                        <button x-show="step > 1" @click="prevStep()" class="px-8 py-4 rounded-full border-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-slate-50 transition-all flex items-center gap-2 text-center text-center text-center text-center text-center text-center text-center">
+                    <div class="mt-auto pt-12 flex items-center justify-between gap-6 max-w-2xl mx-auto w-full">
+                        <button x-show="step > 1" @click="prevStep()" class="px-8 py-4 rounded-full border-2 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-slate-50 transition-all flex items-center gap-2">
                             <i data-lucide="chevron-left" class="w-4 h-4"></i> Précédent
                         </button>
-                        <div class="flex-1 text-center text-center text-center text-center text-center text-center text-center">
+                        <div class="flex-1">
                             <button x-show="step < 9 && step !== 1 && step !== 7" 
                                     @click="nextStep()" 
                                     :disabled="step === 8 && (!formData.firstName || !formData.lastName || !formData.companyName || !formData.email || !formData.phone)"
-                                    class="w-full px-8 py-4 bg-black text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl flex items-center justify-center gap-2 transition-all hover:scale-105 disabled:opacity-30 disabled:hover:scale-100 disabled:cursor-not-allowed text-center text-center text-center text-center text-center">
-                                Suivant <i data-lucide="chevron-right" class="w-4 h-4 text-center text-center text-center text-center"></i>
+                                    class="w-full px-8 py-4 bg-black text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl flex items-center justify-center gap-2 transition-all hover:scale-105 disabled:opacity-30 disabled:hover:scale-100 disabled:cursor-not-allowed">
+                                Suivant <i data-lucide="chevron-right" class="w-4 h-4"></i>
                             </button>
-                            <button x-show="step === 9" @click="submitAudit()" class="w-full px-8 py-5 bg-brand-gradient text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-2xl flex items-center justify-center gap-2 transition-all hover:scale-105 text-center text-center text-center text-center" :disabled="loading || !formData.finalAction">
+                            <button x-show="step === 9" @click="submitAudit()" class="w-full px-8 py-5 bg-brand-gradient text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-2xl flex items-center justify-center gap-2 transition-all hover:scale-105" :disabled="loading || !formData.finalAction">
                                 <span x-show="!loading">Lancer l'Analyse Stratégique</span>
-                                <i x-show="loading" data-lucide="loader" class="w-4 h-4 animate-spin text-center text-center text-center"></i>
+                                <i x-show="loading" data-lucide="loader" class="w-4 h-4 animate-spin"></i>
                             </button>
                         </div>
                     </div>
@@ -885,33 +983,33 @@
             </div>
 
             <!-- RESULTS PAGE (Recommandation) -->
-            <div x-show="showRecommendation" x-cloak class="reveal reveal-visible bg-white rounded-[4rem] overflow-hidden shadow-4xl border border-slate-100 text-center" x-transition:enter="transition ease-out duration-500">
-                <div class="bg-brand-dark p-12 md:p-20 text-white text-left text-left text-left text-left text-left">
+            <div x-show="showRecommendation" x-cloak class="reveal reveal-visible bg-white rounded-[4rem] overflow-hidden shadow-4xl border border-slate-100" x-transition:enter="transition ease-out duration-500">
+                <div class="bg-slate-900 p-12 md:p-20 text-white text-left">
                     <div class="label-partie mb-6">Audit Stratégique</div>
-                    <h2 class="text-4xl md:text-7xl font-black tracking-tighter leading-tight text-left text-left text-left text-left text-left text-left">Diagnostic <br><span class="brand-gradient">Opérationnel</span></h2>
+                    <h2 class="text-4xl md:text-7xl font-black tracking-tighter leading-tight">Diagnostic <br><span class="brand-gradient">Opérationnel</span></h2>
                 </div>
 
-                <div class="relative h-[400px] overflow-hidden text-center text-center text-center text-center text-center">
+                <div class="relative h-[400px] overflow-hidden">
                     <img :src="recommendedOffer.img" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-gradient-to-t from-white via-white/10 to-transparent text-left text-left text-left text-left text-left"></div>
-                    <div class="absolute bottom-12 left-10 md:left-24 flex items-end gap-10 text-center text-center text-center">
-                        <div class="flex-1 text-left text-left text-left text-left">
-                            <div class="label-partie bg-brand-blue text-white mb-6 text-left text-left text-left">Offre Prioritaire</div>
-                            <h2 class="text-5xl md:text-8xl font-black text-neutral-900 tracking-tighter leading-none text-left text-left text-left text-left" x-text="recommendedOffer.title"></h2>
+                    <div class="absolute inset-0 bg-gradient-to-t from-white via-white/10 to-transparent"></div>
+                    <div class="absolute bottom-12 left-10 md:left-24 flex items-end gap-10">
+                        <div class="flex-1 text-left">
+                            <div class="label-partie bg-brand-blue text-white mb-6">Offre Prioritaire</div>
+                            <h2 class="text-5xl md:text-8xl font-black text-neutral-900 tracking-tighter leading-none" x-text="recommendedOffer.title"></h2>
                         </div>
                     </div>
                 </div>
 
-                <div class="p-12 md:p-24 bg-white text-center text-center text-center text-center text-center">
-                    <div class="max-w-4xl space-y-12 text-left text-left text-left text-left text-left">
-                        <div class="space-y-6 text-left text-left text-left text-left text-left">
-                            <h3 class="text-3xl font-black uppercase tracking-tight text-neutral-900 text-left text-left text-left text-left text-left">Analyse Effectuée</h3>
-                            <p class="text-xl text-slate-600 font-medium leading-relaxed text-left text-left text-left text-left text-left text-left text-left text-left">
+                <div class="p-12 md:p-24 bg-white">
+                    <div class="max-w-4xl space-y-12 text-left">
+                        <div class="space-y-6">
+                            <h3 class="text-3xl font-black uppercase tracking-tight text-neutral-900">Analyse Effectuée</h3>
+                            <p class="text-xl text-slate-600 font-medium leading-relaxed">
                                 Au vu de votre enjeu sur <strong class="text-brand-blue" x-text="challengeLabel"></strong>, j'ai identifié l'offre <strong x-text="recommendedOffer.title"></strong> comme étant le levier opérationnel le plus impactant pour vous aujourd'hui.
                             </p>
                         </div>
-                        <div class="flex flex-wrap gap-6 justify-start text-left text-left text-left text-left text-left text-left text-left">
-                            <button @click="confirmRecommendation()" class="px-12 py-6 bg-brand-gradient text-white rounded-full font-black uppercase text-sm shadow-2xl hover:scale-105 transition-all text-left text-left text-left text-left">Accéder au compte rendu</button>
+                        <div class="flex flex-wrap gap-6 justify-start">
+                            <button @click="confirmRecommendation()" class="px-12 py-6 bg-brand-gradient text-white rounded-full font-black uppercase text-sm shadow-2xl hover:scale-105 transition-all">Accéder au compte rendu</button>
                             
                             <!-- AFFICHAGE CONDITIONNEL CALENDLY SUR PAGE DE RÉSULTAT -->
                             <template x-if="formData.finalAction === 'Planifier un échange'">
@@ -925,34 +1023,33 @@
                 </div>
             </div>
 
-            <!-- SUCCESS PAGE (Final - C'est dans la boîte) -->
-            <div x-show="submitted" x-cloak class="text-center py-12 text-center text-center text-center text-center text-center text-center" x-transition:enter="transition ease-out duration-500">
-                <div class="relative inline-block mb-16 text-center text-center text-center text-center text-center text-center text-center text-center">
-                    <div class="absolute inset-0 bg-brand-blue/20 blur-[100px] rounded-full scale-150 animate-pulse text-center text-center text-center"></div>
-                    <img src="https://lh3.googleusercontent.com/d/1ZKwRL-c7yJCE-H8-ZbH1jt_RStqn-Svq" alt="Succès" class="relative w-48 h-auto mx-auto animate-float drop-shadow-3xl colibri-interaction text-center text-center text-center text-center">
+            <!-- SUCCESS PAGE (Final) -->
+            <div x-show="submitted" x-cloak class="text-center py-12" x-transition:enter="transition ease-out duration-500">
+                <div class="relative inline-block mb-16">
+                    <div class="absolute inset-0 bg-brand-blue/20 blur-[100px] rounded-full scale-150 animate-pulse"></div>
+                    <img src="https://lh3.googleusercontent.com/d/1ZKwRL-c7yJCE-H8-ZbH1jt_RStqn-Svq" alt="Succès" class="relative w-48 h-auto mx-auto animate-float drop-shadow-3xl colibri-interaction">
                 </div>
-                <div class="max-w-2xl mx-auto space-y-10 text-center text-center text-center text-center text-center">
+                <div class="max-w-2xl mx-auto space-y-10">
                     <h2 class="text-5xl md:text-7xl font-black tracking-tight text-neutral-900 leading-none">C'est dans la <span class="brand-gradient">boîte !</span></h2>
-                    <p class="text-2xl text-slate-500 font-medium leading-relaxed text-center text-center text-center text-center text-center">Merci <span class="text-brand-blue font-bold" x-text="formData.firstName"></span> ! Votre diagnostic stratégique a été transmis avec succès.</p>
-                    <div class="bg-white p-10 rounded-[3rem] shadow-3xl border border-slate-100 text-left space-y-8 text-left text-left text-left text-left text-left text-left">
-                        <h4 class="text-xs font-black uppercase tracking-[0.2em] text-slate-300 border-b pb-4 text-left text-left text-left text-left">Prochaines étapes</h4>
-                        <div class="flex items-start gap-6 text-left text-left text-left text-left text-left">
-                            <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center shrink-0 text-brand-blue text-left"><i data-lucide="mail" class="w-5 h-5 text-left"></i></div>
-                            <p class="text-slate-600 font-bold leading-tight text-lg text-left text-left text-left">Analyse immédiate de vos réponses par Corinne Marsiac.</p>
+                    <p class="text-2xl text-slate-500 font-medium leading-relaxed">Merci <span class="text-brand-blue font-bold" x-text="formData.firstName"></span> ! Votre diagnostic stratégique a été transmis avec succès.</p>
+                    <div class="bg-white p-10 rounded-[3rem] shadow-3xl border border-slate-100 text-left space-y-8">
+                        <h4 class="text-xs font-black uppercase tracking-[0.2em] text-slate-300 border-b pb-4">Prochaines étapes</h4>
+                        <div class="flex items-start gap-6">
+                            <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center shrink-0 text-brand-blue"><i data-lucide="mail" class="w-5 h-5"></i></div>
+                            <p class="text-slate-600 font-bold leading-tight text-lg">Analyse immédiate de vos réponses par Corinne Marsiac.</p>
                         </div>
-                        <div class="flex items-start gap-6 text-left text-left text-left text-left text-left text-left">
-                            <div class="w-10 h-10 rounded-full bg-violet-50 flex items-center justify-center shrink-0 text-brand-violet text-left text-left text-left"><i data-lucide="phone-call" class="w-5 h-5 text-left text-left"></i></div>
-                            <p class="text-slate-600 font-bold leading-tight text-lg text-left text-left text-left text-left text-left">Recontact sous 24h ouvrées pour fixer notre premier échange conseil.</p>
+                        <div class="flex items-start gap-6">
+                            <div class="w-10 h-10 rounded-full bg-violet-50 flex items-center justify-center shrink-0 text-brand-violet"><i data-lucide="phone-call" class="w-5 h-5"></i></div>
+                            <p class="text-slate-600 font-bold leading-tight text-lg">Recontact sous 24h ouvrées pour fixer notre premier échange conseil.</p>
                         </div>
                     </div>
-                    <div class="pt-8 flex flex-col gap-6 items-center text-center text-center text-center text-center text-center text-center text-center">
-                        <!-- BOUTON TÉLÉCHARGER DÉPLACÉ SUR PAGE FINALE -->
-                        <button @click="downloadPDF()" class="px-16 py-7 bg-brand-gradient text-white rounded-full font-black uppercase text-sm shadow-4xl hover:scale-110 transition-all flex items-center gap-4 text-center">
+                    <div class="pt-8 flex flex-col gap-6 items-center">
+                        <button @click="downloadPDF()" class="px-16 py-7 bg-brand-gradient text-white rounded-full font-black uppercase text-sm shadow-4xl hover:scale-110 transition-all flex items-center gap-4">
                             <i data-lucide="download" class="w-6 h-6"></i> Télécharger mon diagnostic (.pdf)
                         </button>
                         
-                        <button @click="resetAudit()" class="text-slate-400 hover:text-brand-blue font-bold uppercase text-xs tracking-widest transition-colors flex items-center gap-2 text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center">
-                            <i data-lucide="rotate-ccw" class="w-4 h-4 text-center text-center text-center"></i> Relancer le diagnostic
+                        <button @click="resetAudit()" class="text-slate-400 hover:text-brand-blue font-bold uppercase text-xs tracking-widest transition-colors flex items-center gap-2">
+                            <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Relancer le diagnostic
                         </button>
                     </div>
                 </div>
@@ -961,73 +1058,55 @@
     </section>
 
     <!-- SECTION CONTACT -->
-    <section id="contact" class="py-24 md:py-48 bg-white px-6 text-center text-center text-center text-center text-center text-center">
-        <div class="container mx-auto max-w-[1920px] text-center text-center text-center text-center text-center text-center text-center text-center">
-            <div class="relative overflow-hidden bg-neutral-950 rounded-[5rem] p-12 md:p-32 reveal text-center group shadow-3xl text-center text-center text-center text-center text-center text-center text-center">
-                <h2 class="text-5xl md:text-8xl font-[900] tracking-tighter mb-12 leading-tight text-white text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center">Construisons votre <span class="brand-gradient">réussite ensemble</span></h2>
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-8 relative z-10 text-center text-center text-center text-center text-center text-center text-center text-center">
-                    <a href="https://calendly.com/corinne-marsiac-careandsuccess/30min" target="_blank" class="w-full sm:w-auto px-16 py-6 bg-brand-gradient text-white rounded-full font-black uppercase tracking-widest text-sm transition-all duration-500 hover:scale-110 flex items-center justify-center gap-4 shadow-2xl shadow-indigo-500/30 text-center text-center text-center text-center text-center text-center">Prendre RDV <i data-lucide="calendar" class="w-5 h-5 text-center"></i></a>
-                    <a href="mailto:careandsuccess.partner@gmail.com" class="w-full sm:w-auto px-16 py-6 border border-white/20 text-white rounded-full font-black uppercase tracking-widest text-sm transition-all duration-500 hover:scale-110 hover:bg-white/10 flex items-center justify-center gap-4 text-center text-center text-center text-center text-center text-center">E-mail <i data-lucide="mail" class="w-5 h-5 text-center text-center"></i></a>
+    <section id="contact" class="py-24 md:py-48 bg-white px-6">
+        <div class="container mx-auto max-w-[1920px]">
+            <div class="relative overflow-hidden bg-neutral-950 rounded-[5rem] p-12 md:p-32 reveal group shadow-3xl text-center">
+                <h2 class="text-5xl md:text-8xl font-[900] tracking-tighter mb-12 leading-tight text-white">Construisons votre <span class="brand-gradient">réussite ensemble</span></h2>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-8 relative z-10">
+                    <a href="https://calendly.com/corinne-marsiac-careandsuccess/30min" target="_blank" class="w-full sm:w-auto px-16 py-6 bg-brand-gradient text-white rounded-full font-black uppercase tracking-widest text-sm transition-all duration-500 hover:scale-110 flex items-center justify-center gap-4 shadow-2xl shadow-indigo-500/30">Prendre RDV <i data-lucide="calendar" class="w-5 h-5"></i></a>
+                    <a href="mailto:careandsuccess.partner@gmail.com" class="w-full sm:w-auto px-16 py-6 border border-white/20 text-white rounded-full font-black uppercase tracking-widest text-sm transition-all duration-500 hover:scale-110 hover:bg-white/10 flex items-center justify-center gap-4">E-mail <i data-lucide="mail" class="w-5 h-5"></i></a>
                 </div>
-                <div class="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none text-center text-center text-center text-center text-center text-center text-center" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+                <div class="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 40px 40px;"></div>
             </div>
         </div>
     </section>
 
     <!-- FOOTER -->
-    <footer class="py-24 bg-white border-t border-neutral-100 px-6 text-center text-center text-center">
-        <div class="container mx-auto max-w-[1920px] text-center text-center text-center">
-            <div class="grid grid-cols-1 lg:grid-cols-3 items-center gap-12 lg:gap-20 mb-20 text-center text-center text-center text-center text-center text-center">
-                <div class="order-2 lg:order-1 space-y-6 lg:text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left text-left">
-                    <span class="text-xs font-black uppercase tracking-[0.3em] border-b-2 border-brand-blue pb-3 inline-block lg:block text-left text-left text-left text-left text-left text-left text-left text-left">Navigation</span>
-                    <div class="flex flex-col gap-3 text-lg font-bold text-neutral-500 text-left text-left text-left text-left text-left text-left text-left text-left">
-                        <a href="#accueil" class="hover:text-blue-600 transition-colors text-left text-left text-left">Accueil</a>
-                        <a href="#offres" class="hover:text-blue-600 transition-colors text-left text-left text-left">Offres</a>
-                        <a href="#framework" class="hover:text-blue-600 transition-colors text-left text-left text-left text-left text-left">Méthode Colibri™</a>
+    <footer class="py-24 bg-white border-t border-neutral-100 px-6">
+        <div class="container mx-auto max-w-[1920px] text-center">
+            <div class="grid grid-cols-1 lg:grid-cols-3 items-center gap-12 lg:gap-20 mb-20">
+                <div class="order-2 lg:order-1 space-y-6 lg:text-left">
+                    <span class="text-xs font-black uppercase tracking-[0.3em] border-b-2 border-brand-blue pb-3 inline-block lg:block">Navigation</span>
+                    <div class="flex flex-col gap-3 text-lg font-bold text-neutral-500">
+                        <a href="#accueil" class="hover:text-blue-600 transition-colors">Accueil</a>
+                        <a href="#offres" class="hover:text-blue-600 transition-colors">Offres</a>
+                        <a href="#framework" class="hover:text-blue-600 transition-colors">Méthode Colibri™</a>
                     </div>
                 </div>
 
-                <div class="order-1 lg:order-2 flex justify-center text-center text-center text-center text-center text-center text-center text-center text-center">
-                    <a href="#accueil" class="text-center text-center text-center">
-                        <img src="https://lh3.googleusercontent.com/d/1r0tG2koxXGDPjoCw9dmlCtk6UisQYxDE" alt="Logo" class="h-40 md:h-56 lg:h-72 opacity-90 hover:opacity-100 transition-all mx-auto text-center text-center text-center">
+                <div class="order-1 lg:order-2 flex justify-center">
+                    <a href="#accueil">
+                        <img src="https://lh3.googleusercontent.com/d/1r0tG2koxXGDPjoCw9dmlCtk6UisQYxDE" alt="Logo" class="h-40 md:h-56 lg:h-72 opacity-90 hover:opacity-100 transition-all mx-auto">
                     </a>
                 </div>
                 
-                <div class="order-3 lg:order-3 space-y-6 lg:text-left text-left text-left text-left text-left text-left text-left text-left">
-                    <span class="text-xs font-black uppercase tracking-[0.3em] border-b-2 border-brand-blue pb-3 inline-block lg:block text-left text-left text-left text-left text-left text-left">Contact</span>
-                    <div class="flex flex-col gap-3 text-lg font-bold text-neutral-500 text-left text-left text-left text-left text-left text-left text-left text-left">
-                        <a href="https://www.linkedin.com/company/care-and-success/" target="_blank" class="hover:text-blue-600 transition-colors flex items-center gap-2 justify-center lg:justify-start text-left text-left text-left text-left text-left">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#0077b5" class="text-left text-left text-left text-left text-left text-left text-left"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg> LinkedIn
+                <div class="order-3 lg:order-3 space-y-6 lg:text-left">
+                    <span class="text-xs font-black uppercase tracking-[0.3em] border-b-2 border-brand-blue pb-3 inline-block lg:block">Contact</span>
+                    <div class="flex flex-col gap-3 text-lg font-bold text-neutral-500">
+                        <a href="https://www.linkedin.com/company/care-and-success/" target="_blank" class="hover:text-blue-600 transition-colors flex items-center gap-2 justify-center lg:justify-start">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#0077b5"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg> LinkedIn
                         </a>
-                        <a href="mailto:careandsuccess.partner@gmail.com" class="hover:text-blue-600 transition-colors lowercase break-all text-sm md:text-lg text-left text-left text-left text-left">careandsuccess.partner@gmail.com</a>
+                        <a href="mailto:careandsuccess.partner@gmail.com" class="hover:text-blue-600 transition-colors lowercase break-all text-sm md:text-lg">careandsuccess.partner@gmail.com</a>
                     </div>
                 </div>
             </div>
 
-            <div class="pt-12 border-t border-neutral-100 text-center text-center text-center text-center text-center text-center text-center text-center text-center">
-                <p class="text-[11px] font-black uppercase tracking-widest text-neutral-400 leading-relaxed mx-auto max-w-5xl px-4 text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center text-center">
+            <div class="pt-12 border-t border-neutral-100">
+                <p class="text-[11px] font-black uppercase tracking-widest text-neutral-400 leading-relaxed mx-auto max-w-5xl px-4">
                     © 2026 • Care & Success • Renfort opérationnel Freelance • Expertise SaaS B2B • RH Tech / Paie
                 </p>
             </div>
         </div>
     </footer>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
-            window.addEventListener('scroll', () => {
-                const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-                const scrolledWidth = (winScroll / height) * 100;
-                const scrollProgress = document.getElementById('scroll-progress');
-                if (scrollProgress) scrollProgress.style.width = scrolledWidth + "%";
-            });
-            const observerOptions = { threshold: 0.15, rootMargin: '0px 0px -50px 0px' };
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('reveal-visible'); });
-            }, observerOptions);
-            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-        });
-    </script>
 </body>
 </html>
