@@ -331,6 +331,34 @@
                 nextStep() { if(this.step < 9) { this.step++; this.$nextTick(() => lucide.createIcons()); } },
                 prevStep() { if(this.step > 1) { this.step--; this.$nextTick(() => lucide.createIcons()); } },
 
+                /**
+                 * DESSINER LE PIED DE PAGE PDF VECTORIEL (OPTIMISÉ LISIBILITÉ)
+                 * Sépare le préfixe gris du nom d'entreprise en couleur moderne
+                 */
+                drawVectorFooter(doc, companyName) {
+                    const pageHeight = doc.internal.pageSize.getHeight();
+                    const pageWidth = doc.internal.pageSize.getWidth();
+                    const prefix = "Care & Success par Corinne Marsiac - ";
+                    const name = companyName || 'Votre Entreprise';
+                    
+                    doc.setFontSize(8);
+                    doc.setFont('helvetica', 'bold');
+                    
+                    // Calcul des largeurs pour le centrage
+                    const prefixWidth = doc.getTextWidth(prefix);
+                    const nameWidth = doc.getTextWidth(name);
+                    const totalWidth = prefixWidth + nameWidth;
+                    const startX = (pageWidth - totalWidth) / 2;
+                    
+                    // 1. Dessiner le préfixe en gris (Screenshot)
+                    doc.setTextColor(100, 116, 139); // Slate-500
+                    doc.text(prefix, startX, pageHeight - 10);
+                    
+                    // 2. Dessiner le nom de l'entreprise en Indigo Moderne (Brand Indigo)
+                    doc.setTextColor(99, 102, 241); // #6366f1
+                    doc.text(name, startX + prefixWidth, pageHeight - 10);
+                },
+
                 async submitAudit() {
                     this.loading = true;
                     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw0SwbVXhY3pocn_NyeMWCnvEAUliX6a9rKpTqYllaR24TP1BuAgSG_1gCGC237-Lyf/exec';
@@ -376,6 +404,9 @@
                         drawRow('Défi', this.challengeLabel);
                         drawRow('Pression', this.formData.pressureLevel);
                         drawRow('Recommandation', this.recommendedOffer.title);
+
+                        // PIED DE PAGE VECTORIEL
+                        this.drawVectorFooter(doc, this.formData.companyName);
 
                         const pdfBase64 = doc.output('datauristring').split(',')[1];
 
@@ -440,9 +471,13 @@
                     };
 
                     try {
-                        const [loadedColibri, gradientTitleData] = await Promise.all([loadImage(colibriImgUrl), createTitleCanvas()]);
+                        const [loadedColibri, gradientTitleData] = await Promise.all([
+                            loadImage(colibriImgUrl), 
+                            createTitleCanvas()
+                        ]);
+
                         const doc = new jsPDF();
-                        const blueColor = [37, 99, 235], darkColor = [15, 23, 42], greyColor = [100, 116, 139], marginX = 20;
+                        const blueColor = [37, 99, 235], darkColor = [15, 23, 42], marginX = 20;
                         let currentY = 75;
 
                         doc.setFillColor(darkColor[0], darkColor[1], darkColor[2]); doc.rect(0, 0, 210, 55, 'F');
@@ -453,7 +488,7 @@
                         doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
                         doc.text('VOTRE DIAGNOSTIC STRATÉGIQUE', marginX, currentY); currentY += 4;
                         doc.setDrawColor(blueColor[0], blueColor[1], blueColor[2]); doc.setLineWidth(1.5); doc.line(marginX, currentY, marginX + 30, currentY);
-                        doc.setFontSize(10); doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]); doc.text('Émis le ' + new Date().toLocaleDateString('fr-FR'), 160, currentY - 5);
+                        doc.setFontSize(10); doc.setTextColor(100, 116, 139); doc.text('Émis le ' + new Date().toLocaleDateString('fr-FR'), 160, currentY - 5);
                         currentY += 15;
 
                         const drawSection = (title, data) => {
@@ -477,8 +512,10 @@
                         doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(255, 255, 255); doc.text('PRÉCONISATION STRATÉGIQUE CARE & SUCCESS', marginX + 10, currentY + 12);
                         doc.setFontSize(16); doc.setTextColor(blueColor[0], blueColor[1], blueColor[2]); doc.text(this.recommendedOffer.title.toUpperCase(), marginX + 10, currentY + 24);
 
+                        // PIED DE PAGE VECTORIEL (COULEURS MIXTES)
+                        this.drawVectorFooter(doc, this.formData.companyName);
+
                         const companyName = this.formData.companyName || 'Votre Entreprise';
-                        doc.setFontSize(8); doc.setTextColor(greyColor[0], greyColor[1], greyColor[2]); doc.text('Care & Success par Corinne Marsiac - ' + companyName, 105, 290, null, null, 'center');
                         doc.save('Diagnostic_CareSuccess_' + companyName.replace(/\s+/g, '_') + '.pdf');
                     } catch (error) { console.error("Erreur PDF:", error); } finally { this.loading = false; }
                 }
@@ -1188,5 +1225,12 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        // Synchronisation des icônes Lucide à chaque chargement de vue Alpine
+        document.addEventListener('alpine:initialized', () => {
+            lucide.createIcons();
+        });
+    </script>
 </body>
 </html>
