@@ -231,6 +231,65 @@
             outline: none; transition: all 0.2s ease; font-size: 0.95rem; background: white;
         }
         .input-field:focus { border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+
+        /* Styles RGPD */
+        .checkbox-container {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+            text-align: left;
+            padding: 14px;
+            border-radius: 16px;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+            background: #ffffff;
+        }
+        
+        .checkbox-container:hover {
+            background: #f8faff;
+            border-color: #e2e8f0;
+        }
+
+        .checkbox-input {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            border: 2px solid #cbd5e1;
+            accent-color: #2563eb;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+
+        .label-text {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .legal-notice {
+            font-size: 11px;
+            color: #64748b;
+            line-height: 1.5;
+            padding: 15px;
+            background: #f1f5f9;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .required-mark {
+            color: #ef4444;
+            margin-left: 2px;
+            font-weight: bold;
+        }
+
+        .link-legal {
+            color: #2563eb;
+            text-decoration: underline;
+            cursor: pointer;
+        }
     </style>
 
     <script>
@@ -241,7 +300,8 @@
                     challenge: '', industry: '', maturity: '', pressureLevel: '', mainImpact: '', 
                     trackedKPIs: [], pressureKPI: '', toolStack: [], toolUsage: '',
                     interventionType: '', timing: '', expectedResult: '', firstName: '', lastName: '', 
-                    companyName: '', email: '', website: '', linkedin: '', phone: '', jobTitle: '', finalAction: '' 
+                    companyName: '', email: '', website: '', linkedin: '', phone: '', jobTitle: '', finalAction: '',
+                    gdprConsent: false, contactConsent: false, newsletterConsent: false
                 },
                 sectors: ['SaaS B2B', 'SaaS B2C', 'FinTech', 'HRTech / Paie / RH', 'EdTech', 'E-commerce / Retail', 'Marketplace / Plateforme', 'Industrie / Services B2B', 'Santé / MedTech', 'Conseil / Services professionnels', 'Autre (champ libre)'],
                 challengesList: [
@@ -271,21 +331,16 @@
                 nextStep() { if(this.step < 9) { this.step++; this.$nextTick(() => lucide.createIcons()); } },
                 prevStep() { if(this.step > 1) { this.step--; this.$nextTick(() => lucide.createIcons()); } },
 
-                /**
-                 * ENVOI DES DONNÉES ET GÉNÉRATION PDF TECHNIQUE POUR E-MAIL
-                 */
                 async submitAudit() {
                     this.loading = true;
                     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw0SwbVXhY3pocn_NyeMWCnvEAUliX6a9rKpTqYllaR24TP1BuAgSG_1gCGC237-Lyf/exec';
 
                     try {
-                        // 1. Génération du PDF pour l'envoi email
                         const { jsPDF } = window.jspdf;
                         const doc = new jsPDF();
                         const marginX = 20; 
                         let y = 30;
 
-                        // Entête
                         doc.setFillColor(15, 23, 42); 
                         doc.rect(0, 0, 210, 45, 'F');
                         doc.setFont('helvetica', 'bold'); 
@@ -324,7 +379,6 @@
 
                         const pdfBase64 = doc.output('datauristring').split(',')[1];
 
-                        // 2. Préparation du payload
                         const payload = {
                             ...this.formData,
                             challengeLabel: this.challengeLabel,
@@ -333,7 +387,6 @@
                             fileName: `Diagnostic_CareSuccess_${this.formData.companyName.replace(/\s+/g, '_')}.pdf`
                         };
 
-                        // 3. Envoi au serveur Google (Emailing)
                         await fetch(SCRIPT_URL, {
                             method: 'POST',
                             mode: 'no-cors',
@@ -341,14 +394,12 @@
                             body: JSON.stringify(payload)
                         });
 
-                        // 4. Passage à la page de recommandation
                         this.loading = false;
                         this.showRecommendation = true;
                         this.$nextTick(() => lucide.createIcons());
 
                     } catch (error) {
                         console.error("Erreur lors de l'envoi :", error);
-                        // On continue quand même vers la recommandation pour ne pas bloquer l'utilisateur
                         this.loading = false;
                         this.showRecommendation = true;
                         this.$nextTick(() => lucide.createIcons());
@@ -358,13 +409,10 @@
                 confirmRecommendation() { this.showRecommendation = false; this.submitted = true; this.$nextTick(() => lucide.createIcons()); },
                 resetAudit() {
                     this.step = 1; this.submitted = false; this.showRecommendation = false;
-                    this.formData = { challenge: '', industry: '', maturity: '', pressureLevel: '', mainImpact: '', trackedKPIs: [], pressureKPI: '', toolStack: [], toolUsage: '', interventionType: '', timing: '', expectedResult: '', firstName: '', lastName: '', companyName: '', email: '', website: '', linkedin: '', phone: '', jobTitle: '', finalAction: '' };
+                    this.formData = { challenge: '', industry: '', maturity: '', pressureLevel: '', mainImpact: '', trackedKPIs: [], pressureKPI: '', toolStack: [], toolUsage: '', interventionType: '', timing: '', expectedResult: '', firstName: '', lastName: '', companyName: '', email: '', website: '', linkedin: '', phone: '', jobTitle: '', finalAction: '', gdprConsent: false, contactConsent: false, newsletterConsent: false };
                     this.$nextTick(() => { lucide.createIcons(); document.getElementById('diagnostic-encart').scrollIntoView({behavior:'smooth'}); });
                 },
 
-                /**
-                 * TÉLÉCHARGEMENT PDF HAUTE QUALITÉ POUR L'UTILISATEUR
-                 */
                 async downloadPDF() {
                     this.loading = true;
                     const { jsPDF } = window.jspdf;
@@ -938,7 +986,7 @@
                         </div>
                     </div>
 
-                    <!-- STEP 8: COORDONNÉES -->
+                    <!-- STEP 8: COORDONNÉES + RGPD -->
                     <div x-show="step === 8" class="space-y-8">
                         <h2 class="text-3xl md:text-5xl font-black tracking-tighter text-center">Vos <span class="brand-gradient">Coordonnées</span></h2>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
@@ -948,6 +996,38 @@
                             <input type="text" x-model="formData.companyName" placeholder="Entreprise *" class="input-field md:col-span-2">
                             <input type="email" x-model="formData.email" placeholder="Email professionnel *" class="input-field md:col-span-2">
                             <input type="tel" x-model="formData.phone" placeholder="Numéro de téléphone *" class="input-field md:col-span-2 font-bold text-brand-blue border-brand-blue/20">
+                        </div>
+
+                        <!-- BLOC RGPD OPTIMISÉ (v2026) -->
+                        <div class="max-w-2xl mx-auto space-y-4 pt-8 border-t border-slate-100">
+                            <!-- Mention d'information obligatoire -->
+                            <div class="legal-notice">
+                                <strong>Information sur vos données :</strong> Les données collectées sont traitées par Corinne Marsiac (Care & Success) pour traiter votre demande de diagnostic opérationnel. Vos données sont conservées pendant 3 ans. Vous disposez d’un droit d’accès, de rectification et de suppression que vous pouvez exercer à careandsuccess.partner@gmail.com. Consultez notre <span class="link-legal">Politique de confidentialité</span>.
+                            </div>
+
+                            <!-- 1. Consentement au traitement de la demande (Obligatoire) -->
+                            <label class="checkbox-container">
+                                <input type="checkbox" x-model="formData.gdprConsent" class="checkbox-input">
+                                <span class="label-text">
+                                    J'accepte que les données saisies soient collectées pour l'établissement de mon diagnostic stratégique et le suivi de ma demande.<span class="required-mark">*</span>
+                                </span>
+                            </label>
+
+                            <!-- 2. Autorisation de recontact multicanal (Obligatoire pour la prospection) -->
+                            <label class="checkbox-container">
+                                <input type="checkbox" x-model="formData.contactConsent" class="checkbox-input">
+                                <span class="label-text">
+                                    J'autorise Care & Success à me recontacter par e-mail, téléphone ou via LinkedIn pour me présenter des solutions adaptées à mes besoins.<span class="required-mark">*</span>
+                                </span>
+                            </label>
+
+                            <!-- 3. Inscription Newsletter (Optionnel) -->
+                            <label class="checkbox-container">
+                                <input type="checkbox" x-model="formData.newsletterConsent" class="checkbox-input">
+                                <span class="label-text">
+                                    Je souhaite m'abonner à la newsletter "Customer Success Insight" pour recevoir des conseils stratégiques mensuels.
+                                </span>
+                            </label>
                         </div>
                     </div>
 
@@ -969,7 +1049,7 @@
                         <div class="flex-1">
                             <button x-show="step < 9 && step !== 1 && step !== 7" 
                                     @click="nextStep()" 
-                                    :disabled="step === 8 && (!formData.firstName || !formData.lastName || !formData.companyName || !formData.email || !formData.phone)"
+                                    :disabled="step === 8 && (!formData.firstName || !formData.lastName || !formData.companyName || !formData.email || !formData.phone || !formData.gdprConsent || !formData.contactConsent)"
                                     class="w-full px-8 py-4 bg-black text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl flex items-center justify-center gap-2 transition-all hover:scale-105 disabled:opacity-30 disabled:hover:scale-100 disabled:cursor-not-allowed">
                                 Suivant <i data-lucide="chevron-right" class="w-4 h-4"></i>
                             </button>
